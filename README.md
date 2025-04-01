@@ -1,37 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# <b>Stock & Crypto Investment Analyzer</b>
+### <b>"See the data, not the noise."</b>
 
-## Getting Started
+Help investors compare <b>real-time</b> and <b>historical performance</b> of stocks and crypto to make <b>smarter, data-driven decisions—not emotional ones.</b>
 
-First, run the development server:
+## Why This Matters
+Most traders lose money because they:
+✅ <b>Chase hype</b> without historical context.
+✅ <b>Ignore opportunity costs</b> (e.g., "What if I bought Tesla instead of Bitcoin last year?").
+✅ <b>Overlook hidden costs</b> like fees, taxes, and exchange-rate impacts.
 
-```bash
+## This tool solves those problems by:
+📊 <b>Visualizing trends</b> (not just raw numbers).
+💡 <b>Showing "what-if"</b> scenarios (e.g., comparing two assets).
+🔍 <b>Highlighting hidden costs</b> (fees, taxes, volatility).
+
+## 🚀 How to Run This Project Locally
+1. Prerequisites
+Node.js (v18+)
+
+### Free API keys:
+Alpha Vantage (Stocks)
+CoinGecko (Crypto)
+ExchangeRate-API
+
+2. Setup & Installation
+### 1. Clone the repository
+git clone [https://github.com/SamuelIVX/Deltabase]
+cd deltabase
+
+### 2. Install dependencies
+npm install
+
+### 3. Set up environment variables
+## Create a `.env.local` file and add your API keys:
+ALPHA_VANTAGE_KEY=your_key_here
+COINGECKO_KEY=your_key_here
+EXCHANGE_RATE_KEY=your_key_here
+
+3. Start the Development Server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Open http://localhost:3000 in your browser.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# Deltabase
+## ⚙️ Technologies Used
+Stocks Data - [Alpha Vantage](https://www.alphavantage.co/)	| <b>Reliable stocks API</b>
+Crypto Data - [CoinGecko](https://www.coingecko.com/en/api) | <b>Best free crypto API</b>
+Exchange Rates - [ExchangeRate-API](https://www.exchangerate-api.com/) | <b>Simple currency conversion</b>
+Data Visualization - [Recharts](https://recharts.org/en-US/) | <b>Easy, interactive visualizations</b>
+State Management - [Zustand](https://github.com/pmndrs/zustand) | <b>Lightweight, fast, no boilerplate</b>
