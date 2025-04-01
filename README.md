@@ -21,23 +21,26 @@ Most traders lose money because they:
 🔍 <b>Highlighting hidden costs</b> (fees, taxes, volatility).
 
 ## 🚀 How to Run This Project Locally
-## 1. Prerequisites
+## Prerequisites
 Node.js (v18+)
 
-### Free API keys:
-Alpha Vantage (Stocks)
-CoinGecko (Crypto)
-ExchangeRate-API
+### 1. Free API keys:
+[Alpha Vantage](https://www.alphavantage.co/)
+
+[CoinGecko](https://www.coingecko.com/en/api)
+
+[ExchangeRate-API](https://www.exchangerate-api.com/)
 
 ## 2. Setup & Installation
 ### 1. Clone the repository
 git clone [https://github.com/SamuelIVX/Deltabase]
+
 cd deltabase
 
-## 2. Install dependencies
+## 3. Install dependencies
 npm install
 
-## 3. Set up environment variables
+## 4. Set up environment variables
 ### Create a `.env.local` file and add your API keys:
 
 ALPHA_VANTAGE_KEY=your_key_here
@@ -46,8 +49,9 @@ COINGECKO_KEY=your_key_here
 
 EXCHANGE_RATE_KEY=your_key_here
 
-## 3. Start the Development Server
+## 5. Start the Development Server
 npm run dev
+
 Open http://localhost:3000 in your browser.
 
 ## ⚙️ Technologies Used
