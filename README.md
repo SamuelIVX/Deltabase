@@ -41,7 +41,7 @@ cd deltabase
 npm install
 
 ## 4. Set up environment variables
-### Create a `.env.local` file and add your API keys:
+#### Create a `.env.local` file and add your API keys:
 
 ALPHA_VANTAGE_KEY=your_key_here
 
