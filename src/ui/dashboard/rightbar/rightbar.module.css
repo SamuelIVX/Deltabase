@@ -1,0 +1,64 @@
+.container {
+    position: fixed;
+  }
+  
+  .item {
+    position: relative;
+    background: linear-gradient(to top, #182237, #253352);
+    padding: 20px 24px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .bgContainer {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 50%;
+    height: 50%;
+  }
+  
+  .bg {
+    object-fit: contain;
+    opacity: 0.2;
+  }
+  
+  .text {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .notification {
+    font-weight: bold;
+  }
+  
+  .title {
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .subtitle {
+    font-size: 12px;
+    color: var(--textSoft);
+  }
+  
+  .desc {
+    font-size: 12px;
+    color: var(--textSoft);
+  }
+  
+  .button {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #5d57c9;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: max-content;
+    font-size: 12px;
+  }
+  
