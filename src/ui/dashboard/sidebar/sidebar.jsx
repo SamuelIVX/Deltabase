@@ -1,18 +1,18 @@
 import MenuLink from "./menuLink/menuLink";
 import Image from "next/image";
 import styles from "./sidebar.module.css";
-import { auth } from "@/app/auth";
 
 import {
-  FaMoneyBillTransfer,
-  CiMoneyCheck1,
   MdOutlineMoney,
   MdDashboard,
-  FaQuestion,
-  FaCalculator,
-  MdOutlineCurrencyExchange,
+  MdOutlineHelpOutline,  // Instead of FaQuestion
+  MdCalculate,           // Instead of FaCalculator
   MdLogout,
+  MdOutlineCurrencyExchange,
+  MdPayments             // Instead of FaMoneyBillTransfer
 } from "react-icons/md";
+
+import { CiMoneyCheck1 } from "react-icons/ci";
 
 const menuItems = [
   {
@@ -26,17 +26,17 @@ const menuItems = [
       {
         title: "WhatIf",
         path: "/dashboard/stocks",
-        icon: <FaQuestion />,
+        icon: <MdOutlineHelpOutline />,
       },
       {
         title: "OpportunityCostCalculator",
         path: "/dashboard/crypto",
-        icon: <FaCalculator />,
+        icon: <MdCalculate />,
       },
       {
         title: "VolatilitySwings",
         path: "/dashboard/conversion-rates",
-        icon: <MdOutlineCurrencyExchange />,
+        icon: <MdPayments />,
       },
     ],
   },
@@ -56,27 +56,26 @@ const menuItems = [
       {
         title: "Conversion Rates",
         path: "/dashboard/conversion-rates",
-        icon: <FaMoneyBillTransfer />,
+        icon: <MdOutlineCurrencyExchange />,
       },
     ],
   },
 ];
 
 const Sidebar = async () => {
-  const session = await auth();
   return (
     <div className={styles.container}>
       <div className={styles.user}>
         <Image
           className={styles.userImage}
-          src="/DeltaBase.png"
+          src="/DeltaBase.jpg"
           alt=""
           width="50"
           height="50"
         />
         <div className={styles.userDetail}>
-          <span className={styles.username}>John Doe</span>
-          <span className={styles.userTitle}>User</span>
+          <span className={styles.userName}>DeltaBase</span>
+          <span className={styles.userTitle}>See the data, not the noise.</span>
         </div>
       </div>
       <ul className={styles.list}>
@@ -96,6 +95,5 @@ const Sidebar = async () => {
     </div>
   );
 };
-
 export default Sidebar;
 
