@@ -25,17 +25,17 @@ const menuItems = [
       },
       {
         title: "WhatIf",
-        path: "/dashboard/stocks",
+        path: "/dashboard/whatif",
         icon: <MdOutlineHelpOutline />,
       },
       {
-        title: "OpportunityCostCalculator",
-        path: "/dashboard/crypto",
+        title: "Calculator",
+        path: "/dashboard/opportunitycostcalculator",
         icon: <MdCalculate />,
       },
       {
-        title: "VolatilitySwings",
-        path: "/dashboard/conversion-rates",
+        title: "Volatility",
+        path: "/dashboard/volatilityswings",
         icon: <MdPayments />,
       },
     ],
@@ -55,7 +55,7 @@ const menuItems = [
       },
       {
         title: "Conversion Rates",
-        path: "/dashboard/conversion-rates",
+        path: "/dashboard/conversion_rates",
         icon: <MdOutlineCurrencyExchange />,
       },
     ],
