@@ -1,33 +1,26 @@
-import Image from "next/image";
 import styles from "./rightbar.module.css";
-import { MdPlayCircleFilled, MdReadMore } from "react-icons/md";
+import { MdReadMore } from "react-icons/md";
+import { FaArrowTrendUp } from "react-icons/fa6";
+
 
 const Rightbar = () => {
   return (
     <div className={styles.container}>
       <div className={styles.item}>
         <div className={styles.bgContainer}>
-          <Image className={styles.bg} src="/astronaut.png" alt="" fill />
         </div>
         <div className={styles.text}>
-          <span className={styles.notification}>🔥 Available Now</span>
+          <span className={styles.notification}>Total Balance</span>
           <h3 className={styles.title}>
-            How to use the new version of the admin dashboard?
+            $148,601
           </h3>
-          <span className={styles.subtitle}>Take 4 minutes to learn</span>
-          <p className={styles.desc}>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-          </p>
-          <button className={styles.button}>
-            <MdPlayCircleFilled />
-            Watch
-          </button>
+          <span className={styles.positive}> <FaArrowTrendUp /> +18% from last week</span>
         </div>
       </div>
+
       <div className={styles.item}>
         <div className={styles.text}>
-          <span className={styles.notification}>🚀 Coming Soon</span>
+          <span className={styles.notification}>🚀 Newsletter Of The Day</span>
           <h3 className={styles.title}>
             How server actions are available, partial pre-rendering is coming
             up!

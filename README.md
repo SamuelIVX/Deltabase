@@ -25,7 +25,7 @@ Most traders lose money because they:
 Node.js (v18+)
 
 ### 1. Free API keys:
-[Alpha Vantage](https://www.alphavantage.co/)
+[Finnhub](https://finnhub.io/)
 
 [CoinGecko](https://www.coingecko.com/en/api)
 
@@ -43,11 +43,11 @@ npm install
 ## 4. Set up environment variables
 #### Create a `.env.local` file and add your API keys:
 
-ALPHA_VANTAGE_KEY=your_key_here
+FINNHUB_API_KEY=your_key_here
 
-COINGECKO_KEY=your_key_here
+COINGECKO_API_KEY=your_key_here
 
-EXCHANGE_RATE_KEY=your_key_here
+EXCHANGE_RATE_API_KEY=your_key_here
 
 ## 5. Start the Development Server
 npm run dev
@@ -55,7 +55,7 @@ npm run dev
 Open http://localhost:3000 in your browser.
 
 ## ⚙️ Technologies Used
-Stocks Data - [Alpha Vantage](https://www.alphavantage.co/)	| <b>Reliable stocks API</b>
+Stocks Data - [Finnhub](https://finnhub.io/) | <b>Reliable stocks API</b>
 
 Crypto Data - [CoinGecko](https://www.coingecko.com/en/api) | <b>Best free crypto API</b>
 
