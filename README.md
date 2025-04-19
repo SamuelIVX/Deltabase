@@ -27,7 +27,7 @@ Node.js (v18+)
 ### 1. Free API keys:
 [Finnhub](https://finnhub.io/)
 
-[CoinGecko](https://www.coingecko.com/en/api)
+[Coinranking](https://developers.coinranking.com/api)
 
 [ExchangeRate-API](https://www.exchangerate-api.com/)
 
@@ -57,7 +57,7 @@ Open http://localhost:3000 in your browser.
 ## ⚙️ Technologies Used
 Stocks Data - [Finnhub](https://finnhub.io/) | <b>Reliable stocks API</b>
 
-Crypto Data - [CoinGecko](https://www.coingecko.com/en/api) | <b>Best free crypto API</b>
+Crypto Data - [Coinranking](https://developers.coinranking.com/api) | <b>Best free crypto API</b>
 
 Exchange Rates - [ExchangeRate-API](https://www.exchangerate-api.com/) | <b>Simple currency conversion</b>
 
