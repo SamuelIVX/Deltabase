@@ -1,9 +1,13 @@
+'use client'; 
 import styles from "./rightbar.module.css";
-import { MdReadMore } from "react-icons/md";
 import { FaArrowTrendUp } from "react-icons/fa6";
-
+import useFinnhubData from "@/hooks/useFinnhubData"
 
 const Rightbar = () => {
+  const {data, isPending, isError, error} = useFinnhubData();
+  if(isPending) { return <div>Loading...</div> };
+  if(isError) { return <div>Error: {error.message}</div> };
+
   return (
     <div className={styles.container}>
       <div className={styles.item}>
@@ -21,19 +25,13 @@ const Rightbar = () => {
       <div className={styles.item}>
         <div className={styles.text}>
           <span className={styles.notification}>🚀 Newsletter Of The Day</span>
-          <h3 className={styles.title}>
-            How server actions are available, partial pre-rendering is coming
-            up!
-          </h3>
-          <span className={styles.subtitle}>Boost your productivity</span>
-          <p className={styles.desc}>
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-          </p>
-          <button className={styles.button}>
-            <MdReadMore />
-            Learn
-          </button>
+          {data.slice(0,1).map((article) => (
+               <div key={article.id}>
+                  <h3 className={styles.title}>{article.headline}</h3>
+                  <span className={styles.subtitle}>{article.source}</span>
+                  <p className={styles.desc}>{article.summary}</p>
+               </div>
+          ))}
         </div>
       </div>
     </div>
