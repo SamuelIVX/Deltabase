@@ -1,10 +1,10 @@
 'use client'; 
 import styles from "./rightbar.module.css";
 import { FaArrowTrendUp } from "react-icons/fa6";
-import useFinnhubData from "@/hooks/useFinnhubData"
+import useFinnhubNews from "@/hooks/useFinnhubNews"
 
 const Rightbar = () => {
-  const {data, isPending, isError, error} = useFinnhubData();
+  const {data, isPending, isError, error} = useFinnhubNews();
   if(isPending) { return <div>Loading...</div> };
   if(isError) { return <div>Error: {error.message}</div> };
 
