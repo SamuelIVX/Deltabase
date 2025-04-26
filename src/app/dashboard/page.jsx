@@ -9,10 +9,9 @@ const Dashboard = () => {
       <div className={styles.main}>
         <div className={styles.cards}>
           <Card />
-          <Card />
-          <Card />
+          {/* <Card />
+          <Card /> */}
         </div>
-        {/* <Transactions /> */}
         <Chart />
       </div>
       <div className={styles.side}>
