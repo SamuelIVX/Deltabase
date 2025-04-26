@@ -13,7 +13,7 @@ const fetchFromFinnhub = async() => {
 
 const useFinnhubNews = () => {
     return useQuery({
-        queryKey: ['finnhub-news'],
+        queryKey: ['news'],
         queryFn: fetchFromFinnhub,
         staleTime: 1000 * 60 * 5 // 5 minutes cache
     })
