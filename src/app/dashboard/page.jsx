@@ -1,7 +1,7 @@
-import styles from "@/ui/dashboard/dashboard.module.css";
-import Card from "@/ui/dashboard/card/card";
-import Rightbar from "@/ui/dashboard/rightbar/rightbar";
-import Chart from "@/ui/dashboard/chart/chart"
+import styles from "@/components/dashboard/dashboard.module.css";
+import Card from "@/components/dashboard/card/card";
+import Rightbar from "@/components/dashboard/rightbar/rightbar";
+import Chart from "@/components/dashboard/chart/chart"
 
 const Dashboard = () => {
   return (
@@ -9,8 +9,6 @@ const Dashboard = () => {
       <div className={styles.main}>
         <div className={styles.cards}>
           <Card />
-          {/* <Card />
-          <Card /> */}
         </div>
         <Chart />
       </div>

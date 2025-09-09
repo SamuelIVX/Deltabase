@@ -1,5 +1,5 @@
 "use client"
-import styles from "@/ui/page/page.module.css";
+import styles from "@/components/page/page.module.css";
 import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
