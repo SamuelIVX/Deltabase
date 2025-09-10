@@ -47,6 +47,9 @@ function useFinnhubStockSymbols(searchTerm: string){
             }
 
             fetchData();
+        } else{
+            setResults([]);
+            setError(null);
         };
     }, [searchTerm]);
 

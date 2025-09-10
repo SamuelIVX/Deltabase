@@ -14,7 +14,7 @@
     align-items: center;
     justify-content: space-between;
     margin-top: 24px;
-    max-width: 45%;
+    max-width: 50%;
 }
 
 .title {
@@ -24,6 +24,7 @@
 }
 
 .search {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -39,8 +40,22 @@
     background-color: transparent;
     border: none;
     color: var(--text);
+    cursor: 'pointer';
 }
 
 .output{
-    padding: 5px;
+    margin: 10px;
+    cursor: pointer;
+    background: #2e374a;
+    color: var(--text);
+    transition: background-color 0.2s ease;
+}
+
+.output:hover{
+    background-color: #3e4a5a;
+}
+
+.selected{
+    margin: 10px;
+    background-color: #3e4a5a;
 }
