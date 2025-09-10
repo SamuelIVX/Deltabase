@@ -1,0 +1,23 @@
+.container {
+    background-color: var(--bgSoft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin: 30px auto 0;
+    width: 100%;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    gap: 20px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.description {
+    font-size: 14px;
+    font-weight: 500;
+}
