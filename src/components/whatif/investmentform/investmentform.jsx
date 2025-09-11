@@ -1,5 +1,4 @@
 'use client'
-import useFinnhubHistoricalData from "@/hooks/useFinnhubHistoricalData"
 import styles from "./investmentform.module.css";
 import * as Slider from "@radix-ui/react-slider"
 import { useState } from "react"

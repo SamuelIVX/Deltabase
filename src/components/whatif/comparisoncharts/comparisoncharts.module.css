@@ -1,0 +1,7 @@
+.wrapper{
+    background-color: var(--bgSoft);
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 24px;
+    display: flex;
+}
