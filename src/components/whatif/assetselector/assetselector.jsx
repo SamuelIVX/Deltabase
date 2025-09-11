@@ -37,9 +37,9 @@ const AssetSelector = () => {
                     onChange={(e) => {
                         const value = e.target.value;
                         setSearchTerm1(value)
-
-                        if (value == ""){
-                            setSelectedAsset1(null)
+                        // Clear selection as soon as the input diverges from the selected symbol
+                        if (selectedAsset1 && value !== selectedAsset1.symbol) {
+                            setSelectedAsset1(null);
                         }
                     }}
                     />
@@ -76,9 +76,9 @@ const AssetSelector = () => {
                     onChange={(e) => {
                         const value = e.target.value;
                         setSearchTerm2(value)
-
-                        if (value == ""){
-                            setSelectedAsset2(null)
+                        // Clear selection as soon as the input diverges from the selected symbol
+                        if (selectedAsset2 && value !== selectedAsset2.symbol) {
+                            setSelectedAsset2(null);
                         }
                     }}
                     />
