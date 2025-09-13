@@ -20,6 +20,7 @@
     "react-router-dom": "^6.30.0",
     "recharts": "^2.15.1",
     "slider": "^1.0.4",
+    "yahoo-finance2": "^2.13.3",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

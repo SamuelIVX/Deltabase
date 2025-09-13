@@ -1,3 +1,4 @@
+'use client';
 import styles from "./comparisoncharts.module.css";
 import Chart1 from "./charts/chart1";
 import Chart2 from "./charts/chart2";
