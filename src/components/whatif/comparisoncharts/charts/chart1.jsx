@@ -2,6 +2,7 @@
 import React, { PureComponent } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from "./chart1.module.css"
+import { AssetContext } from '@/components/whatif/assetselector/assetselector';
 
 const data = [
   {
@@ -49,9 +50,12 @@ const data = [
 ];
 
 const Chart1 = () => {
+
+  const { selectedAsset1 } = React.useContext(AssetContext);
+
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Asset 1</h2>
+      <h2 className={styles.title}>{selectedAsset1 ? selectedAsset1.symbol : 'Asset 1'}</h2>
       <ResponsiveContainer width="100%" height="90%">
         <AreaChart
           width={500}
