@@ -52,6 +52,7 @@ const data = [
 const Chart1 = () => {
 
   const { selectedAsset1 } = React.useContext(AssetContext);
+  const { value, initialInvestment, monthlyInvestment } = React.useContext(AssetContext);
 
   return (
     <div className={styles.container}>

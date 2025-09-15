@@ -9,10 +9,24 @@ import ComparisonCharts from "../../../components/whatif/comparisoncharts/compar
 const WhatIf = () => {
     const [selectedAsset1, setSelectedAsset1] = useState(null);
     const [selectedAsset2, setSelectedAsset2] = useState(null);
+    const [value, setValue] = useState([1]);
+    const [initialInvestment, setInitialInvestment] = useState("");
+    const [monthlyInvestment, setMonthlyInvestment] = useState("");
 
     return (
         <div>
-            <AssetContext.Provider value={{ selectedAsset1, setSelectedAsset1, selectedAsset2, setSelectedAsset2 }}>
+            <AssetContext.Provider value={{
+                selectedAsset1,
+                setSelectedAsset1,
+                selectedAsset2,
+                setSelectedAsset2,
+                value,
+                setValue,
+                initialInvestment,
+                setInitialInvestment,
+                monthlyInvestment,
+                setMonthlyInvestment
+            }}>
                 <Blurb />
                 <AssetSelector />
                 <InvestmentForm />

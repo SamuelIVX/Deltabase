@@ -51,6 +51,8 @@ const data = [
 
 const Chart2 = () => {
   const { selectedAsset2 } = React.useContext(AssetContext);
+  const { value, initialInvestment, monthlyInvestment } = React.useContext(AssetContext);
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>{selectedAsset2 ? selectedAsset2.symbol : 'Asset 2'}</h2>

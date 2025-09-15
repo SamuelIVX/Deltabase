@@ -1,6 +1,5 @@
 'use client'
 import { createContext, useContext, useState } from 'react'
-import useFinnhubStockSymbols from '@/hooks/useFinnhubStockSymbol';
 import styles from "./assetselector.module.css";
 import useYahooStockSymbols from '@/hooks/useYahooStockSymbols';
 
@@ -33,87 +32,85 @@ const AssetSelector = () => {
 
     return (
         <div className={styles.wrapper}>
-            <AssetContext.Provider value={{ selectedAsset1, setSelectedAsset1, selectedAsset2, setSelectedAsset2 }}>
-                <div className={styles.container}>
-                    <span className={styles.title}>Asset 1</span>
-                    <div className={styles.search}>
-                        <input
-                            className={styles.input}
-                            type='text'
-                            placeholder="Enter a stock symbol..."
-                            value={searchTerm1}
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                setSearchTerm1(value)
-                                // Clear selection as soon as the input diverges from the selected symbol
-                                if (selectedAsset1 && value !== selectedAsset1.symbol) {
-                                    setSelectedAsset1(null);
-                                }
-                            }}
-                        />
-                    </div>
-
-                    {isLoading1 && <p>Loading results...</p>}
-                    {error1 && <p>An error occured: {error1}</p>}
-
-                    {!selectedAsset1 && results1.length > 0 && results1.map(stock => (
-                        <div
-                            key={stock.symbol || stock.name}
-                            className={styles.output}
-                            onClick={() => handleSelectAsset1(stock)}
-                        >
-                            {stock.symbol ? `${stock.symbol} - ${stock.shortname || stock.longname}` : stock.name}
-                        </div>
-                    ))}
-
-                    {selectedAsset1 && (
-                        <div className={styles.selected}>
-                            Selected: {selectedAsset1.symbol} - {selectedAsset1.shortname}
-                        </div>
-                    )}
-
+            <div className={styles.container}>
+                <span className={styles.title}>Asset 1</span>
+                <div className={styles.search}>
+                    <input
+                        className={styles.input}
+                        type='text'
+                        placeholder="Enter a stock symbol..."
+                        value={searchTerm1}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setSearchTerm1(value)
+                            // Clear selection as soon as the input diverges from the selected symbol
+                            if (selectedAsset1 && value !== selectedAsset1.symbol) {
+                                setSelectedAsset1(null);
+                            }
+                        }}
+                    />
                 </div>
 
-                <div className={styles.container}>
-                    <span className={styles.title}>Asset 2</span>
-                    <div className={styles.search}>
-                        <input
-                            className={styles.input}
-                            type='text'
-                            placeholder="Enter a stock symbol..."
-                            value={searchTerm2}
-                            onChange={(e) => {
-                                const value = e.target.value;
-                                setSearchTerm2(value)
-                                // Clear selection as soon as the input diverges from the selected symbol
-                                if (selectedAsset2 && value !== selectedAsset2.symbol) {
-                                    setSelectedAsset2(null);
-                                }
-                            }}
-                        />
+                {isLoading1 && <p>Loading results...</p>}
+                {error1 && <p>An error occured: {error1}</p>}
+
+                {!selectedAsset1 && results1.length > 0 && results1.map(stock => (
+                    <div
+                        key={stock.symbol || stock.name}
+                        className={styles.output}
+                        onClick={() => handleSelectAsset1(stock)}
+                    >
+                        {stock.symbol ? `${stock.symbol} - ${stock.shortname || stock.longname}` : stock.name}
                     </div>
+                ))}
 
-                    {isLoading2 && <p>Loading...</p>}
-                    {error2 && <p>An error occured: {error2}</p>}
+                {selectedAsset1 && (
+                    <div className={styles.selected}>
+                        Selected: {selectedAsset1.symbol} - {selectedAsset1.shortname}
+                    </div>
+                )}
 
-                    {!selectedAsset2 && results2.length > 0 && results2.map(stock => (
-                        <div
-                            key={stock.symbol || stock.name}
-                            className={styles.output}
-                            onClick={() => handleSelectAsset2(stock)}
-                        >
-                            {stock.symbol ? `${stock.symbol} - ${stock.shortname || stock.longname}` : stock.name}
-                        </div>
-                    ))}
+            </div>
 
-                    {selectedAsset2 && (
-                        <div className={styles.selected}>
-                            Selected: {selectedAsset2.symbol} - {selectedAsset2.shortname}
-                        </div>
-                    )}
-
+            <div className={styles.container}>
+                <span className={styles.title}>Asset 2</span>
+                <div className={styles.search}>
+                    <input
+                        className={styles.input}
+                        type='text'
+                        placeholder="Enter a stock symbol..."
+                        value={searchTerm2}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setSearchTerm2(value)
+                            // Clear selection as soon as the input diverges from the selected symbol
+                            if (selectedAsset2 && value !== selectedAsset2.symbol) {
+                                setSelectedAsset2(null);
+                            }
+                        }}
+                    />
                 </div>
-            </AssetContext.Provider>
+
+                {isLoading2 && <p>Loading...</p>}
+                {error2 && <p>An error occured: {error2}</p>}
+
+                {!selectedAsset2 && results2.length > 0 && results2.map(stock => (
+                    <div
+                        key={stock.symbol || stock.name}
+                        className={styles.output}
+                        onClick={() => handleSelectAsset2(stock)}
+                    >
+                        {stock.symbol ? `${stock.symbol} - ${stock.shortname || stock.longname}` : stock.name}
+                    </div>
+                ))}
+
+                {selectedAsset2 && (
+                    <div className={styles.selected}>
+                        Selected: {selectedAsset2.symbol} - {selectedAsset2.shortname}
+                    </div>
+                )}
+
+            </div>
         </div>
     )
 }
