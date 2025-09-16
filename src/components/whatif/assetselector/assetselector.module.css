@@ -31,11 +31,11 @@
     background: #2e374a;
     padding: 10px;
     border-radius: 10px;
-    max-width: 26%;
+    max-width: 30%;
     margin: 0 auto;
     margin-top: 10px;
 }
-  
+
 .input {
     background-color: transparent;
     border: none;
@@ -43,7 +43,7 @@
     cursor: 'pointer';
 }
 
-.output{
+.output {
     margin: 10px;
     cursor: pointer;
     background: #2e374a;
@@ -53,11 +53,11 @@
     padding: 5px;
 }
 
-.output:hover{
+.output:hover {
     background-color: #3e4a5a;
 }
 
-.selected{
+.selected {
     margin: 10px;
     background-color: #3e4a5a;
     padding: 5px;

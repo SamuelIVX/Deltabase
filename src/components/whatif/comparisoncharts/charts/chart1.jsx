@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from "./chart1.module.css"
 import { AssetContext } from '@/components/whatif/assetselector/assetselector';
+import useYahooHistoricalData from '@/hooks/useYahooHistoricalData';
 
 const data = [
   {
@@ -51,8 +52,8 @@ const data = [
 
 const Chart1 = () => {
 
-  const { selectedAsset1 } = React.useContext(AssetContext);
-  const { value, initialInvestment, monthlyInvestment } = React.useContext(AssetContext);
+  const { selectedAsset1, value, initialInvestment, monthlyInvestment } = React.useContext(AssetContext);
+  const { results, isLoading, error } = useYahooHistoricalData(selectedAsset1?.symbol, value[0]);
 
   return (
     <div className={styles.container}>
@@ -78,6 +79,21 @@ const Chart1 = () => {
           <Area type="monotone" dataKey="amt" stackId="1" stroke="#ffc658" fill="#ffc658" />
         </AreaChart>
       </ResponsiveContainer>
+
+      {/* {results.length > 0 && results.map(item => (
+        <div key={item.date}>
+          <p>
+            Date: {item.date},
+            Open: {item.open},
+            High: {item.high},
+            Low: {item.low},
+            Close: {item.close},
+            Volume: {item.volume},
+            adjClose: {item.adjClose}
+          </p>
+        </div>
+      ))} */}
+
     </div>
   );
 };

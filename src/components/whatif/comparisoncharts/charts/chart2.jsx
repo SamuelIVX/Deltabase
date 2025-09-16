@@ -50,8 +50,7 @@ const data = [
 ];
 
 const Chart2 = () => {
-  const { selectedAsset2 } = React.useContext(AssetContext);
-  const { value, initialInvestment, monthlyInvestment } = React.useContext(AssetContext);
+  const { selectedAsset2, value, initialInvestment, monthlyInvestment } = React.useContext(AssetContext);
 
   return (
     <div className={styles.container}>
