@@ -1,6 +1,6 @@
 "use client";
 import React, { PureComponent } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from "./chart2.module.css"
 import { AssetContext } from '@/components/whatif/assetselector/assetselector';
 import useYahooHistoricalData from '@/hooks/useYahooHistoricalData';
