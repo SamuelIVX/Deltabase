@@ -29,18 +29,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     try {
         const results = await yahooFinance.chart(symbol, queryOptions);
 
-        // Filter the results to get one data point per year
-        const yearlyData = results.quotes.filter((dataPoint, index, arr) => {
-            // Include the very first data point
-            if (index === 0) return true;
-
-            // Check if the current data point is in a different year than the previous one
-            const currentYear = dataPoint.date.getFullYear();
-            const previousYear = arr[index - 1].date.getFullYear();
-            return currentYear > previousYear;
-        });
-
-        res.status(200).json(yearlyData);
+        // Return all monthly data points
+        res.status(200).json(results.quotes);
 
     } catch (error: any) {
         res.status(500).json({ error: error.message });

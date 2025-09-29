@@ -1,87 +1,69 @@
 "use client";
-import React, { PureComponent } from 'react';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import styles from "./chart2.module.css"
+import React from 'react';
+import { MoonLoader } from 'react-spinners';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, Label } from 'recharts';
+import styles from "./chart1.module.css"
 import { AssetContext } from '@/components/whatif/assetselector/assetselector';
 import useYahooHistoricalData from '@/hooks/useYahooHistoricalData';
-
-const data = [
-  {
-    name: '10 am',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: '11 am',
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: '12 pm',
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: '1 pm',
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: '2 pm',
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: '3 pm',
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: '4 pm',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
+import useSimulateDCA from '@/hooks/useSimulateDCA';
 
 const Chart2 = () => {
   const { selectedAsset2, value, initialInvestment, monthlyInvestment } = React.useContext(AssetContext);
   const { results, isLoading, error } = useYahooHistoricalData(selectedAsset2?.symbol, value[0]);
 
+  const currentMonth = new Date().getMonth();
+
+  const dcaResults = useSimulateDCA(results, initialInvestment, monthlyInvestment);
+  const chartData = dcaResults.monthlyPortfolio;
+
+  // Filter to only show ticks for the current month
+  const customTicks = chartData
+    .filter(item => new Date(item.name).getMonth() === currentMonth)
+    .map(item => item.name);
 
   return (
-    // isLoading && <p className={styles.message}>Loading...</p> ||
-    // error && <p className={styles.message}>Error: {error}</p> ||
+    <div className={styles.chartWrapper} style={{ position: 'relative', width: '100%', height: '400px' }}>
+      {error && <p className={styles.message}>Error: {error}</p>}
+      {isLoading && (
+        <div className={styles.loadingOverlay}>
+          <MoonLoader color="#dc3545" size={100} />
+        </div>
+      )}
 
-    selectedAsset2 && results && <div className={styles.container}>
-      <h2 className={styles.title}>{selectedAsset2 ? selectedAsset2.symbol : 'Asset 2'}</h2>
-      <ResponsiveContainer width="100%" height="90%">
-        <AreaChart
-          width={500}
-          height={400}
-          data={data}
-          margin={{
-            top: 10,
-            right: 30,
-            left: 0,
-            bottom: 0,
-          }}
-        >
-          {/* <CartesianGrid strokeDasharray="3 3" /> */}
-          <XAxis />
-          <YAxis />
-          <Tooltip />
-          <Area type="monotone" dataKey="uv" stackId="1" stroke="#8884d8" fill="#8884d8" />
-          <Area type="monotone" dataKey="pv" stackId="1" stroke="#82ca9d" fill="#82ca9d" />
-          {/* <Area type="monotone" dataKey="amt" stackId="1" stroke="#ffc658" fill="#ffc658" /> */}
-        </AreaChart>
-      </ResponsiveContainer>
+      {selectedAsset2 && results && (
+        <div className={styles.container}>
+          <h2 className={styles.title}>{selectedAsset2 ? selectedAsset2.symbol : 'Asset 2'}</h2>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart
+              width={800}
+              height={400}
+              data={chartData}
+              margin={{
+                top: 10,
+                right: 30,
+                left: 0,
+                bottom: 0,
+              }}
+            >
+              <XAxis
+                dataKey="name"
+                ticks={customTicks}
+                tickFormatter={(value) => {
+                  return value;
+                }}
+              />
+              <YAxis />
+              <Tooltip />
+              <Area
+                type="monotone"
+                dataKey="portfolioValue"
+                stroke="rgba(220, 53, 69, 0.7)"
+                fill="rgba(220, 53, 69, 0.3)" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
     </div>
   );
 };

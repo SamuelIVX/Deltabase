@@ -1,13 +1,25 @@
 .container {
-    height: 450px;
-    background-color: var(--bgSoft);
-    padding: 20px;
-    border-radius: 10px;
-  }
-  
-  .title {
-    font-weight: 200;
-    color: var(--textSoft);
-    margin-bottom: 20px;
-  }
-  
+  height: 450px;
+  background-color: var(--bgSoft);
+  border-radius: 10px;
+}
+
+.title {
+  font-weight: 200;
+  color: var(--textSoft);
+  margin-bottom: 20px;
+}
+
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* background: rgba(255, 255, 255, 0.6); */
+  /* optional: semi-transparent overlay */
+  z-index: 10;
+}
