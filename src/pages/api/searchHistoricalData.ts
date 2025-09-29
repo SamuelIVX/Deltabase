@@ -27,10 +27,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     };
 
     try {
-        const results = await yahooFinance.historical(symbol, queryOptions);
+        const results = await yahooFinance.chart(symbol, queryOptions);
 
         // Filter the results to get one data point per year
-        const yearlyData = results.filter((dataPoint, index, arr) => {
+        const yearlyData = results.quotes.filter((dataPoint, index, arr) => {
             // Include the very first data point
             if (index === 0) return true;
 

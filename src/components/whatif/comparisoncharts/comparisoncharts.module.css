@@ -1,6 +1,18 @@
 .wrapper {
     background-color: var(--bgSoft);
     border-radius: 10px;
+    margin-top: 24px;
+}
+
+.unselected {
+    background-color: var(--bgSoft);
+    border-radius: 10px;
     padding: 20px;
     margin-top: 24px;
+    text-align: center;
+    color: var(--textSoft)
+}
+
+.container {
+    padding: 20px;
 }

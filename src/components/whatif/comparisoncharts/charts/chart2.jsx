@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from "./chart2.module.css"
 import { AssetContext } from '@/components/whatif/assetselector/assetselector';
+import useYahooHistoricalData from '@/hooks/useYahooHistoricalData';
 
 const data = [
   {
@@ -51,9 +52,14 @@ const data = [
 
 const Chart2 = () => {
   const { selectedAsset2, value, initialInvestment, monthlyInvestment } = React.useContext(AssetContext);
+  const { results, isLoading, error } = useYahooHistoricalData(selectedAsset2?.symbol, value[0]);
+
 
   return (
-    <div className={styles.container}>
+    // isLoading && <p className={styles.message}>Loading...</p> ||
+    // error && <p className={styles.message}>Error: {error}</p> ||
+
+    selectedAsset2 && results && <div className={styles.container}>
       <h2 className={styles.title}>{selectedAsset2 ? selectedAsset2.symbol : 'Asset 2'}</h2>
       <ResponsiveContainer width="100%" height="90%">
         <AreaChart
@@ -67,13 +73,13 @@ const Chart2 = () => {
             bottom: 0,
           }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
+          {/* <CartesianGrid strokeDasharray="3 3" /> */}
+          <XAxis />
           <YAxis />
           <Tooltip />
           <Area type="monotone" dataKey="uv" stackId="1" stroke="#8884d8" fill="#8884d8" />
           <Area type="monotone" dataKey="pv" stackId="1" stroke="#82ca9d" fill="#82ca9d" />
-          <Area type="monotone" dataKey="amt" stackId="1" stroke="#ffc658" fill="#ffc658" />
+          {/* <Area type="monotone" dataKey="amt" stackId="1" stroke="#ffc658" fill="#ffc658" /> */}
         </AreaChart>
       </ResponsiveContainer>
     </div>

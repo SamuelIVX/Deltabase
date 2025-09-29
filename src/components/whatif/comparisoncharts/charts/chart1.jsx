@@ -1,68 +1,31 @@
 "use client";
-import React, { PureComponent } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import React from 'react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label } from 'recharts';
 import styles from "./chart1.module.css"
 import { AssetContext } from '@/components/whatif/assetselector/assetselector';
 import useYahooHistoricalData from '@/hooks/useYahooHistoricalData';
-
-const data = [
-  {
-    name: '10 am',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: '11 am',
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: '12 pm',
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: '1 pm',
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: '2 pm',
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: '3 pm',
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: '4 pm',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
+import useSimulateDCA from '@/hooks/useSimulateDCA';
 
 const Chart1 = () => {
-
   const { selectedAsset1, value, initialInvestment, monthlyInvestment } = React.useContext(AssetContext);
   const { results, isLoading, error } = useYahooHistoricalData(selectedAsset1?.symbol, value[0]);
 
+
+  const dcaResults = useSimulateDCA(results, initialInvestment, monthlyInvestment);
+  const chartData = dcaResults.monthlyPortfolio;
+
+
   return (
-    <div className={styles.container}>
+    isLoading && <p className={styles.message}>Loading...</p> ||
+    error && <p className={styles.message}>Error: {error}</p> ||
+
+    selectedAsset1 && results && <div className={styles.container}>
       <h2 className={styles.title}>{selectedAsset1 ? selectedAsset1.symbol : 'Asset 1'}</h2>
-      <ResponsiveContainer width="100%" height="90%">
+      <ResponsiveContainer width="100%" height="100%">
         <AreaChart
-          width={500}
+          width={800}
           height={400}
-          data={data}
+          data={chartData}
           margin={{
             top: 10,
             right: 30,
@@ -70,29 +33,20 @@ const Chart1 = () => {
             bottom: 0,
           }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
+          {/* <CartesianGrid strokeDasharray="3 3" /> */}
           <XAxis dataKey="name" />
           <YAxis />
           <Tooltip />
-          <Area type="monotone" dataKey="uv" stackId="1" stroke="#8884d8" fill="#8884d8" />
-          <Area type="monotone" dataKey="pv" stackId="1" stroke="#82ca9d" fill="#82ca9d" />
-          <Area type="monotone" dataKey="amt" stackId="1" stroke="#ffc658" fill="#ffc658" />
+          <Area type="monotone" dataKey="portfolioValue" stroke="rgba(0, 123, 255, 0.7)" fill="rgba(0, 123, 255, 0.3)" />
         </AreaChart>
       </ResponsiveContainer>
 
-      {/* {results.length > 0 && results.map(item => (
-        <div key={item.date}>
-          <p>
-            Date: {item.date},
-            Open: {item.open},
-            High: {item.high},
-            Low: {item.low},
-            Close: {item.close},
-            Volume: {item.volume},
-            adjClose: {item.adjClose}
-          </p>
-        </div>
-      ))} */}
+      {/* {chartData && <div className={styles.chartContainer}>
+        <p className={styles.chartText}>Total Shares: {dcaResults.totalShares.toFixed(4)}</p>
+        <p className={styles.chartText}>Total Invested: ${dcaResults.totalInvested.toFixed(2)}</p>
+        <p className={styles.chartText}>Final Value: ${dcaResults.finalValue.toFixed(2)}</p>
+        <p className={styles.chartText}>Total Gain/Loss: ${dcaResults.gain.toFixed(2)}</p>
+      </div>} */}
 
     </div>
   );
