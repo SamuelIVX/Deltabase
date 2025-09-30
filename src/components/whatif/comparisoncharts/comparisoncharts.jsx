@@ -6,10 +6,13 @@ import Chart1 from "./charts/chart1";
 import Chart2 from "./charts/chart2";
 
 const ComparisonCharts = () => {
-    const { selectedAsset1, selectedAsset2 } = React.useContext(AssetContext);
+    const { selectedAsset1, selectedAsset2, value, initialInvestment, monthlyInvestment } = React.useContext(AssetContext);
 
-    if (!selectedAsset1 || !selectedAsset2) {
-        return <div className={styles.unselected}><p className={styles.message}>Please select both assets to see their respective charts.</p></div>;
+    if (!selectedAsset1 || !selectedAsset2 || !value || !initialInvestment || !monthlyInvestment) {
+        return <div
+            className={styles.unselected}>
+            <p className={styles.message}>Please fill out all necessary fields to see the respective charts.</p>
+        </div>;
     }
 
     return (
