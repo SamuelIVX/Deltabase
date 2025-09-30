@@ -9,13 +9,19 @@ import useSimulateDCA from '@/hooks/useSimulateDCA';
 import useTooltipData from '../../../../hooks/useTooltipData';
 
 const Chart2 = () => {
-  const { selectedAsset2, value, initialInvestment, monthlyInvestment } = React.useContext(AssetContext);
+  const { selectedAsset2, value, initialInvestment, monthlyInvestment, setAsset2Data } = React.useContext(AssetContext);
   const { results, isLoading, error } = useYahooHistoricalData(selectedAsset2?.symbol, value[0]);
 
   const currentMonth = new Date().getMonth();
 
   const dcaResults = useSimulateDCA(results, initialInvestment, monthlyInvestment);
   const chartData = dcaResults.monthlyPortfolio;
+
+  React.useEffect(() => {
+    if (chartData && chartData.length > 0) {
+      setAsset2Data(chartData);
+    }
+  }, [chartData, setAsset2Data]);
 
   // Filter to only show ticks for the current month
   const customTicks = chartData

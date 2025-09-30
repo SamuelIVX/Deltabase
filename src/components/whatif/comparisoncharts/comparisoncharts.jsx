@@ -11,7 +11,7 @@ const ComparisonCharts = () => {
     if (!selectedAsset1 || !selectedAsset2 || !value || !initialInvestment || !monthlyInvestment) {
         return <div
             className={styles.unselected}>
-            <p className={styles.message}>Please fill out all necessary fields to see the respective charts.</p>
+            <p>Please fill out all necessary fields to see the <strong>respective charts</strong> and the <strong>comparison summary</strong>.</p>
         </div>;
     }
 

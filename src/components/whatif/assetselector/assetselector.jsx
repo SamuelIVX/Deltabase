@@ -3,11 +3,27 @@ import { createContext, useContext, useState } from 'react'
 import styles from "./assetselector.module.css";
 import useYahooStockSymbols from '@/hooks/useYahooStockSymbols';
 
+// export const AssetContext = createContext({
+//     selectedAsset1: null,
+//     setSelectedAsset1: (value) => { },
+//     selectedAsset2: null,
+//     setSelectedAsset2: (value) => { },
+// });
 export const AssetContext = createContext({
     selectedAsset1: null,
     setSelectedAsset1: (value) => { },
     selectedAsset2: null,
     setSelectedAsset2: (value) => { },
+    value: [1],
+    setValue: (value) => { },
+    initialInvestment: "",
+    setInitialInvestment: (value) => { },
+    monthlyInvestment: "",
+    setMonthlyInvestment: (value) => { },
+    asset1Data: [],
+    setAsset1Data: (value) => { },
+    asset2Data: [],
+    setAsset2Data: (value) => { },
 });
 
 const AssetSelector = () => {

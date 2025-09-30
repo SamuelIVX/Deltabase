@@ -5,6 +5,7 @@ import Blurb from "@/components/whatif/blurb/blurb";
 import AssetSelector from "@/components/whatif/assetselector/assetselector";
 import InvestmentForm from "@/components/whatif/investmentform/investmentform";
 import ComparisonCharts from "../../../components/whatif/comparisoncharts/comparisoncharts";
+import ComparisonSummary from "@/components/whatif/comparisonsummary/comparisonsummary"; <ComparisonSummary />
 
 const WhatIf = () => {
     const [selectedAsset1, setSelectedAsset1] = useState(null);
@@ -12,6 +13,8 @@ const WhatIf = () => {
     const [value, setValue] = useState([1]);
     const [initialInvestment, setInitialInvestment] = useState("");
     const [monthlyInvestment, setMonthlyInvestment] = useState("");
+    const [asset1Data, setAsset1Data] = useState([]);
+    const [asset2Data, setAsset2Data] = useState([]);
 
     return (
         <div>
@@ -25,12 +28,17 @@ const WhatIf = () => {
                 initialInvestment,
                 setInitialInvestment,
                 monthlyInvestment,
-                setMonthlyInvestment
+                setMonthlyInvestment,
+                asset1Data,
+                setAsset1Data,
+                asset2Data,
+                setAsset2Data
             }}>
                 <Blurb />
                 <AssetSelector />
                 <InvestmentForm />
                 <ComparisonCharts />
+                <ComparisonSummary />
             </AssetContext.Provider>
         </div>
     )

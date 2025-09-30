@@ -5,7 +5,6 @@
     justify-content: center;
     flex-direction: column;
     margin: 30px auto 0;
-    width: 100%;
     padding: 20px;
     border-radius: 12px;
     text-align: center;
@@ -13,11 +12,13 @@
 }
 
 .title {
+    color: var(--textSoft);
     font-size: 24px;
     font-weight: bold;
 }
 
 .description {
+    color: var(--textSoft);
     font-size: 14px;
     font-weight: 500;
 }

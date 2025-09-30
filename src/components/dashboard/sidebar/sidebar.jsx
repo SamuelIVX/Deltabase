@@ -5,11 +5,11 @@ import styles from "./sidebar.module.css";
 import {
   MdOutlineMoney,
   MdDashboard,
-  MdOutlineHelpOutline,  // Instead of FaQuestion
-  MdCalculate,           // Instead of FaCalculator
+  MdOutlineHelpOutline,
+  MdCalculate,
   MdLogout,
   MdOutlineCurrencyExchange,
-  MdPayments             // Instead of FaMoneyBillTransfer
+  MdPayments
 } from "react-icons/md";
 
 import { CiMoneyCheck1 } from "react-icons/ci";
@@ -24,7 +24,7 @@ const menuItems = [
         icon: <MdDashboard />,
       },
       {
-        title: "WhatIf",
+        title: "What-If",
         path: "/dashboard/whatif",
         icon: <MdOutlineHelpOutline />,
       },
