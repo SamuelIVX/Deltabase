@@ -3,12 +3,6 @@ import { createContext, useContext, useState } from 'react'
 import styles from "./assetselector.module.css";
 import useYahooStockSymbols from '@/hooks/useYahooStockSymbols';
 
-// export const AssetContext = createContext({
-//     selectedAsset1: null,
-//     setSelectedAsset1: (value) => { },
-//     selectedAsset2: null,
-//     setSelectedAsset2: (value) => { },
-// });
 export const AssetContext = createContext({
     selectedAsset1: null,
     setSelectedAsset1: (value) => { },

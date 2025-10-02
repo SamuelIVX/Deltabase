@@ -1,13 +1,18 @@
+'use client'
 import StockMarketChart from "@/components/markets/stockmarket/stockmarketchart";
 import StockMarketMetrics from "@/components/markets/stockmarket/stockmarketmetrics";
-
+import { MarketContext } from "@/components/markets/stockmarket/stockmarketchart";
+import { useState } from "react";
 
 const StockMarket = () => {
+    const [selectedStock, setSelectedStock] = useState(null);
+
     return (
         <div>
-            <h1> Stock Market Page</h1>
-            <StockMarketMetrics />
-            <StockMarketChart />
+            <MarketContext.Provider value={{ selectedStock, setSelectedStock }}>
+                <StockMarketChart />
+                <StockMarketMetrics />
+            </MarketContext.Provider>
         </div>
     );
 };

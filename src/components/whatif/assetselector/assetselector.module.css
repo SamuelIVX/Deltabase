@@ -40,7 +40,7 @@
     background-color: transparent;
     border: none;
     color: var(--text);
-    cursor: 'pointer';
+    cursor: pointer;
 }
 
 .output {

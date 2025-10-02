@@ -5,8 +5,8 @@ const CryptoMarket = () => {
     return (
         <div>
             <h1> Crypto Market Page</h1>
-            <CryptoMarketMetrics />
             <CryptoMarketChart />
+            <CryptoMarketMetrics />
         </div>
     );
 };

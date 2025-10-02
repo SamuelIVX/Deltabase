@@ -1,3 +1,5 @@
+import styles from '../marketsmetrics.module.css';
+
 const CryptoMarketMetrics = () => {
     return (
         <div>

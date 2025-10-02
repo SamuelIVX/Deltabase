@@ -1,0 +1,24 @@
+.container {
+    height: 500px;
+    background-color: var(--bgSoft);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.header {
+    margin-bottom: 20px;
+}
+
+.title {
+    font-weight: 200;
+    color: var(--textSoft);
+    margin-bottom: 20px;
+}
+
+.input {
+    background-color: transparent;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+}
