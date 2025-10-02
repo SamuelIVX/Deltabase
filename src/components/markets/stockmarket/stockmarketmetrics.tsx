@@ -3,14 +3,16 @@ import styles from '../marketsmetrics.module.css';
 import { useContext, useState } from 'react'
 import { MarketContext } from './stockmarketchart';
 import useYahooStockQuote from '@/hooks/useYahooStockQuote';
+import useDebounce from '@/hooks/useDebounce';
 
 const StockMarketMetrics = () => {
     const { selectedStock } = useContext(MarketContext);
-    const { quote, isLoading, error } = useYahooStockQuote(selectedStock);
+    const debouncedStock = useDebounce(selectedStock, 500); // Wait 500ms after typing stops to allow for debouncing
+    const { quote, isLoading, error } = useYahooStockQuote(debouncedStock);
 
     return (
         <div className={styles.container}>
-            <h2>Key Stock Statistics</h2>
+            <h2 className={styles.title}>Key Stock Statistics</h2>
             {error && <p className={styles.error}>Error fetching stock data</p>}
 
             {isLoading && <p>Loading...</p>}
