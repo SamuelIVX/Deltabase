@@ -1,52 +1,11 @@
 'use client'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from '../markets.module.css';
 import { createContext, useContext } from 'react'
-
-const data = [
-    {
-        name: 'Page A',
-        uv: 4000,
-        pv: 2400,
-        amt: 2400,
-    },
-    {
-        name: 'Page B',
-        uv: 3000,
-        pv: 1398,
-        amt: 2210,
-    },
-    {
-        name: 'Page C',
-        uv: 2000,
-        pv: 9800,
-        amt: 2290,
-    },
-    {
-        name: 'Page D',
-        uv: 2780,
-        pv: 3908,
-        amt: 2000,
-    },
-    {
-        name: 'Page E',
-        uv: 1890,
-        pv: 4800,
-        amt: 2181,
-    },
-    {
-        name: 'Page F',
-        uv: 2390,
-        pv: 3800,
-        amt: 2500,
-    },
-    {
-        name: 'Page G',
-        uv: 3490,
-        pv: 4300,
-        amt: 2100,
-    },
-];
+import useYahooBasicHistoricalData from '@/hooks/useYahooBasicHistoricalData';
+import useYahooStockQuote from '@/hooks/useYahooStockQuote';
+import useDebounce from '@/hooks/useDebounce';
+import formatDate from '@/utils/formatDate';
 
 export const MarketContext = createContext({
     selectedStock: "",
@@ -55,6 +14,11 @@ export const MarketContext = createContext({
 
 const StockMarketChart = () => {
     const { selectedStock, setSelectedStock } = useContext(MarketContext);
+    const debouncedStock = useDebounce(selectedStock, 500);
+    const { quote, isLoading, error } = useYahooStockQuote(debouncedStock);
+
+    // Fetch historical data
+    const { historicalData } = useYahooBasicHistoricalData(debouncedStock, '1y');
 
     return (
         <div className={styles.container}>
@@ -74,12 +38,61 @@ const StockMarketChart = () => {
                 </span>
             </div>
 
+            {error && <p className={styles.error}>Error fetching stock data</p>}
+            {isLoading && <p className={styles.loading}>Loading...</p>}
+
+            {quote && !isLoading && (
+                <div className={styles.stockInfo}>
+
+
+                    {/* Regular Market */}
+                    <div className={styles.priceSection}>
+                        <span className={styles.price}>${quote.regularMarketPrice?.toFixed(2)}</span>
+                        {' '}
+                        {quote.regularMarketChangePercent !== undefined && (
+                            <span style={{ color: quote.regularMarketChangePercent >= 0 ? '#10b981' : '#ef4444' }}>
+                                {quote.regularMarketChangePercent >= 0 ? '+' : ''}
+                                {quote.regularMarketChangePercent.toFixed(2)}%
+                                {' '}
+                                ({quote.regularMarketChangePercent >= 0 ? '+' : ''}
+                                ${Math.abs(quote.regularMarketPrice * quote.regularMarketChangePercent / 100).toFixed(2)})
+                                <span className={styles.timeLabel}> Today</span>
+                            </span>
+                        )}
+                        {' '}
+                    </div>
+
+                    {/* Post Market - Only show if available */}
+                    {quote.postMarketPrice && quote.postMarketChangePercent !== undefined && (
+                        <div className={styles.priceSection}>
+                            <span className={styles.afterHoursLabel}>After Hours:</span>
+                            {' '}
+                            <span className={styles.price}>${quote.postMarketPrice.toFixed(2)}</span>
+                            {' '}
+                            <span style={{ color: quote.postMarketChangePercent >= 0 ? '#10b981' : '#ef4444' }}>
+                                {quote.postMarketChangePercent >= 0 ? '+' : ''}
+                                {quote.postMarketChangePercent.toFixed(2)}%
+                                {' '}
+                                ({quote.postMarketChangePercent >= 0 ? '+' : ''}
+                                ${Math.abs(quote.postMarketPrice * quote.postMarketChangePercent / 100).toFixed(2)})
+                            </span>
+                        </div>
+                    )}
+
+                    {quote.regularMarketTime && (
+                        <div className={styles.marketTime}>
+                            {formatDate(quote.regularMarketTime)} · {quote.currency}
+                        </div>
+                    )}
+
+                </div>
+            )}
 
             <ResponsiveContainer width="100%" height="100%">
-                <LineChart
+                <AreaChart
                     width={500}
                     height={300}
-                    data={data}
+                    data={historicalData}
                     margin={{
                         top: 5,
                         right: 30,
@@ -87,17 +100,26 @@ const StockMarketChart = () => {
                         bottom: 5,
                     }}
                 >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
+                    <XAxis
+                        dataKey="date"
+                    />
+                    <YAxis
+                        domain={[
+                            (dataMin) => (dataMin * 0.995),
+                            (dataMax) => dataMax * 1.005,
+                        ]}
+                        tickFormatter={(value) => value.toFixed(2)}
+                    />
                     <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
-                    <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-                </LineChart>
+                    <Area
+                        type="monotone"
+                        dataKey="close"
+                        stroke="rgba(51, 242, 121, 0.76)"
+                        fill="rgba(61, 180, 63, 0.15)" />
+                </AreaChart>
             </ResponsiveContainer>
 
-        </div>
+        </div >
     );
 };
 

@@ -85,7 +85,13 @@ const Chart2 = () => {
                   return value;
                 }}
               />
-              <YAxis />
+              <YAxis
+                domain={[
+                  (dataMin) => (dataMin * 0.995),
+                  (dataMax) => dataMax * 1.005,
+                ]}
+                tickFormatter={(value) => value.toFixed(2)}
+              />
               <Tooltip content={<CustomTooltip data={chartData} />} />
               <Area
                 type="monotone"

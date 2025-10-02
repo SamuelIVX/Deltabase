@@ -1,13 +1,15 @@
 .container {
-    height: 500px;
+    height: 400px;
     background-color: var(--bgSoft);
     padding: 20px;
     border-radius: 10px;
     margin-top: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 .header {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .title {
@@ -28,4 +30,16 @@
     border: none;
     color: var(--text);
     cursor: pointer;
+}
+
+.priceSection {
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.marketTime {
+    font-size: 12px;
+    color: var(--textSoft);
+    margin-bottom: 10px;
 }

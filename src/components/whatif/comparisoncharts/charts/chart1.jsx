@@ -1,7 +1,7 @@
 "use client";
 import React from 'react';
 import { MoonLoader } from 'react-spinners';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, Label } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from "./charts.module.css"
 import { AssetContext } from '@/components/whatif/assetselector/assetselector';
 import useYahooHistoricalData from '@/hooks/useYahooHistoricalData';
@@ -85,7 +85,13 @@ const Chart1 = () => {
                   return value;
                 }}
               />
-              <YAxis />
+              <YAxis
+                domain={[
+                  (dataMin) => (dataMin * 0.995),
+                  (dataMax) => dataMax * 1.005,
+                ]}
+                tickFormatter={(value) => value.toFixed(2)}
+              />
               <Tooltip content={<CustomTooltip data={chartData} />} />
               <Area
                 type="monotone"
