@@ -12,11 +12,9 @@ import {
   MdPayments
 } from "react-icons/md";
 
-import { CiMoneyCheck1 } from "react-icons/ci";
-
 const menuItems = [
   {
-    title: "Pages",
+    title: "User Panels",
     list: [
       {
         title: "Dashboard",
@@ -29,29 +27,19 @@ const menuItems = [
         icon: <MdOutlineHelpOutline />,
       },
       {
-        title: "Calculator",
-        path: "/dashboard/opportunitycostcalculator",
+        title: "Stock Market",
+        path: "/dashboard/stockmarket",
         icon: <MdCalculate />,
+      },
+      {
+        title: "Crypto Market",
+        path: "/dashboard/cryptomarket",
+        icon: <MdPayments />,
       },
       {
         title: "Volatility",
         path: "/dashboard/volatilityswings",
         icon: <MdPayments />,
-      },
-    ],
-  },
-  {
-    title: "Analytics",
-    list: [
-      {
-        title: "Stocks",
-        path: "/dashboard/stocks",
-        icon: <CiMoneyCheck1 />,
-      },
-      {
-        title: "Crypto",
-        path: "/dashboard/crypto",
-        icon: <MdOutlineMoney />,
       },
       {
         title: "Conversion Rates",
@@ -59,7 +47,7 @@ const menuItems = [
         icon: <MdOutlineCurrencyExchange />,
       },
     ],
-  },
+  }
 ];
 
 const Sidebar = async () => {

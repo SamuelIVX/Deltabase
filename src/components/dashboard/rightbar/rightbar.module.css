@@ -1,10 +1,11 @@
 .container {
-    position: fixed;
-  }
-  
+  position: fixed;
+}
+
 .item {
   position: relative;
-  background: linear-gradient(to top, #182237, #253352);
+  background-color: var(--bgSoft);
+  /* background: linear-gradient(to top, #182237, #253352); */
   padding: 20px 24px;
   border-radius: 10px;
   margin-bottom: 20px;
@@ -33,7 +34,7 @@
   font-size: 18px;
 }
 
-.image{
+.image {
   max-height: 100%;
   max-width: 100%;
   border-style: solid;
@@ -47,7 +48,7 @@
   font-weight: bold;
 }
 
-.balance{
+.balance {
   font-size: 20px;
   font-weight: bold;
 }
