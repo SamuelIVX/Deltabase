@@ -43,3 +43,47 @@
     color: var(--textSoft);
     margin-bottom: 10px;
 }
+
+.dateRangeButtons {
+    margin: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.dateButton {
+    gap: 6px;
+    padding: 12px;
+    background-color: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    transition: background-color 0.2s, transform 0.1s;
+    color: gray;
+    border: none;
+    cursor: pointer;
+}
+
+.dateButton:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dateButton:active {
+    transform: translateY(2px);
+    background-color: rgba(255, 255, 255, 0.08);
+    color: white;
+}
+
+.dateButton.selected {
+    transform: translateY(2px);
+    /* keeps it pressed in */
+    background-color: rgba(255, 255, 255, 0.08);
+    color: white;
+}
+
+.customTooltip {
+    padding: 10px;
+}
+
+.description {
+    margin: 8px 0 2px 0;
+    font-size: 12px;
+    color: rgba(211, 211, 211, 0.934);
+}
