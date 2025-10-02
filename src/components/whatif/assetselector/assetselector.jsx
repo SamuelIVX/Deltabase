@@ -8,12 +8,18 @@ export const AssetContext = createContext({
     setSelectedAsset1: (value) => { },
     selectedAsset2: null,
     setSelectedAsset2: (value) => { },
-    value: [1],
-    setValue: (value) => { },
-    initialInvestment: "",
-    setInitialInvestment: (value) => { },
-    monthlyInvestment: "",
-    setMonthlyInvestment: (value) => { },
+    value1: [1],
+    setValue1: (value) => { },
+    initialInvestment1: "",
+    setInitialInvestment1: (value) => { },
+    monthlyInvestment1: "",
+    setMonthlyInvestment1: (value) => { },
+    value2: [1],
+    setValue2: (value) => { },
+    initialInvestment2: "",
+    setInitialInvestment2: (value) => { },
+    monthlyInvestment2: "",
+    setMonthlyInvestment2: (value) => { },
     asset1Data: [],
     setAsset1Data: (value) => { },
     asset2Data: [],
@@ -64,9 +70,10 @@ const AssetSelector = () => {
                 {isLoading1 && <p>Loading results...</p>}
                 {error1 && <p>An error occured: {error1}</p>}
 
-                {!selectedAsset1 && results1.length > 0 && results1.map(stock => (
+                {/* Asset 1 results */}
+                {!selectedAsset1 && results1.length > 0 && results1.map((stock, index) => (
                     <div
-                        key={stock.symbol || stock.name}
+                        key={`${stock.symbol || stock.name}-${index}`}
                         className={styles.output}
                         onClick={() => handleSelectAsset1(stock)}
                     >
@@ -104,9 +111,10 @@ const AssetSelector = () => {
                 {isLoading2 && <p>Loading...</p>}
                 {error2 && <p>An error occured: {error2}</p>}
 
-                {!selectedAsset2 && results2.length > 0 && results2.map(stock => (
+                {/* Asset 2 results */}
+                {!selectedAsset2 && results2.length > 0 && results2.map((stock, index) => (
                     <div
-                        key={stock.symbol || stock.name}
+                        key={`${stock.symbol || stock.name}-${index}`}
                         className={styles.output}
                         onClick={() => handleSelectAsset2(stock)}
                     >

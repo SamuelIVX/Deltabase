@@ -1,53 +1,55 @@
 .wrapper {
-    background-color: var(--bgSoft);
     display: flex;
-    gap: 16px;
-    border-radius: 10px;
-    padding: 20px;
-    max-width: 520px;
-    margin: 24px auto 0;
-    text-align: center;
-    align-items: flex-start;
+    gap: 24px;
     justify-content: center;
     flex-wrap: wrap;
+    margin: 24px auto;
 }
 
 .container {
     display: flex;
+    flex-direction: column;
     gap: 16px;
-    align-items: flex-end;
-    flex-wrap: wrap;
+    flex: 1;
+    min-width: 300px;
+    background-color: var(--bgSoft);
+    padding: 20px;
+    border-radius: 10px;
+    align-items: center;
 }
 
 .field {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    min-width: 50%;
-    flex: 1;
 }
 
 .label {
-    text-transform: capitalize;
     font-size: 14px;
     font-weight: bold;
-    color: var(--textSoft)
+    color: var(--textSoft);
+    text-transform: capitalize;
 }
 
 .inputBg {
     background: #2e374a;
     border-radius: 10px;
-    margin-top: 10px;
-    max-width: 48%;
-    margin: 0 auto;
+    width: 100%;
 }
 
 .input {
     background-color: transparent;
     border: none;
     color: var(--text);
-    cursor: 'pointer';
     padding: 10px;
+    width: 100%;
+}
+
+.sliderWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
 }
 
 .slider {

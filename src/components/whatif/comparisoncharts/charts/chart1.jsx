@@ -9,12 +9,12 @@ import useSimulateDCA from '@/hooks/useSimulateDCA';
 import useTooltipData from '../../../../hooks/useTooltipData';
 
 const Chart1 = () => {
-  const { selectedAsset1, value, initialInvestment, monthlyInvestment, setAsset1Data } = React.useContext(AssetContext);
-  const { results, isLoading, error } = useYahooHistoricalData(selectedAsset1?.symbol, value[0]);
+  const { selectedAsset1, value1, initialInvestment1, monthlyInvestment1, setAsset1Data } = React.useContext(AssetContext);
+  const { results, isLoading, error } = useYahooHistoricalData(selectedAsset1?.symbol, value1[0]);
 
   const currentMonth = new Date().getMonth();
 
-  const dcaResults = useSimulateDCA(results, initialInvestment, monthlyInvestment);
+  const dcaResults = useSimulateDCA(results, initialInvestment1, monthlyInvestment1);
   const chartData = dcaResults.monthlyPortfolio;
 
   React.useEffect(() => {
@@ -63,7 +63,7 @@ const Chart1 = () => {
         </div>
       )}
 
-      {selectedAsset1 && results && value && initialInvestment && monthlyInvestment && (
+      {selectedAsset1 && results && value1 && initialInvestment1 && monthlyInvestment1 && (
         <div className={styles.container}>
           <h2 className={styles.title}>{selectedAsset1 ? selectedAsset1.symbol : 'Asset 1'}</h2>
           <ResponsiveContainer width="100%" height="100%">
@@ -74,7 +74,7 @@ const Chart1 = () => {
               margin={{
                 top: 10,
                 right: 0,
-                left: 0,
+                left: 30,
                 bottom: 0,
               }}
             >
