@@ -50,7 +50,7 @@ const data = [
 
 export const MarketContext = createContext({
     selectedStock: "",
-    setSelectedStock: (value) => { },
+    setSelectedStock: (value: string) => { },
 });
 
 const StockMarketChart = () => {
