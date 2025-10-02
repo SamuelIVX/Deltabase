@@ -13,7 +13,14 @@
 .title {
     font-weight: 200;
     color: var(--textSoft);
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    margin-right: 5px;
+}
+
+.search {
+    background: #2e374a;
+    padding: 6px;
+    border-radius: 10px;
 }
 
 .input {

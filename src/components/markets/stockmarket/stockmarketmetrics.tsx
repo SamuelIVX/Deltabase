@@ -1,9 +1,13 @@
 'use client'
 import styles from '../marketsmetrics.module.css';
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import { MarketContext } from './stockmarketchart';
 import useYahooStockQuote from '@/hooks/useYahooStockQuote';
 import useDebounce from '@/hooks/useDebounce';
+import formatCurrency from '@/utils/formatCurrency';
+import formatNumber from '@/utils/formatNumber';
+import formatPercent from '@/utils/formatPercent';
+import formatDate from '@/utils/formatDate';
 
 const StockMarketMetrics = () => {
     const { selectedStock } = useContext(MarketContext);
@@ -17,16 +21,28 @@ const StockMarketMetrics = () => {
 
             {isLoading && <p>Loading...</p>}
             {quote && (
-                <ul className={styles.metrics}>
-                    <li>Market Day Range: {quote.regularMarketDayRange.low} - {quote.regularMarketDayRange.high}</li>
-                    <li>52-Week Range: {quote.fiftyTwoWeekRange.low} - {quote.fiftyTwoWeekRange.high}</li>
-                    <li>Market Cap: {quote.marketCap}</li>
-                    <li>Forward P/E: {quote.forwardPE}</li>
-                    <li>Trailing P/E: {quote.trailingPE}</li>
-                    <li>Dividend Yield: {quote.dividendYield}</li>
-                    <li>Dividend Pay Date: {quote.dividendDate}</li>
+                <>
+                    <div className={styles.content}>
+                        <span><strong style={{ color: 'beige' }}>Market Day Range:</strong> ${quote.regularMarketDayRange.low} - ${quote.regularMarketDayRange.high}</span>
+                        <span><strong style={{ color: 'beige' }}>52-Week Range:</strong> ${quote.fiftyTwoWeekRange.low} - ${quote.fiftyTwoWeekRange.high}</span>
+                    </div>
 
-                </ul>
+                    <div className={styles.content}>
+                        <span><strong style={{ color: 'beige' }}>Market Cap:</strong> {formatCurrency(quote.marketCap)}</span>
+                    </div>
+
+                    <div className={styles.content}>
+                        <span><strong style={{ color: 'beige' }}>Forward P/E:</strong> {formatNumber(quote.forwardPE)}</span>
+                        <span><strong style={{ color: 'beige' }}>Trailing P/E:</strong> {formatNumber(quote.trailingPE)}</span>
+
+                    </div>
+
+                    <div className={styles.content}>
+                        <span><strong style={{ color: 'beige' }}>Dividend Yield:</strong> {formatPercent(quote.dividendYield)}</span>
+                        <span><strong style={{ color: 'beige' }}>Dividend Pay Date:</strong> {formatDate(quote.dividendDate)}</span>
+                    </div>
+
+                </>
             )}
 
         </div>
