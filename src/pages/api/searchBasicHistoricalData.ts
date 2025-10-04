@@ -1,4 +1,3 @@
-// pages/api/yahoo-chart.ts
 import { NextApiRequest, NextApiResponse } from "next";
 import yahooFinance from "yahoo-finance2";
 
