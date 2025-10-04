@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 type Result = {
     date: string;
+    time: string;
     timestamp: number;
     open: number;
     high: number;
@@ -13,11 +14,14 @@ type Result = {
 interface Params {
     market: string;
     instrument: string;
-    limit?: number;
-    aggregate?: number;
+    range?: '1d' | '5d' | '1mo' | '3mo' | '6mo' | '1y' | '5y';
 }
 
-export default function useCryptoHistoricalData({ market, instrument, limit = 30, aggregate = 1 }: Params) {
+export default function useCryptoHistoricalData({
+    market,
+    instrument,
+    range = '1mo'
+}: Params) {
     const [results, setResults] = useState<Result[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -28,7 +32,7 @@ export default function useCryptoHistoricalData({ market, instrument, limit = 30
         setIsLoading(true);
         setError(null);
 
-        fetch(`/api/searchCoinHistoricalData?market=${market}&instrument=${instrument}&limit=${limit}&aggregate=${aggregate}`)
+        fetch(`/api/searchCoinHistoricalData?market=${market}&instrument=${instrument}&range=${range}`)
             .then(async res => {
                 if (!res.ok) {
                     const errorData = await res.json();
@@ -47,7 +51,7 @@ export default function useCryptoHistoricalData({ market, instrument, limit = 30
                 setError(err.message);
             })
             .finally(() => setIsLoading(false));
-    }, [market, instrument, limit, aggregate]);
+    }, [market, instrument, range]);
 
     return { results, isLoading, error };
 }

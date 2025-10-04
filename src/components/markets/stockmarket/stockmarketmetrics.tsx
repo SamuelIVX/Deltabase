@@ -1,7 +1,7 @@
 'use client'
 import styles from '../marketsmetrics.module.css';
 import { useContext } from 'react'
-import { MarketContext } from './stockmarketchart';
+import { StockMarketContext } from './stockmarketchart';
 import useYahooStockQuote from '@/hooks/useYahooStockQuote';
 import useDebounce from '@/hooks/useDebounce';
 import formatCurrency from '@/utils/formatCurrency';
@@ -17,7 +17,7 @@ const StatItem = ({ label, value }) => (
 );
 
 const StockMarketMetrics = () => {
-    const { selectedStock } = useContext(MarketContext);
+    const { selectedStock } = useContext(StockMarketContext);
     const debouncedStock = useDebounce(selectedStock, 500);
     const { quote, isLoading, error } = useYahooStockQuote(debouncedStock);
 

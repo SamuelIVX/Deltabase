@@ -9,14 +9,14 @@ import useDebounce from '@/hooks/useDebounce';
 import formatNumber from '@/utils/formatNumber';
 import formatDate from '@/utils/formatDate';
 
-export const MarketContext = createContext({
+export const StockMarketContext = createContext({
     selectedStock: "",
     setSelectedStock: (value: string) => { },
 });
 
 
 const StockMarketChart = () => {
-    const { selectedStock, setSelectedStock } = useContext(MarketContext);
+    const { selectedStock, setSelectedStock } = useContext(StockMarketContext);
     const debouncedStock = useDebounce(selectedStock, 500);
     const { quote, isLoading, error } = useYahooStockQuote(debouncedStock);
 
