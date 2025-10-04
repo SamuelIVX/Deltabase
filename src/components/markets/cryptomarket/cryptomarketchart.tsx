@@ -4,6 +4,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 import styles from '../markets.module.css';
 import { createContext, useContext } from 'react'
 import useCryptoHistoricalData from '@/hooks/useCryptoHistoricalData';
+import useCryptoLatestTick from '@/hooks/useCryptoLatestTick';
 import useDebounce from '@/hooks/useDebounce';
 import formatNumber from '@/utils/formatNumber';
 import formatDate from '@/utils/formatDate';
@@ -17,11 +18,14 @@ export const CryptoMarketContext = createContext({
 const CryptoMarketChart = () => {
     const { selectedCrypto, setSelectedCrypto } = useContext(CryptoMarketContext);
     const debouncedCrypto = useDebounce(selectedCrypto, 700);
+    const { result, isLoading, error } = useCryptoLatestTick({
+        instruments: debouncedCrypto
+    });
 
     // Fetch historical data
     const [selectedRange, setSelectedRange] = useState('1d');
 
-    const { results, isLoading, error } = useCryptoHistoricalData({
+    const { results } = useCryptoHistoricalData({
         market: "kraken",
         instrument: debouncedCrypto,
         range: selectedRange
@@ -47,7 +51,7 @@ const CryptoMarketChart = () => {
                 <p className={styles.description}>Current Date</p>
                 <span className={styles.date}>{formatDate(date)}</span>
                 <p className={styles.description}>Price</p>
-                <p className={styles.volume}>{formatNumber(close)}</p>
+                <p className={styles.volume}>${formatNumber(close)}</p>
                 <p className={styles.description}>Volume</p>
                 <p className={styles.volume}>{formatNumber(volume)}</p>
             </div>
@@ -66,7 +70,7 @@ const CryptoMarketChart = () => {
                         placeholder="Enter a stock symbol..."
                         value={selectedCrypto || ''}
                         onChange={(e) => {
-                            setSelectedCrypto(e.target.value.toLocaleUpperCase())
+                            setSelectedCrypto(e.target.value.toUpperCase())
                         }}
                     />
                 </span>
@@ -74,6 +78,30 @@ const CryptoMarketChart = () => {
 
             {error && <p className={styles.error}>Error fetching stock data</p>}
             {isLoading && <p className={styles.loading}>Loading...</p>}
+
+            {result && !isLoading && (
+                <div className={styles.stockInfo}>
+                    <div className={styles.priceSection}>
+                        <span className={styles.price}>${result.PRICE?.toFixed(2)} </span>
+                        {result.CURRENT_DAY_CHANGE_PERCENTAGE !== undefined && (
+                            <span
+                                style={{
+                                    color:
+                                        result.CURRENT_DAY_CHANGE_PERCENTAGE >= 0 ? "#10b981" : "#ef4444",
+                                }}
+                            >
+                                {result.CURRENT_DAY_CHANGE_PERCENTAGE >= 0 ? "+" : ""}
+                                {result.CURRENT_DAY_CHANGE_PERCENTAGE.toFixed(2)}%
+                                {" "}
+                                ({result.CURRENT_DAY_CHANGE >= 0 ? "+" : ""}
+                                ${Math.abs(result.CURRENT_DAY_CHANGE).toFixed(2)})
+                                <span> Today</span>
+                            </span>
+                        )}
+                    </div>
+                </div>
+            )}
+
 
 
             {results?.length > 0 && (

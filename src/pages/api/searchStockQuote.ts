@@ -6,6 +6,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (!symbol || typeof symbol !== 'string') {
         return res.status(400).json({ error: 'Missing or invalid symbol parameter.' });
     }
+
     try {
         const results = await yahooFinance.quote(symbol);
         res.status(200).json(results);

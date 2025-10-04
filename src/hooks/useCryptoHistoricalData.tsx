@@ -17,11 +17,12 @@ interface Params {
     range?: '1d' | '5d' | '1mo' | '3mo' | '6mo' | '1y' | '5y';
 }
 
-export default function useCryptoHistoricalData({
-    market,
-    instrument,
-    range = '1mo'
-}: Params) {
+export default function useCryptoHistoricalData(
+    {
+        market,
+        instrument,
+        range = '1mo'
+    }: Params) {
     const [results, setResults] = useState<Result[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
