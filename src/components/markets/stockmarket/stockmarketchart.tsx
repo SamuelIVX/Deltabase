@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react';
+import { MoonLoader } from 'react-spinners';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from '../markets.module.css';
 import { createContext, useContext } from 'react'
@@ -76,8 +77,12 @@ const StockMarketChart = () => {
                 </span>
             </div>
 
-            {error && <p className={styles.error}>Error fetching stock data</p>}
-            {isLoading && <p className={styles.loading}>Loading...</p>}
+            {error && <p className={styles.message}>Error: {error}</p>}
+            {isLoading && (
+                <div className={styles.loadingOverlay}>
+                    <MoonLoader color="#47ef60ff" size={100} />
+                </div>
+            )}
 
             {quote && !isLoading && (
                 <div className={styles.stockInfo}>
