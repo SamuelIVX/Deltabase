@@ -1,10 +1,27 @@
 import { useMemo } from "react";
+interface DCAResultItem {
+    date: string;
+    adjclose: string | number;
+}
 
-const useSimulateDCA = (results, initialInvestment, monthlyInvestment) => {
+interface DCAResult {
+    totalShares: number;
+    totalInvested: number;
+    finalValue: number;
+    gain: number;
+    monthlyPortfolio: {
+        name: string;
+        portfolioValue: string;
+        invested: string;
+        adjclose: number;
+    }[];
+}
+
+const useSimulateDCA = (results: DCAResultItem[], initialInvestment: number, monthlyInvestment: number): DCAResult => {
     return useMemo(() => {
         let totalShares = 0;
         let totalInvested = 0;
-        const monthlyPortfolio = [];
+        const monthlyPortfolio: DCAResult["monthlyPortfolio"] = [];
 
         results.forEach((item, idx) => {
             const price = Number(item.adjclose);

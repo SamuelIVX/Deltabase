@@ -6,8 +6,27 @@ import useCryptoLatestTick from '@/hooks/useCryptoLatestTick';
 import useDebounce from '@/hooks/useDebounce';
 import formatCurrency from '@/utils/formatCurrency';
 import formatNumber from '@/utils/formatNumber';
+interface TickResult {
+    MARKET: string;
+    CURRENT_DAY_LOW: number;
+    CURRENT_DAY_HIGH: number;
+    CURRENT_DAY_OPEN: number;
+    CURRENT_DAY_QUOTE_VOLUME: number;
+    BEST_BID: number;
+    BEST_ASK: number;
+    CURRENT_YEAR_HIGH: number;
+    CURRENT_YEAR_LOW: number;
+    LIFETIME_HIGH: number;
+    PRICE: number;
+    CURRENT_DAY_CHANGE: number;
+    CURRENT_DAY_CHANGE_PERCENTAGE: number;
+}
+interface StatItemProps {
+    label: string;
+    value: string | number;
+}
 
-const StatItem = ({ label, value }) => (
+const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
     <div className={styles.statItem}>
         <span className={styles.label}>{label}</span>
         <span className={styles.value}>{value}</span>
@@ -18,8 +37,8 @@ const CryptoMarketMetrics = () => {
     const { selectedCrypto } = useContext(CryptoMarketContext);
     const debouncedCrypto = useDebounce(selectedCrypto, 500);
     const { result, isLoading, error } = useCryptoLatestTick({
-        instruments: debouncedCrypto
-    });
+        instruments: debouncedCrypto,
+    }) as { result: TickResult | null; isLoading: boolean; error?: string };
 
     return (
         <div className={styles.container}>

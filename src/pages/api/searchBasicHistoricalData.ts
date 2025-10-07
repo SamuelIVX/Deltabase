@@ -3,6 +3,11 @@ import yahooFinance from "yahoo-finance2";
 
 const validRanges = ['1d', '5d', '1m', '3m', '6m', '1y', '5y'];
 
+type YahooInterval =
+    | "1d" | "5d" | "1m" | "2m" | "5m"
+    | "1wk" | "15m" | "30m" | "60m" | "90m"
+    | "1h" | "1mo" | "3mo";
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { symbol, range = "1y" } = req.query;
 
@@ -15,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Map ranges to intervals and # of days
-    const intervalMap: Record<string, { interval: unknown, days: number }> = {
+    const intervalMap: Record<string, { interval: YahooInterval; days: number }> = {
         '1d': { interval: '2m', days: 1 },
         '5d': { interval: '5m', days: 5 },
         '1m': { interval: '1d', days: 30 },

@@ -42,11 +42,17 @@ const CryptoMarketChart = () => {
 
     interface CustomTooltipProps {
         active?: boolean;
-        payload?: string;
-        label?: string;
+        payload?: {
+            payload: {
+                date: string;
+                close: number;
+                volume: number;
+            };
+        }[];
+        label?: string | number;
     }
 
-    const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
+    const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
         if (!active || !payload || payload.length === 0) return null;
 
         const { date, close, volume } = payload[0].payload;

@@ -14,7 +14,7 @@ type Result = {
 interface Params {
     market: string;
     instrument: string;
-    range?: '1d' | '5d' | '1mo' | '3mo' | '6mo' | '1y' | '5y';
+    range?: string;
 }
 
 export default function useCryptoHistoricalData(

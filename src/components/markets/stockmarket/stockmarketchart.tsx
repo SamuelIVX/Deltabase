@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react';
 import { MoonLoader } from 'react-spinners';
+import { TooltipProps } from 'recharts';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from '../markets.module.css';
 import { createContext, useContext } from 'react'
@@ -20,11 +21,30 @@ export const StockMarketContext = createContext<StockMarketContextType>({
     setSelectedStock: () => { },
 });
 
+interface HistoricalDataPoint {
+    date: string;
+    time: string;
+    close: number;
+    volume: number;
+}
+
+interface YahooQuote {
+    regularMarketPrice: number;
+    regularMarketChangePercent: number;
+    regularMarketTime: string;
+    postMarketPrice?: number;
+    postMarketChangePercent?: number;
+    currency?: string;
+}
+
 const StockMarketChart = () => {
     const { selectedStock, setSelectedStock } = useContext(StockMarketContext);
     const debouncedStock = useDebounce(selectedStock, 500);
-    const { quote, isLoading, error } = useYahooStockQuote(debouncedStock);
-
+    const { quote, isLoading, error } = useYahooStockQuote(debouncedStock) as {
+        quote: YahooQuote | null;
+        isLoading: boolean;
+        error: string | null;
+    };
     // Fetch historical data
     const [selectedRange, setSelectedRange] = useState('1d');
 
@@ -34,34 +54,22 @@ const StockMarketChart = () => {
 
     const { historicalData } = useYahooBasicHistoricalData(debouncedStock, selectedRange);
 
-    type HistoricalDataPoint = {
-        date: string;
-        time: string;
-        close: number;
-        volume: number;
-    };
+    const CustomTooltip: React.FC<
+        TooltipProps<number, string> & { payload?: { payload: HistoricalDataPoint }[] }> = ({ active, payload }) => {
+            if (!active || !payload || payload.length === 0) return null;
 
-    interface CustomTooltipProps {
-        active?: boolean;
-        payload?: { payload: HistoricalDataPoint }[];
-        label?: string;
-    }
+            const { date, time, volume } = payload[0].payload;
 
-    const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
-        if (!active || !payload || payload.length === 0) return null;
-
-        const { date, time, volume } = payload[0].payload;
-
-        return (
-            <div className={styles.customTooltip} style={{ background: "rgba(36, 131, 71, 0.76)" }}>
-                <p className={styles.description}>Current Date</p>
-                <span className={styles.date}>{formatDate(date)}</span>
-                <span className={styles.time}> {time}</span>
-                <p className={styles.description}>Volume</p>
-                <p className={styles.volume}>{formatNumber(volume)}</p>
-            </div>
-        );
-    };
+            return (
+                <div className={styles.customTooltip} style={{ background: "rgba(36, 131, 71, 0.76)" }}>
+                    <p className={styles.description}>Current Date</p>
+                    <span className={styles.date}>{formatDate(date)}</span>
+                    <span className={styles.time}> {time}</span>
+                    <p className={styles.description}>Volume</p>
+                    <p className={styles.volume}>{formatNumber(volume)}</p>
+                </div>
+            );
+        };
 
     return (
         <div className={styles.container}>
@@ -158,7 +166,7 @@ const StockMarketChart = () => {
                                 ]}
                                 tickFormatter={(value) => value.toFixed(2)}
                             />
-                            <Tooltip content={(tooltipProps) => <CustomTooltip {...tooltipProps} />} />
+                            <Tooltip content={<CustomTooltip />} />
                             <Area
                                 type="monotone"
                                 dataKey="close"

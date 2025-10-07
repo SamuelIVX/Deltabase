@@ -8,8 +8,29 @@ import formatCurrency from '@/utils/formatCurrency';
 import formatNumber from '@/utils/formatNumber';
 import formatPercent from '@/utils/formatPercent';
 import formatDate from '@/utils/formatDate';
+interface StatItemProps {
+    label: string;
+    value: string | number;
+}
+interface YahooQuote {
+    marketCap: number;
+    regularMarketDayRange: {
+        low: number;
+        high: number;
+    };
+    fiftyTwoWeekRange: {
+        low: number;
+        high: number;
+    };
+    forwardPE: number;
+    trailingPE: number;
+    priceEpsCurrentYear: number;
+    dividendYield: number;
+    dividendRate: number;
+    dividendDate: string | number | Date;
+}
 
-const StatItem = ({ label, value }) => (
+const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
     <div className={styles.statItem}>
         <span className={styles.label}>{label}</span>
         <span className={styles.value}>{value}</span>
@@ -19,7 +40,11 @@ const StatItem = ({ label, value }) => (
 const StockMarketMetrics = () => {
     const { selectedStock } = useContext(StockMarketContext);
     const debouncedStock = useDebounce(selectedStock, 500);
-    const { quote, isLoading, error } = useYahooStockQuote(debouncedStock);
+    const { quote, isLoading, error } = useYahooStockQuote(debouncedStock) as {
+        quote: YahooQuote | null;
+        isLoading: boolean;
+        error: string | null;
+    };
 
     return (
         <div className={styles.container}>
