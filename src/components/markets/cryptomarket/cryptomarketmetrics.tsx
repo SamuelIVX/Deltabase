@@ -6,8 +6,6 @@ import useCryptoLatestTick from '@/hooks/useCryptoLatestTick';
 import useDebounce from '@/hooks/useDebounce';
 import formatCurrency from '@/utils/formatCurrency';
 import formatNumber from '@/utils/formatNumber';
-import formatPercent from '@/utils/formatPercent';
-import formatDate from '@/utils/formatDate';
 
 const StatItem = ({ label, value }) => (
     <div className={styles.statItem}>

@@ -10,11 +10,15 @@ import useDebounce from '@/hooks/useDebounce';
 import formatNumber from '@/utils/formatNumber';
 import formatDate from '@/utils/formatDate';
 
-export const CryptoMarketContext = createContext({
-    selectedCrypto: "",
-    setSelectedCrypto: (value: string) => { },
-});
+interface CryptoMarketContextType {
+    selectedCrypto: string;
+    setSelectedCrypto: (value: string) => void;
+}
 
+export const CryptoMarketContext = createContext<CryptoMarketContextType>({
+    selectedCrypto: "",
+    setSelectedCrypto: () => { },
+});
 
 const CryptoMarketChart = () => {
     const { selectedCrypto, setSelectedCrypto } = useContext(CryptoMarketContext);
@@ -42,7 +46,7 @@ const CryptoMarketChart = () => {
         label?: string;
     }
 
-    const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+    const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
         if (!active || !payload || payload.length === 0) return null;
 
         const { date, close, volume } = payload[0].payload;

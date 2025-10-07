@@ -32,8 +32,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         // Return all monthly data points
         res.status(200).json(results.quotes);
 
-    } catch (error: any) {
-        res.status(500).json({ error: error.message });
+    } catch (err: unknown) {
+        console.error(err);
+
+        if (err instanceof Error) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(500).json({ error: "Failed to fetch data" });
+        }
     }
 }
 

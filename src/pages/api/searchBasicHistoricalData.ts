@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Map ranges to intervals and # of days
-    const intervalMap: Record<string, { interval: any, days: number }> = {
+    const intervalMap: Record<string, { interval: unknown, days: number }> = {
         '1d': { interval: '2m', days: 1 },
         '5d': { interval: '5m', days: 5 },
         '1m': { interval: '1d', days: 30 },
@@ -48,8 +48,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         res.status(200).json(formattedData);
 
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error(err);
-        res.status(500).json({ error: err.message || "Failed to fetch data" });
+
+        if (err instanceof Error) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(500).json({ error: "Failed to fetch data" });
+        }
     }
 }

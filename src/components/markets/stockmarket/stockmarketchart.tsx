@@ -10,11 +10,15 @@ import useDebounce from '@/hooks/useDebounce';
 import formatNumber from '@/utils/formatNumber';
 import formatDate from '@/utils/formatDate';
 
-export const StockMarketContext = createContext({
-    selectedStock: "",
-    setSelectedStock: (value: string) => { },
-});
+interface StockMarketContextType {
+    selectedStock: string;
+    setSelectedStock: (value: string) => void;
+}
 
+export const StockMarketContext = createContext<StockMarketContextType>({
+    selectedStock: "",
+    setSelectedStock: () => { },
+});
 
 const StockMarketChart = () => {
     const { selectedStock, setSelectedStock } = useContext(StockMarketContext);
@@ -43,7 +47,7 @@ const StockMarketChart = () => {
         label?: string;
     }
 
-    const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+    const CustomTooltip = ({ active, payload }: CustomTooltipProps) => {
         if (!active || !payload || payload.length === 0) return null;
 
         const { date, time, volume } = payload[0].payload;

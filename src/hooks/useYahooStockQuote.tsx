@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 
 function useYahooStockQuote(symbol: string) {
-    const [quote, setQuote] = useState<any>(null);
+    const [quote, setQuote] = useState<unknown>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 

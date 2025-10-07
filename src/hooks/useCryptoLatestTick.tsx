@@ -10,7 +10,7 @@ interface TickResult {
     MOVING_24_HOUR_CHANGE_PERCENTAGE: number,
     CURRENT_DAY_CHANGE: number,
     CURRENT_DAY_QUOTE_VOLUME: number,
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 interface Params {

@@ -1,4 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+interface CandleData {
+    TIMESTAMP: number;
+    OPEN: number;
+    HIGH: number;
+    LOW: number;
+    CLOSE: number;
+    VOLUME: number;
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const apiKey = process.env.COINDESK_API_KEY;
@@ -71,9 +79,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         // Filter data to only include timestamps within our range
-        const filteredData = data.Data.filter((item: any) => item.TIMESTAMP >= fromTs);
+        const filteredData = data.Data.filter((item: CandleData) => item.TIMESTAMP >= fromTs);
 
-        const results = filteredData.map((item: any) => ({
+        const results = filteredData.map((item: CandleData) => ({
             date: new Date(item.TIMESTAMP * 1000).toISOString().split("T")[0],
             time: new Date(item.TIMESTAMP * 1000).toLocaleTimeString('en-US', {
                 hour: '2-digit',
@@ -88,8 +96,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }));
 
         res.status(200).json(results);
-    } catch (err: any) {
-        console.error('Handler error:', err);
-        res.status(500).json({ error: err.message });
+    } catch (err: unknown) {
+        console.error(err);
+        if (err instanceof Error) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(500).json({ error: "Failed to fetch data" });
+        }
     }
 }
