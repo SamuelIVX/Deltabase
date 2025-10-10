@@ -37,13 +37,8 @@ const menuItems = [
         icon: <MdPayments />,
       },
       {
-        title: "Volatility",
-        path: "/dashboard/volatilityswings",
-        icon: <MdPayments />,
-      },
-      {
-        title: "Conversion Rates",
-        path: "/dashboard/conversion_rates",
+        title: "Tax & Fee Calculator",
+        path: "/dashboard/taxfeecalculator",
         icon: <MdOutlineCurrencyExchange />,
       },
     ],
