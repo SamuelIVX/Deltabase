@@ -25,6 +25,53 @@ interface CryptoTickResult {
     [key: string]: unknown;
 }
 
+interface ResultProps {
+    grossProfit: number,
+    feeCost: number,
+    taxAmount: number,
+    netProfit: number,
+    netReturn: number
+}
+
+const Results: React.FC<ResultProps> = ({ grossProfit, feeCost, taxAmount, netProfit, netReturn }) => (
+    <div className={styles.results}>
+        <h3 className={styles.resultsTitle}>Results</h3>
+
+        <div className={styles.resultRow}>
+            <span className={styles.resultLabel}>Gross Profit</span>
+            <span className={`${styles.resultValue} ${grossProfit < 0 ? styles.negative : styles.positive}`}>
+                ${grossProfit.toFixed(2)}
+            </span>
+        </div>
+
+        <div className={styles.resultRow}>
+            <span className={styles.resultLabel}>Fees</span>
+            <span className={styles.resultValue}>${feeCost.toFixed(2)}</span>
+        </div>
+
+        <div className={styles.resultRow}>
+            <span className={styles.resultLabel}>Tax</span>
+            <span className={styles.resultValue}>${taxAmount.toFixed(2)}</span>
+        </div>
+
+        <div className={styles.divider}></div>
+
+        <div className={`${styles.resultRow} ${styles.resultRowHighlight}`}>
+            <span className={styles.resultLabel}>Net Profit</span>
+            <span className={`${styles.resultValue} ${styles.resultValueLarge} ${netProfit < 0 ? styles.negative : styles.positive}`}>
+                ${netProfit.toFixed(2)}
+            </span>
+        </div>
+
+        <div className={styles.returnBadge}>
+            <span className={styles.returnLabel}>Net Return</span>
+            <span className={`${styles.returnValue} ${netReturn < 0 ? styles.negative : styles.positive}`}>
+                {netReturn.toFixed(2)}%
+            </span>
+        </div>
+    </div>
+);
+
 export default function TaxAdjustedReturns() {
     const [marketType, setMarketType] = useState<'crypto' | 'stock' | ''>('');
     const [symbol, setSymbol] = useState('');
@@ -168,81 +215,23 @@ export default function TaxAdjustedReturns() {
 
                 {/* Display results */}
                 {marketType == 'stock' && stockReturns && (
-                    <div className={styles.results}>
-                        <h3 className={styles.resultsTitle}>Results</h3>
-
-                        <div className={styles.resultRow}>
-                            <span className={styles.resultLabel}>Gross Profit</span>
-                            <span className={`${styles.resultValue} ${stockReturns.grossProfit < 0 ? styles.negative : styles.positive}`}>
-                                ${stockReturns.grossProfit.toFixed(2)}
-                            </span>
-                        </div>
-
-                        <div className={styles.resultRow}>
-                            <span className={styles.resultLabel}>Fees</span>
-                            <span className={styles.resultValue}>${stockReturns.feeCost.toFixed(2)}</span>
-                        </div>
-
-                        <div className={styles.resultRow}>
-                            <span className={styles.resultLabel}>Tax</span>
-                            <span className={styles.resultValue}>${stockReturns.taxAmount.toFixed(2)}</span>
-                        </div>
-
-                        <div className={styles.divider}></div>
-
-                        <div className={`${styles.resultRow} ${styles.resultRowHighlight}`}>
-                            <span className={styles.resultLabel}>Net Profit</span>
-                            <span className={`${styles.resultValue} ${styles.resultValueLarge} ${stockReturns.netProfit < 0 ? styles.negative : styles.positive}`}>
-                                ${stockReturns.netProfit.toFixed(2)}
-                            </span>
-                        </div>
-
-                        <div className={styles.returnBadge}>
-                            <span className={styles.returnLabel}>Net Return</span>
-                            <span className={`${styles.returnValue} ${stockReturns.netReturn < 0 ? styles.negative : styles.positive}`}>
-                                {stockReturns.netReturn.toFixed(2)}%
-                            </span>
-                        </div>
-                    </div>
+                    <Results
+                        grossProfit={stockReturns.grossProfit}
+                        feeCost={stockReturns.feeCost}
+                        taxAmount={stockReturns.taxAmount}
+                        netProfit={stockReturns.netProfit}
+                        netReturn={stockReturns.netReturn}
+                    />
                 )}
 
                 {marketType == 'crypto' && cryptoReturns && (
-                    <div className={styles.results}>
-                        <h3 className={styles.resultsTitle}>Results</h3>
-
-                        <div className={styles.resultRow}>
-                            <span className={styles.resultLabel}>Gross Profit</span>
-                            <span className={`${styles.resultValue} ${cryptoReturns.grossProfit < 0 ? styles.negative : styles.positive}`}>
-                                ${cryptoReturns.grossProfit.toFixed(2)}
-                            </span>
-                        </div>
-
-                        <div className={styles.resultRow}>
-                            <span className={styles.resultLabel}>Fees</span>
-                            <span className={styles.resultValue}>${cryptoReturns.feeCost.toFixed(2)}</span>
-                        </div>
-
-                        <div className={styles.resultRow}>
-                            <span className={styles.resultLabel}>Tax</span>
-                            <span className={styles.resultValue}>${cryptoReturns.taxAmount.toFixed(2)}</span>
-                        </div>
-
-                        <div className={styles.divider}></div>
-
-                        <div className={`${styles.resultRow} ${styles.resultRowHighlight}`}>
-                            <span className={styles.resultLabel}>Net Profit</span>
-                            <span className={`${styles.resultValue} ${styles.resultValueLarge} ${cryptoReturns.netProfit < 0 ? styles.negative : styles.positive}`}>
-                                ${cryptoReturns.netProfit.toFixed(2)}
-                            </span>
-                        </div>
-
-                        <div className={styles.returnBadge}>
-                            <span className={styles.returnLabel}>Net Return</span>
-                            <span className={`${styles.returnValue} ${cryptoReturns.netReturn < 0 ? styles.negative : styles.positive}`}>
-                                {cryptoReturns.netReturn.toFixed(2)}%
-                            </span>
-                        </div>
-                    </div>
+                    <Results
+                        grossProfit={cryptoReturns.grossProfit}
+                        feeCost={cryptoReturns.feeCost}
+                        taxAmount={cryptoReturns.taxAmount}
+                        netProfit={cryptoReturns.netProfit}
+                        netReturn={cryptoReturns.netReturn}
+                    />
                 )}
 
             </div>
