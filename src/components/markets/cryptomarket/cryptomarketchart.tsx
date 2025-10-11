@@ -1,12 +1,13 @@
 'use client'
+import styles from '../markets.module.css';
 import { useState } from 'react';
 import { MoonLoader } from 'react-spinners';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import styles from '../markets.module.css';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
 import { createContext, useContext } from 'react'
 import useCryptoHistoricalData from '@/hooks/useCryptoHistoricalData';
 import useCryptoLatestTick from '@/hooks/useCryptoLatestTick';
 import useDebounce from '@/hooks/useDebounce';
+import { SymbolDataPoint } from '@/types/dataPoints';
 import formatNumber from '@/utils/formatNumber';
 import formatDate from '@/utils/formatDate';
 
@@ -24,7 +25,8 @@ const CryptoMarketChart = () => {
     const { selectedCrypto, setSelectedCrypto } = useContext(CryptoMarketContext);
     const debouncedCrypto = useDebounce(selectedCrypto, 700);
     const { result, isLoading, error } = useCryptoLatestTick({
-        instruments: debouncedCrypto
+        market: 'kraken',
+        instrument: debouncedCrypto
     });
 
     // Fetch historical data
@@ -40,34 +42,23 @@ const CryptoMarketChart = () => {
         setSelectedRange(range);
     };
 
-    interface CustomTooltipProps {
-        active?: boolean;
-        payload?: {
-            payload: {
-                date: string;
-                close: number;
-                volume: number;
-            };
-        }[];
-        label?: string | number;
-    }
+    const CustomTooltip: React.FC<
+        TooltipProps<number, string> & { payload?: { payload: SymbolDataPoint }[] }> = ({ active, payload }) => {
+            if (!active || !payload || payload.length === 0) return null;
 
-    const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
-        if (!active || !payload || payload.length === 0) return null;
+            const { date, close, volume } = payload[0].payload;
 
-        const { date, close, volume } = payload[0].payload;
-
-        return (
-            <div className={styles.customTooltip} style={{ background: "rgba(36, 131, 71, 0.76)" }}>
-                <p className={styles.description}>Current Date</p>
-                <span className={styles.date}>{formatDate(date)}</span>
-                <p className={styles.description}>Price</p>
-                <p className={styles.volume}>${formatNumber(close)}</p>
-                <p className={styles.description}>Volume</p>
-                <p className={styles.volume}>{formatNumber(volume)}</p>
-            </div>
-        );
-    };
+            return (
+                <div className={styles.customTooltip} style={{ background: "rgba(36, 131, 71, 0.76)" }}>
+                    <p className={styles.description}>Current Date</p>
+                    <span className={styles.date}>{formatDate(date)}</span>
+                    <p className={styles.description}>Price</p>
+                    <p className={styles.volume}>${formatNumber(close)}</p>
+                    <p className={styles.description}>Volume</p>
+                    <p className={styles.volume}>{formatNumber(volume)}</p>
+                </div>
+            );
+        };
 
     return (
         <div className={styles.container}>
@@ -143,7 +134,7 @@ const CryptoMarketChart = () => {
                                 ]}
                                 tickFormatter={(value) => value.toFixed(2)}
                             />
-                            <Tooltip content={(tooltipProps) => <CustomTooltip {...tooltipProps} />} />
+                            <Tooltip content={<CustomTooltip />} />
                             <Area
                                 type="monotone"
                                 dataKey="close"

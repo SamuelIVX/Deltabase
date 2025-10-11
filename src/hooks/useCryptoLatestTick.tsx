@@ -1,35 +1,19 @@
 import { useEffect, useState } from "react";
+import { TickResult } from '@/types/crypto';
+import { Params } from "@/types/crypto";
 
-interface TickResult {
-    INSTRUMENT?: string,
-    QUOTE?: string,
-    PRICE: number,
-    PRICE_LAST_UPDATE_TS: number,
-    CURRENT_DAY_CHANGE_PERCENTAGE: number,
-    CURRENT_DAY_OPEN: number;
-    CURRENT_HOUR_CHANGE_PERCENTAGE: number,
-    MOVING_24_HOUR_CHANGE_PERCENTAGE: number,
-    CURRENT_DAY_CHANGE: number,
-    CURRENT_DAY_QUOTE_VOLUME: number,
-    [key: string]: unknown;
-}
-
-interface Params {
-    instruments: string;
-}
-
-export default function useCryptoLatestTick({ instruments }: Params) {
+export default function useCryptoLatestTick({ instrument }: Params) {
     const [result, setResult] = useState<TickResult | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!instruments) return;
+        if (!instrument) return;
 
         setIsLoading(true);
         setError(null);
 
-        fetch(`/api/searchCoinLatestTick?market=kraken&instrument=${instruments}`)
+        fetch(`/api/searchCoinLatestTick?market=kraken&instrument=${instrument}`)
             .then(async res => {
                 if (!res.ok) {
                     const errorData = await res.json();
@@ -45,7 +29,7 @@ export default function useCryptoLatestTick({ instruments }: Params) {
                 setError(err.message);
             })
             .finally(() => setIsLoading(false));
-    }, [instruments]);
+    }, [instrument]);
 
     return { result, isLoading, error };
 }

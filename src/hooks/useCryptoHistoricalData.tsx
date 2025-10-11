@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Params } from "@/types/crypto";
 
 type Result = {
     date: string;
@@ -10,12 +11,6 @@ type Result = {
     close: number;
     volume: number;
 };
-
-interface Params {
-    market: string;
-    instrument: string;
-    range?: string;
-}
 
 export default function useCryptoHistoricalData(
     {

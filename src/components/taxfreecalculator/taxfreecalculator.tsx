@@ -2,17 +2,9 @@
 import { useState } from "react";
 import useCryptoLatestTick from '@/hooks/useCryptoLatestTick';
 import useYahooStockQuote from '@/hooks/useYahooStockQuote';
+import { YahooQuote } from "@/types/stock";
 import useDebounce from '@/hooks/useDebounce';
 import styles from './taxfreecalculator.module.css'
-interface YahooQuote {
-    regularMarketPrice: number;
-    regularMarketChangePercent: number;
-    regularMarketTime: string;
-    regularMarketOpen: number;
-    postMarketPrice?: number;
-    postMarketChangePercent?: number;
-    currency?: string;
-}
 
 interface CryptoTickResult {
     PRICE: number;
@@ -89,7 +81,8 @@ export default function TaxAdjustedReturns() {
     };
 
     const { result } = useCryptoLatestTick({
-        instruments: debouncedSymbol
+        market: 'kraken',
+        instrument: debouncedSymbol
     });
 
     const calculateStockReturns = (quote: YahooQuote) => {

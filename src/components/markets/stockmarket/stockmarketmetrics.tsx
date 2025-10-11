@@ -3,32 +3,13 @@ import styles from '../marketsmetrics.module.css';
 import { useContext } from 'react'
 import { StockMarketContext } from './stockmarketchart';
 import useYahooStockQuote from '@/hooks/useYahooStockQuote';
+import { YahooQuote } from '@/types/stock';
 import useDebounce from '@/hooks/useDebounce';
+import { StatItemProps } from '@/types/statItem';
 import formatCurrency from '@/utils/formatCurrency';
 import formatNumber from '@/utils/formatNumber';
 import formatPercent from '@/utils/formatPercent';
 import formatDate from '@/utils/formatDate';
-interface StatItemProps {
-    label: string;
-    value: string | number;
-}
-interface YahooQuote {
-    marketCap: number;
-    regularMarketDayRange: {
-        low: number;
-        high: number;
-    };
-    fiftyTwoWeekRange: {
-        low: number;
-        high: number;
-    };
-    forwardPE: number;
-    trailingPE: number;
-    priceEpsCurrentYear: number;
-    dividendYield: number;
-    dividendRate: number;
-    dividendDate: string | number | Date;
-}
 
 const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
     <div className={styles.statItem}>

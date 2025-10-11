@@ -1,13 +1,15 @@
 'use client'
+import styles from '../markets.module.css';
 import { useState } from 'react';
 import { MoonLoader } from 'react-spinners';
 import { TooltipProps } from 'recharts';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import styles from '../markets.module.css';
 import { createContext, useContext } from 'react'
 import useYahooBasicHistoricalData from '@/hooks/useYahooBasicHistoricalData';
 import useYahooStockQuote from '@/hooks/useYahooStockQuote';
+import { YahooQuote } from '@/types/stock';
 import useDebounce from '@/hooks/useDebounce';
+import { SymbolDataPoint } from '@/types/dataPoints';
 import formatNumber from '@/utils/formatNumber';
 import formatDate from '@/utils/formatDate';
 
@@ -20,22 +22,6 @@ export const StockMarketContext = createContext<StockMarketContextType>({
     selectedStock: "",
     setSelectedStock: () => { },
 });
-
-interface HistoricalDataPoint {
-    date: string;
-    time: string;
-    close: number;
-    volume: number;
-}
-
-interface YahooQuote {
-    regularMarketPrice: number;
-    regularMarketChangePercent: number;
-    regularMarketTime: string;
-    postMarketPrice?: number;
-    postMarketChangePercent?: number;
-    currency?: string;
-}
 
 const StockMarketChart = () => {
     const { selectedStock, setSelectedStock } = useContext(StockMarketContext);
@@ -55,7 +41,7 @@ const StockMarketChart = () => {
     const { historicalData } = useYahooBasicHistoricalData(debouncedStock, selectedRange);
 
     const CustomTooltip: React.FC<
-        TooltipProps<number, string> & { payload?: { payload: HistoricalDataPoint }[] }> = ({ active, payload }) => {
+        TooltipProps<number, string> & { payload?: { payload: SymbolDataPoint }[] }> = ({ active, payload }) => {
             if (!active || !payload || payload.length === 0) return null;
 
             const { date, time, volume } = payload[0].payload;
