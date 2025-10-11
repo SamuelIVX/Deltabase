@@ -6,6 +6,7 @@ interface TickResult {
     PRICE: number,
     PRICE_LAST_UPDATE_TS: number,
     CURRENT_DAY_CHANGE_PERCENTAGE: number,
+    CURRENT_DAY_OPEN: number;
     CURRENT_HOUR_CHANGE_PERCENTAGE: number,
     MOVING_24_HOUR_CHANGE_PERCENTAGE: number,
     CURRENT_DAY_CHANGE: number,

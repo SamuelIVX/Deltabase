@@ -1,0 +1,188 @@
+.wrapper {
+    margin-top: 24px;
+    padding: 20px;
+    background: var(--bgSoft);
+    border-radius: 10px;
+    color: white;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.buttonContainer {
+    display: inline-flex;
+    background-color: #1f2937;
+    padding: 4px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+    margin: auto;
+    margin-top: 10px;
+}
+
+.toggleButton {
+    padding: 10px 28px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: transparent;
+    color: #9ca3af;
+}
+
+.toggleButton:hover {
+    color: #ffffff;
+}
+
+.toggleButtonActive {
+    background-color: #215ad6;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.title {
+    color: var(--textSoft);
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.input {
+    background: #2e374a;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    color: white;
+}
+
+.section {
+    margin-top: 1rem;
+}
+
+.field {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #ddd;
+}
+
+.input {
+    background: #2e374a;
+    color: #fff;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 0.95rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.results {
+    background-color: var(--bg);
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 24px;
+}
+
+.resultsTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.resultRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+}
+
+.resultLabel {
+    color: #9ca3af;
+    font-size: 15px;
+}
+
+.resultValue {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.resultValueLarge {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.positive {
+    color: #10b981;
+}
+
+.negative {
+    color: #ef4444;
+}
+
+.divider {
+    height: 1px;
+    background-color: #374151;
+    margin: 16px 0;
+}
+
+.resultRowHighlight {
+    background-color: #111827;
+    padding: 16px;
+    margin: 0 -16px;
+    border-radius: 8px;
+}
+
+.returnBadge {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+}
+
+.returnLabel {
+    color: #93c5fd;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.returnValue {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.loadingOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
