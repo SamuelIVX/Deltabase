@@ -27,9 +27,7 @@ Node.js (v18+)
 ### 1. Free API keys:
 [Finnhub](https://finnhub.io/)
 
-[Coinranking](https://developers.coinranking.com/api)
-
-[ExchangeRate-API](https://www.exchangerate-api.com/)
+[Coindesk]([https://developers.coinranking.com/api](https://developers.coindesk.com/))
 
 ## 2. Setup & Installation
 ### 1. Clone the repository
@@ -45,9 +43,7 @@ npm install
 
 FINNHUB_API_KEY=your_key_here
 
-COINGECKO_API_KEY=your_key_here
-
-EXCHANGE_RATE_API_KEY=your_key_here
+COINDESK_API_KEY=your_key_here
 
 ## 5. Start the Development Server
 npm run dev
@@ -62,5 +58,3 @@ Crypto Data - [Coinranking](https://developers.coinranking.com/api) | <b>Best fr
 Exchange Rates - [ExchangeRate-API](https://www.exchangerate-api.com/) | <b>Simple currency conversion</b>
 
 Data Visualization - [Recharts](https://recharts.org/en-US/) | <b>Easy, interactive visualizations</b>
-
-State Management - [Zustand](https://github.com/pmndrs/zustand) | <b>Lightweight, fast, no boilerplate</b>
