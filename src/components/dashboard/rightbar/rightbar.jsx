@@ -28,11 +28,17 @@ const Rightbar = () => {
           {data.slice(0,1).map((article) => (
                <div key={article.id}>
                   <a href={article.url}>
-                    <img 
-                      src= {article.image} 
-                      alt="" 
-                      className={styles.image}
-                    />
+                    {article.image && article.image.trim() !== '' ? (
+                      <img 
+                        src={article.image} 
+                        alt={article.headline || "News article"} 
+                        className={styles.image}
+                      />
+                    ) : (
+                      <div className={styles.imagePlaceholder}>
+                        📰
+                      </div>
+                    )}
                   </a>
                   <h3 className={styles.title}>{article.headline}</h3>
                   <span className={styles.subtitle}>- {article.source}</span>
