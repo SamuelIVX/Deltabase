@@ -3,7 +3,6 @@ import Image from "next/image";
 import styles from "./sidebar.module.css";
 
 import {
-  MdOutlineMoney,
   MdDashboard,
   MdOutlineHelpOutline,
   MdCalculate,
