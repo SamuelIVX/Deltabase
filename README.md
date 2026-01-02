@@ -27,26 +27,37 @@ Node.js (v18+)
 ### 1. Free API keys:
 [Finnhub](https://finnhub.io/)
 
-[Coindesk]([https://developers.coinranking.com/api](https://developers.coindesk.com/))
+[Coindesk](https://developers.coindesk.com/)
 
 ## 2. Setup & Installation
 ### 1. Clone the repository
+
+```
 git clone [https://github.com/SamuelIVX/Deltabase]
 
 cd deltabase
+```
 
 ## 3. Install dependencies
+
+```
 npm install
+```
 
 ## 4. Set up environment variables
 #### Create a `.env` file and add your API keys:
 
+```
 FINNHUB_API_KEY=your_key_here
 
 COINDESK_API_KEY=your_key_here
+```
 
 ## 5. Start the Development Server
+
+```
 npm run dev
+```
 
 Open http://localhost:3000 in your browser.
 
