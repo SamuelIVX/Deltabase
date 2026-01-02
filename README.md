@@ -1,71 +1,96 @@
-# <b>Stock & Crypto Investment Analyzer</b>
-### <b>"See the data, not the noise."</b>
+# DeltaBase
 
-Help investors compare <b>real-time</b> and <b>historical performance</b> of stocks and crypto to make <b>smarter, data-driven decisions—not emotional ones.</b>
+**Stock & Crypto Investment Analyzer**
 
-## Why This Matters
-Most traders lose money because they:
+> "See the data, not the noise."
 
-✅ <b>Chase hype</b> without historical context.
+A modern web application that helps investors compare real-time and historical performance of stocks and cryptocurrencies to make smarter, data-driven investment decisions.
 
-✅ <b>Ignore opportunity costs</b> (e.g., "What if I bought Tesla instead of Bitcoin last year?").
+## Features
 
-✅ <b>Overlook hidden costs</b> like fees, taxes, and exchange-rate impacts.
+- 📊 **Real-time Market Data** - Live stock quotes and crypto prices
+- 📈 **Historical Charts** - Visualize price trends across multiple timeframes (1d, 5d, 1m, 3m, 6m, 1y, 5y)
+- 💰 **Dollar-Cost Averaging Calculator** - Simulate DCA investment strategies
+- 🔄 **What-If Scenarios** - Compare two assets side-by-side to see potential returns
+- 📰 **Financial News** - Stay updated with the latest market news
+- 🧮 **Tax & Fee Calculator** - Calculate investment costs and taxes
 
-## This tool solves those problems by:
+## Tech Stack
 
-📊 <b>Visualizing trends</b> (not just raw numbers).
+### Frontend
+- **Next.js 15** - React framework with App Router
+- **React 19** - UI library
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Styling
+- **Recharts** - Data visualization
 
-💡 <b>Showing "what-if"</b> scenarios (e.g., comparing two assets).
+### Data & State Management
+- **TanStack Query** - Server state management
+- **React Context API** - Client state management
 
-🔍 <b>Highlighting hidden costs</b> (fees, taxes, volatility).
+### APIs & Services
+- **Yahoo Finance** - Stock market data (via `yahoo-finance2`)
+- **CoinDesk Data API** - Cryptocurrency market data
+- **Finnhub** - Financial news feed
 
-## 🚀 How to Run This Project Locally
 ## Prerequisites
-Node.js (v18+)
 
-### 1. Free API keys:
-[Finnhub](https://finnhub.io/)
+- Node.js v18 or higher
+- npm or yarn
+- Free API keys (see below)
 
-[Coindesk](https://developers.coindesk.com/)
+## Getting Started
 
-## 2. Setup & Installation
-### 1. Clone the repository
+### 1. Clone the Repository
 
-```
-git clone [https://github.com/SamuelIVX/Deltabase]
-
+```bash
+git clone https://github.com/SamuelIVX/Deltabase.git
 cd deltabase
 ```
 
-## 3. Install dependencies
+### 2. Install Dependencies
 
-```
+```bash
 npm install
 ```
 
-## 4. Set up environment variables
-#### Create a `.env` file and add your API keys:
+### 3. Get API Keys
 
+You'll need free API keys from:
+
+- **[Finnhub](https://finnhub.io/)** - For financial news
+- **[CoinDesk](https://developers.coindesk.com/)** - For cryptocurrency data
+
+> **Note:** Yahoo Finance data is accessed via the `yahoo-finance2` package and doesn't require an API key.
+
+### 4. Configure Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+NEXT_PUBLIC_FINNHUB_API_KEY=your_finnhub_key_here
+COINDESK_API_KEY=your_coindesk_key_here
 ```
-FINNHUB_API_KEY=your_key_here
 
-COINDESK_API_KEY=your_key_here
-```
+### 5. Run the Development Server
 
-## 5. Start the Development Server
-
-```
+```bash
 npm run dev
 ```
 
-Open http://localhost:3000 in your browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## ⚙️ Technologies Used
-Stocks Data - [Finnhub](https://finnhub.io/) | <b>Reliable stocks API</b>
+## Project Structure
 
-Crypto Data - [Coinranking](https://developers.coinranking.com/api) | <b>Best free crypto API</b>
-
-Exchange Rates - [ExchangeRate-API](https://www.exchangerate-api.com/) | <b>Simple currency conversion</b>
-
-Data Visualization - [Recharts](https://recharts.org/en-US/) | <b>Easy, interactive visualizations</b>
+```
+src/
+├── app/              # Next.js pages and routes
+├── components/       # React components
+│   ├── dashboard/   # Dashboard UI
+│   ├── markets/     # Stock & crypto market views
+│   └── whatif/      # Investment calculator
+├── hooks/           # Custom React hooks
+├── pages/api/       # API route handlers
+├── types/           # TypeScript definitions
+└── utils/           # Utility functions
+```
