@@ -5,6 +5,7 @@ name: PR Tests
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - main
       - master
@@ -43,7 +44,7 @@ jobs:
           COINDESK_API_KEY: ${{ secrets.COINDESK_API_KEY || 'test-key' }}
 
       - name: Comment PR with results
-        if: always()
+        if: always() && github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
@@ -53,9 +54,16 @@ jobs:
               ? 'All tests passed! Ready for review.'
               : 'Tests failed. Please check the workflow logs.';
             
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `${emoji} **Test Results**: ${message}`
-            });
+            // Get PR number from event (works for both PR and manual trigger on PR)
+            const prNumber = context.payload.pull_request?.number || context.issue?.number;
+            
+            if (prNumber) {
+              await github.rest.issues.createComment({
+                issue_number: prNumber,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `${emoji} **Test Results**: ${message}`
+              });
+            } else {
+              console.log('Not a PR context - skipping comment');
+            }
