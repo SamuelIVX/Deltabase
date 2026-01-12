@@ -43,8 +43,52 @@ jobs:
           NEXT_PUBLIC_FINNHUB_API_KEY: ${{ secrets.NEXT_PUBLIC_FINNHUB_API_KEY || 'test-key' }}
           COINDESK_API_KEY: ${{ secrets.COINDESK_API_KEY || 'test-key' }}
 
+      - name: Get PR number
+        id: pr-number
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Try multiple ways to get PR number
+            let prNumber = null;
+            
+            // Method 1: From pull_request event
+            if (context.payload.pull_request?.number) {
+              prNumber = context.payload.pull_request.number;
+            }
+            // Method 2: From issue context
+            else if (context.issue?.number) {
+              prNumber = context.issue.number;
+            }
+            // Method 3: Find PR by branch name (for manual runs)
+            else {
+              const branch = context.ref.replace('refs/heads/', '');
+              if (branch && branch !== 'main' && branch !== 'master') {
+                try {
+                  const { data: prs } = await github.rest.pulls.list({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    state: 'open',
+                    head: `${context.repo.owner}:${branch}`
+                  });
+                  if (prs.length > 0) {
+                    prNumber = prs[0].number;
+                  }
+                } catch (e) {
+                  console.log('Could not find PR for branch:', branch);
+                }
+              }
+            }
+            
+            if (prNumber) {
+              core.setOutput('pr_number', prNumber);
+              console.log(`Found PR number: ${prNumber}`);
+            } else {
+              console.log('No PR number found - will skip commenting');
+            }
+
       - name: Comment PR with results
-        if: always() && github.event_name == 'pull_request'
+        if: always() && steps.pr-number.outputs.pr_number != ''
         uses: actions/github-script@v7
         with:
           script: |
@@ -54,16 +98,11 @@ jobs:
               ? 'All tests passed! Ready for review.'
               : 'Tests failed. Please check the workflow logs.';
             
-            // Get PR number from event (works for both PR and manual trigger on PR)
-            const prNumber = context.payload.pull_request?.number || context.issue?.number;
+            const prNumber = '${{ steps.pr-number.outputs.pr_number }}';
             
-            if (prNumber) {
-              await github.rest.issues.createComment({
-                issue_number: prNumber,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: `${emoji} **Test Results**: ${message}`
-              });
-            } else {
-              console.log('Not a PR context - skipping comment');
-            }
+            await github.rest.issues.createComment({
+              issue_number: parseInt(prNumber),
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${emoji} **Test Results**: ${message}`
+            });
