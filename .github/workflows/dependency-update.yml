@@ -14,6 +14,7 @@ permissions:
   contents: write
   pull-requests: write
   issues: write
+  id-token: write
 
 jobs:
   update-dependencies:
@@ -49,12 +50,17 @@ jobs:
             # Save outdated packages info for debugging
             cat outdated.json
           fi
+          
+          # Clean up temporary file
+          rm -f outdated.json
 
       - name: Update dependencies
         if: steps.check-outdated.outputs.has_updates == 'true'
         run: |
           # Update all dependencies to latest versions within semver range
           npm update
+          # Clean up temporary file if it exists
+          rm -f outdated.json
           # Check for major updates (optional - comment out if you want manual control)
           # npm outdated || true
 
@@ -83,6 +89,8 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          committer: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           commit-message: 'chore(deps): update dependencies'
           title: 'chore(deps): update dependencies'
           body: |
