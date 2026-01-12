@@ -1,0 +1,107 @@
+# Custom GitHub Actions workflow for dependency updates
+# Runs daily at 9 AM UTC and creates PRs for outdated dependencies
+# Automatically checks for updates and creates PRs if needed
+
+name: Dependency Update
+
+on:
+  schedule:
+    # Run daily at 9 AM UTC
+    - cron: '0 9 * * *'
+  workflow_dispatch: # Allow manual triggering
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  update-dependencies:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for outdated packages
+        id: check-outdated
+        run: |
+          outdated=$(npm outdated --json || echo '{}')
+          echo "outdated=$outdated" >> $GITHUB_OUTPUT
+          if [ "$outdated" = "{}" ]; then
+            echo "has_updates=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_updates=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update dependencies
+        if: steps.check-outdated.outputs.has_updates == 'true'
+        run: |
+          # Update all dependencies to latest versions within semver range
+          npm update
+          # Check for major updates (optional - comment out if you want manual control)
+          # npm outdated || true
+
+      - name: Check for existing PR
+        if: steps.check-outdated.outputs.has_updates == 'true'
+        id: check-pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: `${context.repo.owner}:dependabot/update-dependencies`
+            });
+            
+            if (prs.length > 0) {
+              core.setOutput('pr_exists', 'true');
+              core.setOutput('pr_number', prs[0].number);
+            } else {
+              core.setOutput('pr_exists', 'false');
+            }
+
+      - name: Update existing PR or Create new PR
+        if: steps.check-outdated.outputs.has_updates == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore(deps): update dependencies'
+          title: 'chore(deps): update dependencies'
+          body: |
+            ## 🔄 Dependency Updates
+            
+            This PR updates outdated dependencies to their latest compatible versions.
+            
+            **Please review the changes and ensure tests pass before merging.**
+            
+            ### Changes
+            - Updated dependencies within semver ranges
+            - Run `npm install` locally to update your `package-lock.json`
+            
+            ### Testing
+            - [ ] Build passes
+            - [ ] Linting passes
+            - [ ] No breaking changes detected
+            
+            ---
+            *This PR was created automatically by the Dependency Update workflow (runs daily)*
+          branch: dependabot/update-dependencies
+          delete-branch: true
+          labels: |
+            dependencies
+            automated
+            needs-review
