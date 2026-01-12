@@ -38,12 +38,16 @@ jobs:
       - name: Check for outdated packages
         id: check-outdated
         run: |
-          outdated=$(npm outdated --json || echo '{}')
-          echo "outdated=$outdated" >> $GITHUB_OUTPUT
-          if [ "$outdated" = "{}" ]; then
+          # Check for outdated packages and capture exit code
+          npm outdated --json > outdated.json 2>&1 || true
+          
+          # Check if file is empty or contains only {}
+          if [ ! -s outdated.json ] || [ "$(cat outdated.json | tr -d ' \n')" = "{}" ]; then
             echo "has_updates=false" >> $GITHUB_OUTPUT
           else
             echo "has_updates=true" >> $GITHUB_OUTPUT
+            # Save outdated packages info for debugging
+            cat outdated.json
           fi
 
       - name: Update dependencies
