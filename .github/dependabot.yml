@@ -11,7 +11,7 @@ updates:
       timezone: "America/New_York"  
     open-pull-requests-limit: 10
     reviewers:
-      - "SamuelIVX" 
+      - "SamuelIVX"  
     labels:
       - "dependencies"
       - "npm"
@@ -50,6 +50,5 @@ updates:
       - "SamuelIVX"
     labels:
       - "dependencies"
-      - "github-actions"
     commit-message:
       prefix: "ci"
