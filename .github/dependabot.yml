@@ -8,10 +8,10 @@ updates:
     schedule:
       interval: "daily"
       time: "09:00"
-      timezone: "America/New_York"  # Change to your timezone
+      timezone: "America/New_York"  
     open-pull-requests-limit: 10
     reviewers:
-      - "SamuelIVX"  # Auto-assign PRs to yourself
+      - "SamuelIVX" 
     labels:
       - "dependencies"
       - "npm"
