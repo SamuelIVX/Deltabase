@@ -22,7 +22,7 @@
     "react-spinners": "^0.17.0",
     "recharts": "^3.2.1",
     "slider": "^1.0.4",
-    "yahoo-finance2": "^2.13.3",
+    "yahoo-finance2": "^3.11.2",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
