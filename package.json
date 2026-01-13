@@ -15,7 +15,7 @@
     "@tanstack/react-query": "^5.74.4",
     "dotenv": "^16.5.0",
     "next": "^15.5.2",
-    "react": "^19.0.0",
+    "react": "^19.2.3",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
     "react-router-dom": "^6.30.0",
