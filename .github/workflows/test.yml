@@ -32,8 +32,8 @@ jobs:
         run: npm run build
         env:
           # Provide dummy API keys for build
-          NEXT_PUBLIC_FINNHUB_API_KEY: ${{ secrets.NEXT_PUBLIC_FINNHUB_API_KEY || 'dummy_key_for_build' }}
-          COINDESK_API_KEY: ${{ secrets.COINDESK_API_KEY || 'dummy_key_for_build' }}
+          NEXT_PUBLIC_FINNHUB_API_KEY: ${{ secrets.NEXT_PUBLIC_FINNHUB_API_KEY }}
+          COINDESK_API_KEY: ${{ secrets.COINDESK_API_KEY }}
 
       - name: Check build output
         run: |

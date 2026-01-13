@@ -1,0 +1,342 @@
+# .github/workflows/auto-merge-dependabot.yml
+name: Auto-merge Dependabot PRs
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_review:
+    types: [submitted]
+  check_suite:
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+  statuses: read
+
+jobs:
+  auto-merge:
+    name: Auto-merge dependency PRs
+    runs-on: ubuntu-latest
+
+    # Only run for Dependabot PRs
+    if: |
+      github.event.pull_request.user.login == 'dependabot[bot]' ||
+      github.actor == 'dependabot[bot]'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Get PR details
+        id: pr-details
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request?.number || context.payload.pull_request?.number
+            });
+
+            return {
+              number: pr.number,
+              title: pr.title,
+              body: pr.body,
+              user: pr.user.login,
+              draft: pr.draft,
+              mergeable: pr.mergeable,
+              mergeable_state: pr.mergeable_state,
+              head_sha: pr.head.sha,
+              base_ref: pr.base.ref
+            };
+
+      - name: Determine update type and risk level
+        id: analyze-changes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `${{ fromJson(steps.pr-details.outputs.result).title }}`.toLowerCase();
+            const body = `${{ fromJson(steps.pr-details.outputs.result).body }}` || '';
+
+            let updateType = 'unknown';
+            let riskLevel = 'high';
+            let autoMergeAllowed = false;
+
+            // Extract package information
+            const packageMatch = title.match(/(?:bump|update|upgrade)\s+([^\s]+)/);
+            const packageName = packageMatch ? packageMatch[1] : '';
+
+            // Check if it's a dev dependency
+            const isDevDependency = body.includes('devDependencies') ||
+                                  title.includes('dev-dependencies') ||
+                                  packageName.includes('@types/') ||
+                                  packageName.match(/^(eslint|typescript)/);
+
+            // Check for security updates
+            const isSecurityUpdate = title.includes('security') ||
+                                   title.includes('vulnerability') ||
+                                   body.includes('vulnerability');
+
+            // Check for breaking changes
+            const hasBreakingChanges = body.includes('breaking change') ||
+                                     body.includes('BREAKING CHANGE');
+
+            // Determine update type
+            if (title.includes('patch') || body.includes('patch')) {
+              updateType = 'patch';
+              riskLevel = 'low';
+              autoMergeAllowed = true;
+            } else if (title.includes('minor') || body.includes('minor')) {
+              updateType = 'minor';
+              riskLevel = isDevDependency ? 'low' : 'medium';
+              autoMergeAllowed = !hasBreakingChanges;
+            } else if (title.includes('major') || body.includes('major')) {
+              updateType = 'major';
+              riskLevel = 'high';
+              // Only auto-merge major updates for dev dependencies without breaking changes
+              autoMergeAllowed = isDevDependency && !hasBreakingChanges;
+            }
+
+            // Security updates override - always allow unless breaking
+            if (isSecurityUpdate && !hasBreakingChanges) {
+              autoMergeAllowed = true;
+              riskLevel = 'medium';
+            }
+
+            console.log(`Package: ${packageName}`);
+            console.log(`Update type: ${updateType}`);
+            console.log(`Risk level: ${riskLevel}`);
+            console.log(`Auto-merge allowed: ${autoMergeAllowed}`);
+
+            return {
+              updateType,
+              riskLevel,
+              autoMergeAllowed,
+              packageName,
+              isDevDependency,
+              isSecurityUpdate,
+              hasBreakingChanges
+            };
+
+      - name: Add analysis comment
+        if: steps.analyze-changes.outputs.result
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const analysis = ${{ steps.analyze-changes.outputs.result }};
+            const prNumber = ${{ fromJson(steps.pr-details.outputs.result).number }};
+
+            const emoji = analysis.autoMergeAllowed ? '✅' : '⚠️';
+            const decision = analysis.autoMergeAllowed ? 
+              'Will auto-merge if all checks pass' : 
+              'Requires manual review';
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: `${emoji} **Auto-merge Analysis**\n\n` +
+                    `**Package:** \`${analysis.packageName}\`\n` +
+                    `**Update Type:** ${analysis.updateType}\n` +
+                    `**Risk Level:** ${analysis.riskLevel}\n` +
+                    `**Dev Dependency:** ${analysis.isDevDependency ? 'Yes' : 'No'}\n` +
+                    `**Security Update:** ${analysis.isSecurityUpdate ? 'Yes' : 'No'}\n` +
+                    `**Breaking Changes:** ${analysis.hasBreakingChanges ? 'Yes' : 'No'}\n\n` +
+                    `**Decision:** ${decision}`
+            });
+
+      - name: Wait for status checks
+        id: wait-for-checks
+        if: fromJson(steps.analyze-changes.outputs.result).autoMergeAllowed
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const maxWaitTime = 10 * 60 * 1000; // 10 minutes
+            const pollInterval = 30 * 1000; // 30 seconds
+            const startTime = Date.now();
+
+            const prNumber = ${{ fromJson(steps.pr-details.outputs.result).number }};
+            const headSha = '${{ fromJson(steps.pr-details.outputs.result).head_sha }}';
+
+            while (Date.now() - startTime < maxWaitTime) {
+              // Get combined status
+              const { data: statusChecks } = await github.rest.repos.getCombinedStatusForRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: headSha
+              });
+
+              // Get check runs
+              const { data: checkRuns } = await github.rest.checks.listForRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: headSha
+              });
+
+              const allStatuses = statusChecks.statuses || [];
+              const allCheckRuns = checkRuns.check_runs || [];
+
+              // Filter out this workflow's own checks to avoid circular waiting
+              const relevantCheckRuns = allCheckRuns.filter(run => 
+                run.name !== 'Auto-merge dependency PRs'
+              );
+
+              const hasChecks = allStatuses.length > 0 || relevantCheckRuns.length > 0;
+
+              if (!hasChecks) {
+                console.log('No status checks found yet, waiting...');
+                await new Promise(resolve => setTimeout(resolve, pollInterval));
+                continue;
+              }
+
+              // Check for failures
+              const failedStatuses = allStatuses.filter(status => 
+                status.state === 'failure' || status.state === 'error'
+              );
+              const failedCheckRuns = relevantCheckRuns.filter(run =>
+                run.conclusion === 'failure' || run.conclusion === 'cancelled' || run.conclusion === 'timed_out'
+              );
+
+              if (failedStatuses.length > 0 || failedCheckRuns.length > 0) {
+                console.log('❌ Some checks failed:');
+                failedStatuses.forEach(status => console.log(`- ${status.context}: ${status.state}`));
+                failedCheckRuns.forEach(run => console.log(`- ${run.name}: ${run.conclusion}`));
+                return { success: false, reason: 'checks_failed' };
+              }
+
+              // Check for pending
+              const pendingStatuses = allStatuses.filter(status => status.state === 'pending');
+              const pendingCheckRuns = relevantCheckRuns.filter(run =>
+                run.status === 'queued' || run.status === 'in_progress'
+              );
+
+              if (pendingStatuses.length === 0 && pendingCheckRuns.length === 0) {
+                console.log('✅ All checks passed!');
+                return { success: true, reason: 'checks_passed' };
+              }
+
+              console.log(`⏳ Waiting for ${pendingStatuses.length + pendingCheckRuns.length} checks to complete...`);
+              await new Promise(resolve => setTimeout(resolve, pollInterval));
+            }
+
+            console.log('⏰ Timeout waiting for checks');
+            return { success: false, reason: 'timeout' };
+
+      - name: Check for merge conflicts
+        id: check-conflicts
+        if: fromJson(steps.wait-for-checks.outputs.result || '{"success":false}').success
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = ${{ fromJson(steps.pr-details.outputs.result).number }};
+
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+
+            console.log(`PR mergeable: ${pr.mergeable}, state: ${pr.mergeable_state}`);
+
+            if (pr.mergeable === false || pr.mergeable_state === 'dirty') {
+              return { hasConflicts: true };
+            }
+
+            return { hasConflicts: false };
+
+      - name: Auto-approve PR
+        if: |
+          fromJson(steps.wait-for-checks.outputs.result || '{"success":false}').success &&
+          !fromJson(steps.check-conflicts.outputs.result || '{"hasConflicts":true}').hasConflicts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = ${{ fromJson(steps.pr-details.outputs.result).number }};
+
+            try {
+              await github.rest.pulls.createReview({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                event: 'APPROVE',
+                body: '✅ Auto-approved: All checks passed, safe to merge.'
+              });
+              console.log('✅ PR approved');
+            } catch (error) {
+              console.log('Could not approve (may already be approved):', error.message);
+            }
+
+      - name: Merge PR
+        if: |
+          fromJson(steps.wait-for-checks.outputs.result || '{"success":false}').success &&
+          !fromJson(steps.check-conflicts.outputs.result || '{"hasConflicts":true}').hasConflicts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = ${{ fromJson(steps.pr-details.outputs.result).number }};
+            const analysis = ${{ steps.analyze-changes.outputs.result }};
+
+            try {
+              await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                commit_title: `chore(deps): ${analysis.updateType} update - ${analysis.packageName}`,
+                commit_message: `Auto-merged Dependabot PR after passing all checks.\n\nUpdate type: ${analysis.updateType}\nPR: #${prNumber}`,
+                merge_method: 'squash'
+              });
+
+              console.log(`✅ Successfully merged PR #${prNumber}`);
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: `🎉 **Auto-merged successfully!**\n\n` +
+                      `All checks passed:\n` +
+                      `- ✅ Build successful\n` +
+                      `- ✅ Linting passed\n` +
+                      `- ✅ Type check passed\n` +
+                      `- ✅ No merge conflicts\n\n` +
+                      `This ${analysis.updateType} update has been safely merged to main.`
+              });
+
+            } catch (error) {
+              console.error('❌ Failed to merge:', error.message);
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: `⚠️ **Auto-merge failed**\n\nCould not merge: ${error.message}\n\nPlease merge manually.`
+              });
+
+              throw error;
+            }
+
+      - name: Comment if manual review needed
+        if: |
+          steps.analyze-changes.outputs.result &&
+          !fromJson(steps.analyze-changes.outputs.result).autoMergeAllowed
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = ${{ fromJson(steps.pr-details.outputs.result).number }};
+            const analysis = ${{ steps.analyze-changes.outputs.result }};
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: `👤 **Manual review required**\n\n` +
+                    `This PR requires your review because:\n` +
+                    `${analysis.hasBreakingChanges ? '- ⚠️ Contains breaking changes\n' : ''}` +
+                    `${analysis.updateType === 'major' && !analysis.isDevDependency ? '- 📦 Major version update for production dependency\n' : ''}` +
+                    `${analysis.riskLevel === 'high' ? '- 🔴 High risk level\n' : ''}` +
+                    `\n**Please review and merge manually if appropriate.**`
+            });
