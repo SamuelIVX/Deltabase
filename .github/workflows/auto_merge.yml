@@ -37,16 +37,41 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            // Get PR number from different event types
+            let prNumber;
+            
+            if (context.payload.pull_request) {
+              prNumber = context.payload.pull_request.number;
+            } else if (context.payload.check_suite) {
+              // For check_suite events, we need to find the PR
+              const { data: prs } = await github.rest.pulls.list({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                head: context.payload.check_suite.head_branch
+              });
+              
+              if (prs.length === 0) {
+                console.log('No open PR found for this check suite');
+                return null;
+              }
+              
+              prNumber = prs[0].number;
+            } else {
+              console.log('Could not determine PR number from event');
+              return null;
+            }
+
             const { data: pr } = await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: context.payload.pull_request?.number || context.payload.pull_request?.number
+              pull_number: prNumber
             });
 
             return {
               number: pr.number,
               title: pr.title,
-              body: pr.body,
+              body: pr.body || '',
               user: pr.user.login,
               draft: pr.draft,
               mergeable: pr.mergeable,
@@ -57,11 +82,13 @@ jobs:
 
       - name: Determine update type and risk level
         id: analyze-changes
+        if: steps.pr-details.outputs.result != 'null'
         uses: actions/github-script@v7
         with:
           script: |
-            const title = `${{ fromJson(steps.pr-details.outputs.result).title }}`.toLowerCase();
-            const body = `${{ fromJson(steps.pr-details.outputs.result).body }}` || '';
+            const prDetails = ${{ steps.pr-details.outputs.result }};
+            const title = prDetails.title.toLowerCase();
+            const body = prDetails.body || '';
 
             let updateType = 'unknown';
             let riskLevel = 'high';
@@ -98,7 +125,6 @@ jobs:
             } else if (title.includes('major') || body.includes('major')) {
               updateType = 'major';
               riskLevel = 'high';
-              // Only auto-merge major updates for dev dependencies without breaking changes
               autoMergeAllowed = isDevDependency && !hasBreakingChanges;
             }
 
@@ -108,10 +134,10 @@ jobs:
               riskLevel = 'medium';
             }
 
-            console.log(`Package: ${packageName}`);
-            console.log(`Update type: ${updateType}`);
-            console.log(`Risk level: ${riskLevel}`);
-            console.log(`Auto-merge allowed: ${autoMergeAllowed}`);
+            console.log('Package:', packageName);
+            console.log('Update type:', updateType);
+            console.log('Risk level:', riskLevel);
+            console.log('Auto-merge allowed:', autoMergeAllowed);
 
             return {
               updateType,
@@ -124,7 +150,7 @@ jobs:
             };
 
       - name: Add analysis comment
-        if: steps.analyze-changes.outputs.result
+        if: steps.pr-details.outputs.result != 'null' && steps.analyze-changes.outputs.result
         uses: actions/github-script@v7
         with:
           script: |
@@ -136,42 +162,43 @@ jobs:
               'Will auto-merge if all checks pass' : 
               'Requires manual review';
 
+            const comment = emoji + ' **Auto-merge Analysis**\n\n' +
+                    '**Package:** `' + analysis.packageName + '`\n' +
+                    '**Update Type:** ' + analysis.updateType + '\n' +
+                    '**Risk Level:** ' + analysis.riskLevel + '\n' +
+                    '**Dev Dependency:** ' + (analysis.isDevDependency ? 'Yes' : 'No') + '\n' +
+                    '**Security Update:** ' + (analysis.isSecurityUpdate ? 'Yes' : 'No') + '\n' +
+                    '**Breaking Changes:** ' + (analysis.hasBreakingChanges ? 'Yes' : 'No') + '\n\n' +
+                    '**Decision:** ' + decision;
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
-              body: `${emoji} **Auto-merge Analysis**\n\n` +
-                    `**Package:** \`${analysis.packageName}\`\n` +
-                    `**Update Type:** ${analysis.updateType}\n` +
-                    `**Risk Level:** ${analysis.riskLevel}\n` +
-                    `**Dev Dependency:** ${analysis.isDevDependency ? 'Yes' : 'No'}\n` +
-                    `**Security Update:** ${analysis.isSecurityUpdate ? 'Yes' : 'No'}\n` +
-                    `**Breaking Changes:** ${analysis.hasBreakingChanges ? 'Yes' : 'No'}\n\n` +
-                    `**Decision:** ${decision}`
+              body: comment
             });
 
       - name: Wait for status checks
         id: wait-for-checks
-        if: fromJson(steps.analyze-changes.outputs.result).autoMergeAllowed
+        if: steps.pr-details.outputs.result != 'null' && fromJson(steps.analyze-changes.outputs.result).autoMergeAllowed
         uses: actions/github-script@v7
         with:
           script: |
-            const maxWaitTime = 10 * 60 * 1000; // 10 minutes
-            const pollInterval = 30 * 1000; // 30 seconds
+            const maxWaitTime = 10 * 60 * 1000;
+            const pollInterval = 30 * 1000;
             const startTime = Date.now();
 
-            const prNumber = ${{ fromJson(steps.pr-details.outputs.result).number }};
-            const headSha = '${{ fromJson(steps.pr-details.outputs.result).head_sha }}';
+            const prDetails = ${{ steps.pr-details.outputs.result }};
+            const prNumber = prDetails.number;
+            const headSha = prDetails.head_sha;
 
             while (Date.now() - startTime < maxWaitTime) {
-              // Get combined status
               const { data: statusChecks } = await github.rest.repos.getCombinedStatusForRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 ref: headSha
               });
 
-              // Get check runs
               const { data: checkRuns } = await github.rest.checks.listForRef({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -181,7 +208,6 @@ jobs:
               const allStatuses = statusChecks.statuses || [];
               const allCheckRuns = checkRuns.check_runs || [];
 
-              // Filter out this workflow's own checks to avoid circular waiting
               const relevantCheckRuns = allCheckRuns.filter(run => 
                 run.name !== 'Auto-merge dependency PRs'
               );
@@ -194,7 +220,6 @@ jobs:
                 continue;
               }
 
-              // Check for failures
               const failedStatuses = allStatuses.filter(status => 
                 status.state === 'failure' || status.state === 'error'
               );
@@ -203,13 +228,10 @@ jobs:
               );
 
               if (failedStatuses.length > 0 || failedCheckRuns.length > 0) {
-                console.log('❌ Some checks failed:');
-                failedStatuses.forEach(status => console.log(`- ${status.context}: ${status.state}`));
-                failedCheckRuns.forEach(run => console.log(`- ${run.name}: ${run.conclusion}`));
+                console.log('❌ Some checks failed');
                 return { success: false, reason: 'checks_failed' };
               }
 
-              // Check for pending
               const pendingStatuses = allStatuses.filter(status => status.state === 'pending');
               const pendingCheckRuns = relevantCheckRuns.filter(run =>
                 run.status === 'queued' || run.status === 'in_progress'
@@ -220,7 +242,8 @@ jobs:
                 return { success: true, reason: 'checks_passed' };
               }
 
-              console.log(`⏳ Waiting for ${pendingStatuses.length + pendingCheckRuns.length} checks to complete...`);
+              const totalPending = pendingStatuses.length + pendingCheckRuns.length;
+              console.log('⏳ Waiting for ' + totalPending + ' checks to complete...');
               await new Promise(resolve => setTimeout(resolve, pollInterval));
             }
 
@@ -229,7 +252,7 @@ jobs:
 
       - name: Check for merge conflicts
         id: check-conflicts
-        if: fromJson(steps.wait-for-checks.outputs.result || '{"success":false}').success
+        if: steps.pr-details.outputs.result != 'null' && fromJson(steps.wait-for-checks.outputs.result || '{"success":false}').success
         uses: actions/github-script@v7
         with:
           script: |
@@ -251,6 +274,7 @@ jobs:
 
       - name: Auto-approve PR
         if: |
+          steps.pr-details.outputs.result != 'null' &&
           fromJson(steps.wait-for-checks.outputs.result || '{"success":false}').success &&
           !fromJson(steps.check-conflicts.outputs.result || '{"hasConflicts":true}').hasConflicts
         uses: actions/github-script@v7
@@ -271,7 +295,24 @@ jobs:
               console.log('Could not approve (may already be approved):', error.message);
             }
 
-      - name: Merge PR
+      - name: Merge PR with your authorship
+        if: |
+          fromJson(steps.wait-for-checks.outputs.result || '{"success":false}').success &&
+          !fromJson(steps.check-conflicts.outputs.result || '{"hasConflicts":true}').hasConflicts
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Configure git with your details
+          git config --global user.name "SamuelIVX"
+          git config --global user.email "your-email@users.noreply.github.com"
+          
+          # Merge the PR
+          gh pr merge ${{ fromJson(steps.pr-details.outputs.result).number }} \
+            --squash \
+            --auto \
+            --subject "chore(deps): ${{ fromJson(steps.analyze-changes.outputs.result).updateType }} update"
+      
+      - name: Add merge success comment
         if: |
           fromJson(steps.wait-for-checks.outputs.result || '{"success":false}').success &&
           !fromJson(steps.check-conflicts.outputs.result || '{"hasConflicts":true}').hasConflicts
@@ -282,14 +323,6 @@ jobs:
             const analysis = ${{ steps.analyze-changes.outputs.result }};
 
             try {
-              await github.rest.pulls.merge({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: prNumber,
-                commit_title: `chore(deps): ${analysis.updateType} update - ${analysis.packageName}`,
-                commit_message: `Auto-merged Dependabot PR after passing all checks.\n\nUpdate type: ${analysis.updateType}\nPR: #${prNumber}`,
-                merge_method: 'squash'
-              });
 
               console.log(`✅ Successfully merged PR #${prNumber}`);
 
@@ -321,6 +354,7 @@ jobs:
 
       - name: Comment if manual review needed
         if: |
+          steps.pr-details.outputs.result != 'null' &&
           steps.analyze-changes.outputs.result &&
           !fromJson(steps.analyze-changes.outputs.result).autoMergeAllowed
         uses: actions/github-script@v7
@@ -329,14 +363,25 @@ jobs:
             const prNumber = ${{ fromJson(steps.pr-details.outputs.result).number }};
             const analysis = ${{ steps.analyze-changes.outputs.result }};
 
+            let reasons = '';
+            if (analysis.hasBreakingChanges) {
+              reasons += '- ⚠️ Contains breaking changes\n';
+            }
+            if (analysis.updateType === 'major' && !analysis.isDevDependency) {
+              reasons += '- 📦 Major version update for production dependency\n';
+            }
+            if (analysis.riskLevel === 'high') {
+              reasons += '- 🔴 High risk level\n';
+            }
+
+            const comment = '👤 **Manual review required**\n\n' +
+                    'This PR requires your review because:\n' +
+                    reasons +
+                    '\n**Please review and merge manually if appropriate.**';
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
-              body: `👤 **Manual review required**\n\n` +
-                    `This PR requires your review because:\n` +
-                    `${analysis.hasBreakingChanges ? '- ⚠️ Contains breaking changes\n' : ''}` +
-                    `${analysis.updateType === 'major' && !analysis.isDevDependency ? '- 📦 Major version update for production dependency\n' : ''}` +
-                    `${analysis.riskLevel === 'high' ? '- 🔴 High risk level\n' : ''}` +
-                    `\n**Please review and merge manually if appropriate.**`
+              body: comment
             });
