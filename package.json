@@ -36,5 +36,8 @@
     "eslint-plugin-react": "^7.37.5",
     "tailwindcss": "^4.0.17",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=21.0.0"
   }
 }
