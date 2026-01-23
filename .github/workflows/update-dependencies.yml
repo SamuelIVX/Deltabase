@@ -33,4 +33,5 @@ jobs:
                 git config --global user.email "samuel05.hb@gmail.com"
                 git add .
                 git diff --staged --quiet || git commit -m "chore: updated dependencies"
+                git push
     
