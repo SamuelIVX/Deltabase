@@ -3,7 +3,7 @@ name: Dependency Manager
 
 on:
     schedule:
-        - cron: '0 14 * * *'
+        - cron: '17 10 * * *'
 
 jobs:
     update-deps:
