@@ -1,5 +1,5 @@
 ---
-name: Validate Renovate config
+name: Validate Renovate Config
 
 on:
   pull_request:
