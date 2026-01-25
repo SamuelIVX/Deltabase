@@ -3,13 +3,9 @@ name: Lint
 
 on:
     push:
-        branches: [main]
-
+        branches: [main, "renovate/**"]
     pull_request: 
         branches: [main]
-
-    schedule:
-        - cron: '0 14 * * *'
 
 jobs:
     lint:
@@ -18,7 +14,7 @@ jobs:
 
         steps:
             - name: Checkout Code
-              uses: actions/checkout@v5
+              uses: actions/checkout@v6
               with:
                 fetch-depth: 0
 
