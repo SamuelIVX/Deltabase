@@ -2,6 +2,7 @@
 import { createContext, useContext, useState } from 'react'
 import styles from "./assetselector.module.css";
 import useYahooStockSymbols from '@/hooks/useYahooStockSymbols';
+import useDebounce from '@/hooks/useDebounce';
 
 export const AssetContext = createContext({
     selectedAsset1: null,
@@ -29,11 +30,13 @@ export const AssetContext = createContext({
 const AssetSelector = () => {
     const [searchTerm1, setSearchTerm1] = useState('');
     const [searchTerm2, setSearchTerm2] = useState('');
+    const debouncedSearchTerm1 = useDebounce(searchTerm1, 500);
+    const debouncedSearchTerm2 = useDebounce(searchTerm2, 500);
 
     const { selectedAsset1, setSelectedAsset1, selectedAsset2, setSelectedAsset2 } = useContext(AssetContext);
 
-    const { results: results1, isLoading: isLoading1, error: error1 } = useYahooStockSymbols(searchTerm1);
-    const { results: results2, isLoading: isLoading2, error: error2 } = useYahooStockSymbols(searchTerm2);
+    const { results: results1, isLoading: isLoading1, error: error1 } = useYahooStockSymbols(debouncedSearchTerm1);
+    const { results: results2, isLoading: isLoading2, error: error2 } = useYahooStockSymbols(debouncedSearchTerm2);
 
 
     const handleSelectAsset1 = (stock) => {

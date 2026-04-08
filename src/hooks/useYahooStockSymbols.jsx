@@ -21,6 +21,7 @@ function useYahooStockSymbols(searchTerm) {
             })
             .catch(err => setError(err.message))
             .finally(() => setIsLoading(false));
+        return () => controller.abort();
     }, [searchTerm]);
 
     return { results, isLoading, error };
