@@ -1,13 +1,15 @@
 {
     "extends": [
         "config:recommended",
-        ":semanticCommits"
+        ":semanticCommits",
+        "helpers:pinGitHubActionDigests"
     ],
     "timezone": "America/New_York",
     "schedule": [
         "every weekday"
     ],
     "osvVulnerabilityAlerts": true,
+    "platformAutomerge": true,
     "prHourlyLimit": 6,
     "rangeStrategy": "auto",
     "labels": [
@@ -26,7 +28,7 @@
             ],
             "groupName": "github-actions",
             "automerge": true,
-            "automergeType": "branch"
+            "automergeType": "pr"
         },
         {
             "matchManagers": [
@@ -40,7 +42,7 @@
                 "patch"
             ],
             "automerge": true,
-            "automergeType": "branch"
+            "automergeType": "pr"
         },
         {
             "matchManagers": [
@@ -53,7 +55,7 @@
                 "patch"
             ],
             "automerge": true,
-            "automergeType": "branch"
+            "automergeType": "pr"
         },
         {
             "matchManagers": [
@@ -83,13 +85,14 @@
                 "npm"
             ],
             "separateMajorMinor": true
-        },
-        {}
+        }
     ],
     "lockFileMaintenance": {
         "enabled": true,
         "schedule": [
             "at any time"
-        ]
+        ],
+        "automerge": true,
+        "automergeType": "pr"
     }
 }

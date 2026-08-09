@@ -1,6 +1,16 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import yahooFinance from "yahoo-finance2";
 
+type YahooChartQuote = {
+    date?: Date;
+    close?: number;
+    volume?: number;
+};
+
+type YahooChartResult = {
+    quotes?: YahooChartQuote[];
+};
+
 async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { symbol, years } = req.query;
 
@@ -27,10 +37,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     };
 
     try {
-        const results = await yahooFinance.chart(symbol, queryOptions);
+        const results = await yahooFinance.chart(symbol, queryOptions) as YahooChartResult;
 
         // Return all monthly data points
-        res.status(200).json(results.quotes);
+        res.status(200).json(results.quotes ?? []);
 
     } catch (err: unknown) {
         console.error(err);

@@ -1,12 +1,38 @@
 "use client";
 import React from 'react';
 import { MoonLoader } from 'react-spinners';
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, Label } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from "./charts.module.css"
 import { AssetContext } from '@/components/whatif/assetselector/assetselector';
 import useYahooHistoricalData from '@/hooks/useYahooHistoricalData';
 import useSimulateDCA from '@/hooks/useSimulateDCA';
 import useTooltipData from '../../../../hooks/useTooltipData';
+
+const CustomTooltip = ({ active, payload, data }) => {
+  const tooltipData = useTooltipData(active, payload, data);
+
+  if (!tooltipData) return null;
+
+  const { label: date, formattedValue, performance } = tooltipData;
+  const performanceColor = performance > 0 ? 'green' : performance < 0 ? 'red' : 'black';
+
+  return (
+    <div className={styles.customTooltip} style={{ background: 'rgba(220, 53, 69, 0.20)' }}>
+      <p className={styles.description}>Current Date</p>
+      <p className={styles.value}>{date}</p>
+
+      <p className={styles.description}>Portfolio Value</p>
+      <p className={styles.value}>${formattedValue}</p>
+
+      {performance !== null && (
+        <>
+          <p className={styles.description}>Performance</p>
+          <p className={styles.value} style={{ color: performanceColor }}>{performance}%</p>
+        </>
+      )}
+    </div>
+  );
+};
 
 const Chart2 = () => {
   const { selectedAsset2, value2, initialInvestment2, monthlyInvestment2, setAsset2Data } = React.useContext(AssetContext);
@@ -27,32 +53,6 @@ const Chart2 = () => {
   const customTicks = chartData
     .filter(item => new Date(item.name).getMonth() === currentMonth)
     .map(item => item.name);
-
-  const CustomTooltip = ({ active, payload, label, data }) => {
-    const tooltipData = useTooltipData(active, payload, data);
-
-    if (!tooltipData) return null;
-
-    const { label: date, formattedValue, performance } = tooltipData;
-    const performanceColor = performance > 0 ? 'green' : performance < 0 ? 'red' : 'black';
-
-    return (
-      <div className={styles.customTooltip} style={{ background: 'rgba(220, 53, 69, 0.20)' }}>
-        <p className={styles.description}>Current Date</p>
-        <p className={styles.value}>{date}</p>
-
-        <p className={styles.description}>Portfolio Value</p>
-        <p className={styles.value}>${formattedValue}</p>
-
-        {performance !== null && (
-          <>
-            <p className={styles.description}>Performance</p>
-            <p className={styles.value} style={{ color: performanceColor }}>{performance}%</p>
-          </>
-        )}
-      </div>
-    );
-  };
 
   return (
     <div className={styles.chartWrapper} style={{ position: 'relative', width: '100%', height: '400px' }}>

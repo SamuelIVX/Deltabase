@@ -6,22 +6,47 @@ function useYahooStockSymbols(searchTerm) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        const controller = new AbortController();
+        let cancelled = false;
+
         if (!searchTerm) {
-            setResults([]);
-            setError(null);
-            return;
+            queueMicrotask(() => {
+                if (cancelled) return;
+                setResults([]);
+                setError(null);
+                setIsLoading(false);
+            });
+            return () => {
+                cancelled = true;
+                controller.abort();
+            };
         }
 
-        setIsLoading(true);
-        fetch(`/api/searchSymbol?searchTerm=${encodeURIComponent(searchTerm)}`)
-            .then(res => res.json())
-            .then(data => {
-                setResults(data.quotes || []);
-                setError(null);
+        queueMicrotask(() => {
+            if (cancelled) return;
+            setIsLoading(true);
+            fetch(`/api/searchSymbol?searchTerm=${encodeURIComponent(searchTerm)}`, {
+                signal: controller.signal,
             })
-            .catch(err => setError(err.message))
-            .finally(() => setIsLoading(false));
-        return () => controller.abort();
+                .then(res => res.json())
+                .then(data => {
+                    if (cancelled) return;
+                    setResults(data.quotes || []);
+                    setError(null);
+                })
+                .catch(err => {
+                    if (err.name === 'AbortError' || cancelled) return;
+                    setError(err.message);
+                })
+                .finally(() => {
+                    if (!cancelled) setIsLoading(false);
+                });
+        });
+
+        return () => {
+            cancelled = true;
+            controller.abort();
+        };
     }, [searchTerm]);
 
     return { results, isLoading, error };

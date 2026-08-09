@@ -8,6 +8,16 @@ type YahooInterval =
     | "1wk" | "15m" | "30m" | "60m" | "90m"
     | "1h" | "1mo" | "3mo";
 
+type YahooChartQuote = {
+    date?: Date;
+    close?: number;
+    volume?: number;
+};
+
+type YahooChartResult = {
+    quotes?: YahooChartQuote[];
+};
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { symbol, range = "1y" } = req.query;
 
@@ -24,6 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         '1d': { interval: '2m', days: 1 },
         '5d': { interval: '5m', days: 5 },
         '1m': { interval: '1d', days: 30 },
+        '3m': { interval: '1d', days: 90 },
         '6m': { interval: '1d', days: 180 },
         '1y': { interval: '1d', days: 365 },
         '5y': { interval: '1wk', days: 365 * 5 },
@@ -40,7 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             period1: startDate,
             period2: today,
             interval: interval,
-        });
+        }) as YahooChartResult;
 
         const quotes = results.quotes ?? [];
 

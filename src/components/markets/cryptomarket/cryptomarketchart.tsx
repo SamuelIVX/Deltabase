@@ -21,6 +21,24 @@ export const CryptoMarketContext = createContext<CryptoMarketContextType>({
     setSelectedCrypto: () => { },
 });
 
+const CryptoTooltip: React.FC<
+    TooltipProps<number, string> & { payload?: { payload: SymbolDataPoint }[] }> = ({ active, payload }) => {
+        if (!active || !payload || payload.length === 0) return null;
+
+        const { date, close, volume } = payload[0].payload;
+
+        return (
+            <div className={styles.customTooltip} style={{ background: "rgba(36, 131, 71, 0.76)" }}>
+                <p className={styles.description}>Current Date</p>
+                <span className={styles.date}>{formatDate(date)}</span>
+                <p className={styles.description}>Price</p>
+                <p className={styles.volume}>${formatNumber(close)}</p>
+                <p className={styles.description}>Volume</p>
+                <p className={styles.volume}>{formatNumber(volume)}</p>
+            </div>
+        );
+    };
+
 const CryptoMarketChart = () => {
     const { selectedCrypto, setSelectedCrypto } = useContext(CryptoMarketContext);
     const debouncedCrypto = useDebounce(selectedCrypto, 700);
@@ -41,24 +59,6 @@ const CryptoMarketChart = () => {
     const handleRangeChange = (range: string) => {
         setSelectedRange(range);
     };
-
-    const CustomTooltip: React.FC<
-        TooltipProps<number, string> & { payload?: { payload: SymbolDataPoint }[] }> = ({ active, payload }) => {
-            if (!active || !payload || payload.length === 0) return null;
-
-            const { date, close, volume } = payload[0].payload;
-
-            return (
-                <div className={styles.customTooltip} style={{ background: "rgba(36, 131, 71, 0.76)" }}>
-                    <p className={styles.description}>Current Date</p>
-                    <span className={styles.date}>{formatDate(date)}</span>
-                    <p className={styles.description}>Price</p>
-                    <p className={styles.volume}>${formatNumber(close)}</p>
-                    <p className={styles.description}>Volume</p>
-                    <p className={styles.volume}>{formatNumber(volume)}</p>
-                </div>
-            );
-        };
 
     return (
         <div className={styles.container}>
@@ -134,7 +134,7 @@ const CryptoMarketChart = () => {
                                 ]}
                                 tickFormatter={(value) => value.toFixed(2)}
                             />
-                            <Tooltip content={<CustomTooltip />} />
+                            <Tooltip content={<CryptoTooltip />} />
                             <Area
                                 type="monotone"
                                 dataKey="close"
