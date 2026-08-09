@@ -8,27 +8,48 @@ export default function useCryptoLatestTick({ instrument }: Params) {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!instrument) return;
+        let cancelled = false;
 
-        setIsLoading(true);
-        setError(null);
+        if (!instrument) {
+            queueMicrotask(() => {
+                if (cancelled) return;
+                setResult(null);
+                setError(null);
+                setIsLoading(false);
+            });
+            return () => {
+                cancelled = true;
+            };
+        }
 
-        fetch(`/api/searchCoinLatestTick?market=kraken&instrument=${instrument}`)
-            .then(async res => {
-                if (!res.ok) {
-                    const errorData = await res.json();
-                    throw new Error(errorData.error || `HTTP error ${res.status}`);
-                }
-                return res.json();
-            })
-            .then(data => {
-                setResult(data);
-            })
-            .catch(err => {
-                console.error('Hook error:', err);
-                setError(err.message);
-            })
-            .finally(() => setIsLoading(false));
+        queueMicrotask(() => {
+            if (cancelled) return;
+            setIsLoading(true);
+            setError(null);
+
+            fetch(`/api/searchCoinLatestTick?market=kraken&instrument=${instrument}`)
+                .then(async res => {
+                    if (!res.ok) {
+                        const errorData = await res.json();
+                        throw new Error(errorData.error || `HTTP error ${res.status}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (!cancelled) setResult(data);
+                })
+                .catch(err => {
+                    console.error('Hook error:', err);
+                    if (!cancelled) setError(err.message);
+                })
+                .finally(() => {
+                    if (!cancelled) setIsLoading(false);
+                });
+        });
+
+        return () => {
+            cancelled = true;
+        };
     }, [instrument]);
 
     return { result, isLoading, error };

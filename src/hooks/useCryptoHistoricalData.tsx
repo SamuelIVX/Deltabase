@@ -23,30 +23,51 @@ export default function useCryptoHistoricalData(
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!market || !instrument) return;
+        let cancelled = false;
 
-        setIsLoading(true);
-        setError(null);
+        if (!market || !instrument) {
+            queueMicrotask(() => {
+                if (cancelled) return;
+                setResults([]);
+                setError(null);
+                setIsLoading(false);
+            });
+            return () => {
+                cancelled = true;
+            };
+        }
 
-        fetch(`/api/searchCoinHistoricalData?market=${market}&instrument=${instrument}&range=${range}`)
-            .then(async res => {
-                if (!res.ok) {
-                    const errorData = await res.json();
-                    throw new Error(errorData.error || `HTTP error ${res.status}`);
-                }
-                return res.json();
-            })
-            .then(data => {
-                if (!Array.isArray(data)) {
-                    throw new Error("Invalid API response format");
-                }
-                setResults(data);
-            })
-            .catch(err => {
-                console.error('Hook error:', err);
-                setError(err.message);
-            })
-            .finally(() => setIsLoading(false));
+        queueMicrotask(() => {
+            if (cancelled) return;
+            setIsLoading(true);
+            setError(null);
+
+            fetch(`/api/searchCoinHistoricalData?market=${market}&instrument=${instrument}&range=${range}`)
+                .then(async res => {
+                    if (!res.ok) {
+                        const errorData = await res.json();
+                        throw new Error(errorData.error || `HTTP error ${res.status}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (!Array.isArray(data)) {
+                        throw new Error("Invalid API response format");
+                    }
+                    if (!cancelled) setResults(data);
+                })
+                .catch(err => {
+                    console.error('Hook error:', err);
+                    if (!cancelled) setError(err.message);
+                })
+                .finally(() => {
+                    if (!cancelled) setIsLoading(false);
+                });
+        });
+
+        return () => {
+            cancelled = true;
+        };
     }, [market, instrument, range]);
 
     return { results, isLoading, error };

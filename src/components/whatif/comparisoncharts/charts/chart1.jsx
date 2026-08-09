@@ -8,6 +8,32 @@ import useYahooHistoricalData from '@/hooks/useYahooHistoricalData';
 import useSimulateDCA from '@/hooks/useSimulateDCA';
 import useTooltipData from '../../../../hooks/useTooltipData';
 
+const CustomTooltip = ({ active, payload, data }) => {
+  const tooltipData = useTooltipData(active, payload, data);
+
+  if (!tooltipData) return null;
+
+  const { label: date, formattedValue, performance } = tooltipData;
+  const performanceColor = performance > 0 ? 'green' : performance < 0 ? 'red' : 'black';
+
+  return (
+    <div className={styles.customTooltip} style={{ background: 'rgba(0, 123, 255, 0.20)' }}>
+      <p className={styles.description}>Current Date</p>
+      <p className={styles.value}>{date}</p>
+
+      <p className={styles.description}>Portfolio Value</p>
+      <p className={styles.value}>${formattedValue}</p>
+
+      {performance !== null && (
+        <>
+          <p className={styles.description}>Performance</p>
+          <p className={styles.value} style={{ color: performanceColor }}>{performance}%</p>
+        </>
+      )}
+    </div>
+  );
+};
+
 const Chart1 = () => {
   const { selectedAsset1, value1, initialInvestment1, monthlyInvestment1, setAsset1Data } = React.useContext(AssetContext);
   const { results, isLoading, error } = useYahooHistoricalData(selectedAsset1?.symbol, value1[0]);
@@ -27,32 +53,6 @@ const Chart1 = () => {
   const customTicks = chartData
     .filter(item => new Date(item.name).getMonth() === currentMonth)
     .map(item => item.name);
-
-  const CustomTooltip = ({ active, payload, label, data }) => {
-    const tooltipData = useTooltipData(active, payload, data);
-
-    if (!tooltipData) return null;
-
-    const { label: date, formattedValue, performance } = tooltipData;
-    const performanceColor = performance > 0 ? 'green' : performance < 0 ? 'red' : 'black';
-
-    return (
-      <div className={styles.customTooltip} style={{ background: 'rgba(0, 123, 255, 0.20)' }}>
-        <p className={styles.description}>Current Date</p>
-        <p className={styles.value}>{date}</p>
-
-        <p className={styles.description}>Portfolio Value</p>
-        <p className={styles.value}>${formattedValue}</p>
-
-        {performance !== null && (
-          <>
-            <p className={styles.description}>Performance</p>
-            <p className={styles.value} style={{ color: performanceColor }}>{performance}%</p>
-          </>
-        )}
-      </div>
-    );
-  };
 
   return (
     <div className={styles.chartWrapper} style={{ position: 'relative', width: '100%', height: '400px' }}>
