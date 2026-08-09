@@ -7,25 +7,44 @@ function useYahooStockQuote(symbol: string) {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        let cancelled = false;
+
         if (!symbol) {
-            setQuote(null);
-            setError(null);
-            return;
+            queueMicrotask(() => {
+                if (cancelled) return;
+                setQuote(null);
+                setError(null);
+                setIsLoading(false);
+            });
+            return () => {
+                cancelled = true;
+            };
         }
 
-        setIsLoading(true);
-        setError(null);
+        queueMicrotask(() => {
+            if (cancelled) return;
+            setIsLoading(true);
+            setError(null);
 
-        fetch(`/api/searchStockQuote?symbol=${encodeURIComponent(symbol)}`)
-            .then(async (res) => {
-                if (!res.ok) {
-                    throw new Error(`Error fetching quote: ${res.statusText}`);
-                }
-                const data = await res.json();
-                setQuote(data);
-            })
-            .catch(err => setError(err.message))
-            .finally(() => setIsLoading(false));
+            fetch(`/api/searchStockQuote?symbol=${encodeURIComponent(symbol)}`)
+                .then(async (res) => {
+                    if (!res.ok) {
+                        throw new Error(`Error fetching quote: ${res.statusText}`);
+                    }
+                    const data = await res.json();
+                    if (!cancelled) setQuote(data);
+                })
+                .catch(err => {
+                    if (!cancelled) setError(err.message);
+                })
+                .finally(() => {
+                    if (!cancelled) setIsLoading(false);
+                });
+        });
+
+        return () => {
+            cancelled = true;
+        };
     }, [symbol]);
 
     return { quote, isLoading, error };

@@ -23,6 +23,23 @@ export const StockMarketContext = createContext<StockMarketContextType>({
     setSelectedStock: () => { },
 });
 
+const StockTooltip: React.FC<
+    TooltipProps<number, string> & { payload?: { payload: SymbolDataPoint }[] }> = ({ active, payload }) => {
+        if (!active || !payload || payload.length === 0) return null;
+
+        const { date, time, volume } = payload[0].payload;
+
+        return (
+            <div className={styles.customTooltip} style={{ background: "rgba(36, 131, 71, 0.76)" }}>
+                <p className={styles.description}>Current Date</p>
+                <span className={styles.date}>{formatDate(date)}</span>
+                <span className={styles.time}> {time}</span>
+                <p className={styles.description}>Volume</p>
+                <p className={styles.volume}>{formatNumber(volume)}</p>
+            </div>
+        );
+    };
+
 const StockMarketChart = () => {
     const { selectedStock, setSelectedStock } = useContext(StockMarketContext);
     const debouncedStock = useDebounce(selectedStock, 500);
@@ -39,23 +56,6 @@ const StockMarketChart = () => {
     };
 
     const { historicalData } = useYahooBasicHistoricalData(debouncedStock, selectedRange);
-
-    const CustomTooltip: React.FC<
-        TooltipProps<number, string> & { payload?: { payload: SymbolDataPoint }[] }> = ({ active, payload }) => {
-            if (!active || !payload || payload.length === 0) return null;
-
-            const { date, time, volume } = payload[0].payload;
-
-            return (
-                <div className={styles.customTooltip} style={{ background: "rgba(36, 131, 71, 0.76)" }}>
-                    <p className={styles.description}>Current Date</p>
-                    <span className={styles.date}>{formatDate(date)}</span>
-                    <span className={styles.time}> {time}</span>
-                    <p className={styles.description}>Volume</p>
-                    <p className={styles.volume}>{formatNumber(volume)}</p>
-                </div>
-            );
-        };
 
     return (
         <div className={styles.container}>
@@ -152,7 +152,7 @@ const StockMarketChart = () => {
                                 ]}
                                 tickFormatter={(value) => value.toFixed(2)}
                             />
-                            <Tooltip content={<CustomTooltip />} />
+                            <Tooltip content={<StockTooltip />} />
                             <Area
                                 type="monotone"
                                 dataKey="close"
