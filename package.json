@@ -37,7 +37,7 @@
     "eslint": "^9.39.2",
     "eslint-config-next": "16.1.6",
     "eslint-plugin-react": "^7.37.5",
-    "jsdom": "^29.1.1",
+    "jsdom": "^30.0.0",
     "tailwindcss": "^4.1.18",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10"
