@@ -49,9 +49,10 @@ const InvestmentForm = () => {
       {/* Form 1 */}
       <div className={styles.container} >
         <div className={styles.field}>
-          <label className={styles.label}>Initial Investment for Asset 1</label>
+          <label className={styles.label} htmlFor="initialInvestment1">Initial Investment for Asset 1</label>
           <div className={styles.inputBg}>
             <input
+              id="initialInvestment1"
               className={styles.input}
               type="text"
               value={initialInvestment1}
@@ -62,9 +63,10 @@ const InvestmentForm = () => {
         </div>
 
         <div className={styles.field}>
-          <label className={styles.label}>Monthly Investment for Asset 1</label>
+          <label className={styles.label} htmlFor="monthlyInvestment1">Monthly Investment for Asset 1</label>
           <div className={styles.inputBg}>
             <input
+              id="monthlyInvestment1"
               className={styles.input}
               type="text"
               value={monthlyInvestment1}
@@ -80,9 +82,10 @@ const InvestmentForm = () => {
       {/* Form 2 */}
       <div className={styles.container}>
         <div className={styles.field}>
-          <label className={styles.label}>Initial Investment for Asset 2</label>
+          <label className={styles.label} htmlFor="initialInvestment2">Initial Investment for Asset 2</label>
           <div className={styles.inputBg}>
             <input
+              id="initialInvestment2"
               className={styles.input}
               type="text"
               value={initialInvestment2}
@@ -93,9 +96,10 @@ const InvestmentForm = () => {
         </div>
 
         <div className={styles.field}>
-          <label className={styles.label}>Monthly Investment for Asset 2</label>
+          <label className={styles.label} htmlFor="monthlyInvestment2">Monthly Investment for Asset 2</label>
           <div className={styles.inputBg}>
             <input
+              id="monthlyInvestment2"
               className={styles.input}
               type="text"
               value={monthlyInvestment2}

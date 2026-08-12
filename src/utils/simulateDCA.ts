@@ -31,14 +31,15 @@ export function simulateDCA(
 ): DCAResult {
     let totalShares = 0;
     let totalInvested = 0;
+    let lastValidPrice = 0;
     const monthlyPortfolio: DCAResult["monthlyPortfolio"] = [];
 
-    results.forEach((item, idx) => {
+    results.forEach((item) => {
         const price = Number(item.adjclose);
-        if (!price || isNaN(price)) return; // skip if price is invalid
+        if (!Number.isFinite(price) || price <= 0) return; // skip invalid prices
 
-        // Initial investment at first month
-        if (idx === 0 && initialInvestment > 0) {
+        // Initial investment at first valid price point
+        if (monthlyPortfolio.length === 0 && initialInvestment > 0) {
             totalShares += initialInvestment / price;
             totalInvested += Number(initialInvestment);
         }
@@ -47,6 +48,7 @@ export function simulateDCA(
             totalShares += monthlyInvestment / price;
             totalInvested += Number(monthlyInvestment);
         }
+        lastValidPrice = price;
         monthlyPortfolio.push({
             name: item.date.slice(0, 10),
             portfolioValue: (totalShares * price).toFixed(2),
@@ -55,7 +57,7 @@ export function simulateDCA(
         });
     });
 
-    const finalValue = totalShares * (results.length > 0 ? Number(results[results.length - 1].adjclose) : 0);
+    const finalValue = totalShares * lastValidPrice;
     const gain = finalValue - totalInvested;
 
     return {

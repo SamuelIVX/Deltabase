@@ -57,6 +57,34 @@ describe("simulateDCA", () => {
         expect(out.gain).toBeCloseTo(100, 10);
     });
 
+    it("applies the initial investment at the first valid price", () => {
+        const results = [
+            priceRow("2026-01-01", "invalid"),
+            priceRow("2026-02-01", 0),
+            priceRow("2026-03-01", 50),
+        ];
+        // $100 initial at $50 -> 2 shares, $100 invested, final value 2*50=100
+        const out = simulateDCA(results, 100, 0);
+        expect(out.totalShares).toBeCloseTo(2, 10);
+        expect(out.totalInvested).toBe(100);
+        expect(out.finalValue).toBeCloseTo(100, 10);
+    });
+
+    it("uses the last valid price for finalValue, ignoring trailing bad rows", () => {
+        const results = [
+            priceRow("2026-01-01", 100),
+            priceRow("2026-02-01", 200),
+            priceRow("2026-03-01", 0),
+            priceRow("2026-04-01", "invalid"),
+        ];
+        // 1 share @100 + 0.5 shares @200 = 1.5 shares; invested $200
+        const out = simulateDCA(results, 0, 100);
+        expect(out.totalShares).toBeCloseTo(1.5, 10);
+        // final value uses last valid price (200): 1.5 * 200 = 300
+        expect(out.finalValue).toBeCloseTo(300, 10);
+        expect(out.gain).toBeCloseTo(100, 10);
+    });
+
     it("returns an empty portfolio for an empty result set", () => {
         const out = simulateDCA([], 100, 100);
         expect(out.monthlyPortfolio).toEqual([]);
