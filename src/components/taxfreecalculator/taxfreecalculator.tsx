@@ -28,6 +28,7 @@ interface ResultProps {
     netReturn: number
 }
 
+/** Renders the calculated gross/fee/tax/net return summary panel. */
 const Results: React.FC<ResultProps> = ({ grossProfit, feeCost, taxAmount, netProfit, netReturn }) => (
     <div className={styles.results}>
         <h3 className={styles.resultsTitle}>Results</h3>
@@ -92,6 +93,11 @@ export default function TaxAdjustedReturns() {
         instrument: debouncedSymbol
     });
 
+    /**
+     * Computes tax/fee-adjusted returns from a Yahoo quote open vs last price.
+     * @param quote - Yahoo quote with `regularMarketOpen` and `regularMarketPrice`.
+     * @returns Breakdown totals, or null if quote prices are missing.
+     */
     const calculateStockReturns = (quote: YahooQuote) => {
         if (!quote?.regularMarketPrice || !quote?.regularMarketOpen) {
             return null;
@@ -114,6 +120,11 @@ export default function TaxAdjustedReturns() {
         };
     };
 
+    /**
+     * Computes tax/fee-adjusted returns from a CoinDesk latest-tick open vs price.
+     * @param result - CoinDesk tick with `CURRENT_DAY_OPEN` and `PRICE`.
+     * @returns Breakdown totals, or null if tick prices are missing.
+     */
     const calculateCryptoReturns = (result: CryptoTickResult) => {
         if (!result?.PRICE || !result?.CURRENT_DAY_OPEN) {
             return null;

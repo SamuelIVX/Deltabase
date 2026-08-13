@@ -13,6 +13,7 @@ interface MockRes {
     json(body: unknown): MockRes;
 }
 
+/** Minimal `NextApiResponse`-like stub for route unit tests. */
 function mockRes(): MockRes {
     const res: MockRes = {
         statusCode: 0,
