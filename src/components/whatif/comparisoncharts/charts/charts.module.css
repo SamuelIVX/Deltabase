@@ -1,3 +1,6 @@
+/**
+ * Styles for individual What-If DCA Recharts panels.
+ */
 .container {
     height: 450px;
     background-color: var(--bgSoft);

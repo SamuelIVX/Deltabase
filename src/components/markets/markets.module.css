@@ -1,3 +1,6 @@
+/**
+ * Shared styles for stock/crypto market chart layouts.
+ */
 .container {
     height: 500px;
     background-color: var(--bgSoft);

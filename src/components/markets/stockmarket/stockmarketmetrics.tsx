@@ -1,4 +1,7 @@
 'use client'
+/**
+ * Stock market metrics panel — Yahoo quote stats for the selected ticker.
+ */
 import styles from '../marketsmetrics.module.css';
 import { useContext } from 'react'
 import { StockMarketContext } from './stockmarketchart';
@@ -18,6 +21,7 @@ const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
     </div>
 );
 
+/** Displays Yahoo quote metrics for the selected ticker. */
 const StockMarketMetrics = () => {
     const { selectedStock } = useContext(StockMarketContext);
     const debouncedStock = useDebounce(selectedStock, 500);

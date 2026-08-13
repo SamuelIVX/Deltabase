@@ -1,3 +1,6 @@
+/**
+ * Vitest config for Deltabase — jsdom, path alias `@` → `./src`, UTC timezone.
+ */
 import { defineConfig } from "vitest/config";
 import path from "path";
 

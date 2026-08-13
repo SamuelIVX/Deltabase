@@ -1,6 +1,15 @@
+/**
+ * Next.js Pages API: Yahoo Finance symbol search (no API key).
+ * Proxies `yahoo-finance2.search` for typeahead / asset picker UIs.
+ */
 import type { NextApiRequest, NextApiResponse } from 'next';
 import yahooFinance from 'yahoo-finance2';
 
+/**
+ * GET `?searchTerm=` — returns Yahoo search hits for the query string.
+ * @param req - Must include a string `searchTerm` query param.
+ * @param res - JSON search results on 200; 400 if term missing; 500 on Yahoo errors.
+ */
 async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { searchTerm } = req.query;
     if (!searchTerm || typeof searchTerm !== 'string') {

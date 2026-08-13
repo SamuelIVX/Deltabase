@@ -1,5 +1,17 @@
+/**
+ * Fetches Yahoo monthly history via `/api/searchHistoricalData` for What-If DCA.
+ * The `range` argument is forwarded as the API `years` query param.
+ */
 import { useState, useEffect } from 'react';
 
+/**
+ * Loads monthly Yahoo quotes for `symbol` spanning `range` years.
+ * @param symbol - Ticker; empty clears state without fetching.
+ * @param range - Year count string passed to the API as `years`.
+ * @returns `{ results, isLoading, error }`.
+ * @example
+ * const { results } = useYahooHistoricalData("AAPL", "5");
+ */
 function useYahooHistoricalData(symbol: string, range: string) {
     const [results, setResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);

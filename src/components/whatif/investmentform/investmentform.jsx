@@ -1,4 +1,7 @@
 'use client'
+/**
+ * What-If investment inputs — initial/monthly amounts and time-horizon slider.
+ */
 import styles from "./investmentform.module.css";
 import * as Slider from "@radix-ui/react-slider"
 import { useContext } from "react"
@@ -28,6 +31,7 @@ function TimeSlider({ value, setValue }) {
   );
 }
 
+/** Form controls for initial/monthly investment and time horizon. */
 const InvestmentForm = () => {
   const {
     value1, setValue1,

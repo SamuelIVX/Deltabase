@@ -1,7 +1,11 @@
+/**
+ * What-If summary cards — totals, gain, and opportunity-cost between the two assets.
+ */
 import React, { useContext } from 'react';
 import { AssetContext } from '@/components/whatif/assetselector/assetselector';
 import styles from './comparisonsummary.module.css';
 
+/** Summarizes DCA totals and opportunity cost between the two assets. */
 const ComparisonSummary = () => {
     const {
         asset1Data,

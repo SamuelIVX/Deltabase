@@ -1,7 +1,11 @@
+/**
+ * Dashboard overview cards showing placeholder KPI tiles (total users / transactions / revenue).
+ */
 import { FaPiggyBank, FaMoneyBillWave } from "react-icons/fa";
 import { FaUserTie } from "react-icons/fa6";
 import styles from "./card.module.css";
 
+/** Renders three hard-coded overview KPI cards. */
 const Card = () => {
     return (
       <>

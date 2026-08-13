@@ -1,6 +1,11 @@
+/**
+ * React Query hook for Finnhub general news via the server proxy `/api/searchFinnhubNews`.
+ * Keeps the Finnhub API key off the client (see PR #221).
+ */
 'use client';
 import { useQuery } from '@tanstack/react-query';
 
+/** Fetches news JSON from the internal Finnhub proxy route. */
 const fetchFromFinnhub = async () => {
     const response = await fetch("/api/searchFinnhubNews");
     if (!response.ok) {
@@ -11,6 +16,12 @@ const fetchFromFinnhub = async () => {
     return await response.json();
 }
 
+/**
+ * Loads Finnhub general news with a 5-minute stale time.
+ * @returns React Query result for the `['news']` query key.
+ * @example
+ * const { data, isLoading, error } = useFinnhubNews();
+ */
 const useFinnhubNews = () => {
     return useQuery({
         queryKey: ['news'],

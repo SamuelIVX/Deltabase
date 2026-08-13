@@ -1,4 +1,7 @@
 'use client'
+/**
+ * Crypto market price chart — range toggles, Recharts series, and CryptoMarketContext.
+ */
 import styles from '../markets.module.css';
 import { useState } from 'react';
 import { MoonLoader } from 'react-spinners';
@@ -16,6 +19,7 @@ interface CryptoMarketContextType {
     setSelectedCrypto: (value: string) => void;
 }
 
+/** Shared crypto chart selection context (instrument + range). */
 export const CryptoMarketContext = createContext<CryptoMarketContextType>({
     selectedCrypto: "",
     setSelectedCrypto: () => { },
@@ -39,6 +43,7 @@ const CryptoTooltip: React.FC<
         );
     };
 
+/** Interactive crypto price chart with range controls. */
 const CryptoMarketChart = () => {
     const { selectedCrypto, setSelectedCrypto } = useContext(CryptoMarketContext);
     const debouncedCrypto = useDebounce(selectedCrypto, 700);

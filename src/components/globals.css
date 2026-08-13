@@ -1,3 +1,6 @@
+/**
+ * Global base styles and CSS variable tokens for the DeltaBase UI.
+ */
 :root {
   --bg: #151c2c;
   --bgSoft: #182237;

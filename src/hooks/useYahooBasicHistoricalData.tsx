@@ -1,5 +1,17 @@
+/**
+ * Fetches Yahoo range-based chart series via `/api/searchBasicHistoricalData`.
+ * Powers the stock market price chart range toggles.
+ */
 import { useState, useEffect } from 'react';
 
+/**
+ * Loads formatted historical quotes for `symbol` over `range`.
+ * @param symbol - Ticker; empty clears state without fetching.
+ * @param range - Lookback key (`1d`…`5y`) passed to the API.
+ * @returns `{ historicalData, isLoading, error }`.
+ * @example
+ * const { historicalData } = useYahooStockHistoricalData("AAPL", "1y");
+ */
 function useYahooStockHistoricalData(symbol: string, range: string) {
     const [historicalData, setHistoricalData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);

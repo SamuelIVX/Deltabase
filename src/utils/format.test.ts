@@ -1,3 +1,6 @@
+/**
+ * Unit tests for currency/date/number/percent format helpers.
+ */
 import { describe, it, expect } from "vitest";
 import formatCurrency from "./formatCurrency";
 import formatNumber from "./formatNumber";

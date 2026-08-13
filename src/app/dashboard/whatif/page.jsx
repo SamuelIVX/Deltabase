@@ -1,4 +1,8 @@
 'use client';
+/**
+ * What-If page — owns AssetContext state and composes the DCA comparison UI.
+ * Cross-component investment/asset selections live in this page's context provider.
+ */
 import { useState } from 'react';
 import { AssetContext } from '@/components/whatif/assetselector/assetselector';
 import Blurb from "@/components/whatif/blurb/blurb";
@@ -7,6 +11,11 @@ import InvestmentForm from "@/components/whatif/investmentform/investmentform";
 import ComparisonCharts from "../../../components/whatif/comparisoncharts/comparisoncharts";
 import ComparisonSummary from "@/components/whatif/comparisonsummary/comparisonsummary";
 
+/**
+ * What-If flagship page — holds investment/asset state in AssetContext and
+ * composes selector, form, charts, and summary.
+ * @returns {JSX.Element}
+ */
 const WhatIf = () => {
     // Asset 1 state
     const [selectedAsset1, setSelectedAsset1] = useState(null);

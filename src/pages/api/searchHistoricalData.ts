@@ -1,3 +1,7 @@
+/**
+ * Next.js Pages API: Yahoo monthly historical chart for What-If DCA windows.
+ * Proxies `yahoo-finance2.chart` with a `years`-based lookback (no API key).
+ */
 import { NextApiRequest, NextApiResponse } from "next";
 import yahooFinance from "yahoo-finance2";
 
@@ -11,6 +15,11 @@ type YahooChartResult = {
     quotes?: YahooChartQuote[];
 };
 
+/**
+ * GET `?symbol=&years=` — monthly quotes from `years` ago through today.
+ * @param req - `symbol` (string) and `years` (numeric string) required.
+ * @param res - JSON array of monthly quote rows on 200; 400/500 on failure.
+ */
 async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { symbol, years } = req.query;
 

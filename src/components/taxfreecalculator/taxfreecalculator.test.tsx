@@ -1,3 +1,6 @@
+/**
+ * Component tests for the tax/fee adjusted-returns calculator form.
+ */
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import TaxAdjustedReturns from "@/components/taxfreecalculator/taxfreecalculator";

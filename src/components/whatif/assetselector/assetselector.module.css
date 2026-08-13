@@ -1,3 +1,6 @@
+/**
+ * Styles for What-If asset selector controls.
+ */
 .wrapper {
     display: flex;
     gap: 20px;

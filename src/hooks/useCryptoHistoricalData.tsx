@@ -1,3 +1,7 @@
+/**
+ * Fetches CoinDesk historical candles via `/api/searchCoinHistoricalData`.
+ * Used by crypto market charts and What-If crypto legs.
+ */
 import { useEffect, useState } from "react";
 import { Params } from "@/types/crypto";
 
@@ -12,6 +16,13 @@ type Result = {
     volume: number;
 };
 
+/**
+ * Loads historical crypto candles for `market`/`instrument`/`range`.
+ * @param params - CoinDesk query params (`market`, `instrument`, optional `range`, default `1mo`).
+ * @returns `{ results, isLoading, error }` for the candle series.
+ * @example
+ * const { results } = useCryptoHistoricalData({ market: "kraken", instrument: "BTC-USD", range: "1y" });
+ */
 export default function useCryptoHistoricalData(
     {
         market,

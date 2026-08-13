@@ -1,3 +1,6 @@
+/**
+ * Dashboard sidebar navigation with menu sections and MenuLink items.
+ */
 import MenuLink from "./menuLink/menuLink";
 import Image from "next/image";
 import styles from "./sidebar.module.css";
@@ -44,6 +47,7 @@ const menuItems = [
   }
 ];
 
+/** Async server sidebar listing dashboard navigation sections. */
 const Sidebar = async () => {
   return (
     <div className={styles.container}>

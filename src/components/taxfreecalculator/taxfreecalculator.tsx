@@ -1,4 +1,7 @@
 'use client';
+/**
+ * Tax- and fee-adjusted investment return calculator (form + results summary).
+ */
 import { useState } from "react";
 import useCryptoLatestTick from '@/hooks/useCryptoLatestTick';
 import useYahooStockQuote from '@/hooks/useYahooStockQuote';
@@ -64,6 +67,10 @@ const Results: React.FC<ResultProps> = ({ grossProfit, feeCost, taxAmount, netPr
     </div>
 );
 
+/**
+ * Interactive tax/fee calculator — collects inputs and shows net return results.
+ * @returns Tax-adjusted returns form + results panel.
+ */
 export default function TaxAdjustedReturns() {
     const [marketType, setMarketType] = useState<'crypto' | 'stock' | ''>('');
     const [symbol, setSymbol] = useState('');

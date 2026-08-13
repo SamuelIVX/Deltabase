@@ -1,3 +1,6 @@
+/**
+ * Styles for the What-If investment form and time slider.
+ */
 .wrapper {
     display: flex;
     gap: 24px;

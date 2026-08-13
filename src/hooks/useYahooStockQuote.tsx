@@ -1,6 +1,16 @@
-// hooks/useYahooStockQuote.ts
+/**
+ * Fetches a Yahoo Finance quote for one ticker via `/api/searchStockQuote`.
+ * Returns `{ quote, isLoading, error }`; cancels in-flight work on unmount/symbol change.
+ */
 import { useState, useEffect } from 'react';
 
+/**
+ * Loads live quote data for `symbol` from the internal stock-quote API.
+ * @param symbol - Ticker symbol; empty clears state without fetching.
+ * @returns Quote payload plus loading/error flags.
+ * @example
+ * const { quote, isLoading, error } = useYahooStockQuote("AAPL");
+ */
 function useYahooStockQuote(symbol: string) {
     const [quote, setQuote] = useState<unknown>(null);
     const [isLoading, setIsLoading] = useState(false);

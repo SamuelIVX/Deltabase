@@ -1,4 +1,7 @@
 'use client'
+/**
+ * Stock market price chart — range toggles, Recharts series, and StockMarketContext.
+ */
 import styles from '../markets.module.css';
 import { useState } from 'react';
 import { MoonLoader } from 'react-spinners';
@@ -18,6 +21,7 @@ interface StockMarketContextType {
     setSelectedStock: (value: string) => void;
 }
 
+/** Shared stock chart selection context (symbol + range). */
 export const StockMarketContext = createContext<StockMarketContextType>({
     selectedStock: "",
     setSelectedStock: () => { },
@@ -40,6 +44,7 @@ const StockTooltip: React.FC<
         );
     };
 
+/** Interactive stock price chart with range controls. */
 const StockMarketChart = () => {
     const { selectedStock, setSelectedStock } = useContext(StockMarketContext);
     const debouncedStock = useDebounce(selectedStock, 500);

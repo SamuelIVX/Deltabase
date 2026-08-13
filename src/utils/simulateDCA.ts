@@ -1,8 +1,15 @@
+/**
+ * Pure dollar-cost-averaging simulator used by the What-If feature.
+ * No I/O — operates on an already-fetched monthly price series.
+ */
+
+/** One monthly price row consumed by {@link simulateDCA}. */
 export interface DCAResultItem {
     date: string;
     adjclose: string | number;
 }
 
+/** Aggregate DCA totals plus per-month portfolio history for charting. */
 export interface DCAResult {
     totalShares: number;
     totalInvested: number;
@@ -23,6 +30,18 @@ export interface DCAResult {
  * recurring investment is applied at every point. Points with an invalid or
  * zero price are skipped. Returns cumulative totals and the per-month
  * portfolio history used for charting.
+ *
+ * @param results - Chronological price rows (`date` + `adjclose`).
+ * @param initialInvestment - Lump sum applied only at the first valid price.
+ * @param monthlyInvestment - Amount invested at every valid price point.
+ * @returns Totals (`totalShares`, `totalInvested`, `finalValue`, `gain`) and `monthlyPortfolio`.
+ * @example
+ * const out = simulateDCA(
+ *   [{ date: "2020-01-01", adjclose: 100 }, { date: "2020-02-01", adjclose: 110 }],
+ *   1000,
+ *   100
+ * );
+ * // out.finalValue reflects shares bought at each price
  */
 export function simulateDCA(
     results: DCAResultItem[],

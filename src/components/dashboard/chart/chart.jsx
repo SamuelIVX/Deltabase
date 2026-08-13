@@ -1,4 +1,7 @@
 "use client";
+/**
+ * Dashboard home Recharts line chart with hard-coded demo weekly series.
+ */
 import React, { PureComponent } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from "./chart.module.css"
@@ -48,6 +51,7 @@ const data = [
   },
 ];
 
+/** Renders the dashboard home demo line chart. */
 const Chart = () => {
   return (
     <div className={styles.container}>

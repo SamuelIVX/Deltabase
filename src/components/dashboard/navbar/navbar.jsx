@@ -1,4 +1,7 @@
 "use client";
+/**
+ * Dashboard top navbar — route title and search/notification placeholders.
+ */
 import { usePathname } from "next/navigation";
 import styles from "./navbar.module.css";
 import {
@@ -8,6 +11,7 @@ import {
   MdSearch,
 } from "react-icons/md";
 
+/** Top navbar showing the current pathname segment as title. */
 const Navbar = () => {
   const pathname = usePathname();
 
