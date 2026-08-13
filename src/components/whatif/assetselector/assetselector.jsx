@@ -1,9 +1,14 @@
 'use client'
+/**
+ * What-If asset pickers (stock/crypto) and shared AssetContext default export site.
+ * Declares AssetContext consumed across What-If child components.
+ */
 import { createContext, useContext, useState } from 'react'
 import styles from "./assetselector.module.css";
 import useYahooStockSymbols from '@/hooks/useYahooStockSymbols';
 import useDebounce from '@/hooks/useDebounce';
 
+/** Cross-component What-If state (selected assets, investments, horizon). */
 export const AssetContext = createContext({
     selectedAsset1: null,
     setSelectedAsset1: (value) => { },
@@ -27,6 +32,7 @@ export const AssetContext = createContext({
     setAsset2Data: (value) => { },
 });
 
+/** Dual asset search/select UI bound to AssetContext. */
 const AssetSelector = () => {
     const [searchTerm1, setSearchTerm1] = useState('');
     const [searchTerm2, setSearchTerm2] = useState('');

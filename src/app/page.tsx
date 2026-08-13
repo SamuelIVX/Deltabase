@@ -1,7 +1,11 @@
 "use client"
+/**
+ * Landing / login entry page for DeltaBase (links into the dashboard).
+ */
 import styles from "@/components/page/page.module.css";
 import { useRouter } from "next/navigation";
 
+/** Landing page with brand intro and CTA into `/dashboard`. */
 const LoginPage = () => {
 
   const router = useRouter();

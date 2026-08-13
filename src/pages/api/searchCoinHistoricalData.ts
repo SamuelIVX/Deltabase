@@ -1,3 +1,8 @@
+/**
+ * Next.js Pages API: CoinDesk spot historical candles for crypto charts / What-If.
+ * SECURITY: reads `COINDESK_API_KEY` from server env and sends it as a Bearer
+ * token — never expose this key to the client or log the Authorization header.
+ */
 import type { NextApiRequest, NextApiResponse } from "next";
 interface CandleData {
     TIMESTAMP: number;
@@ -8,6 +13,13 @@ interface CandleData {
     VOLUME: number;
 }
 
+/**
+ * GET historical CoinDesk candles filtered to the requested lookback window.
+ * SECURITY: uses `COINDESK_API_KEY`; do not log the key or raw Authorization header.
+ * @param req - Optional `market` (default `kraken`), `instrument` (default `BTC-USD`),
+ *   `range` (`1d|5d|1mo|3mo|6mo|1y|5y`).
+ * @param res - Normalized candle rows on 200; 500 if key missing or CoinDesk fails.
+ */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const apiKey = process.env.COINDESK_API_KEY;
 

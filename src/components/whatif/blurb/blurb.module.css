@@ -1,3 +1,6 @@
+/**
+ * Styles for the What-If feature blurb.
+ */
 .container {
     background-color: var(--bgSoft);
     display: flex;

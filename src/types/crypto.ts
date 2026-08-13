@@ -1,3 +1,8 @@
+/**
+ * Shared TypeScript shapes for CoinDesk spot tick payloads and hook params.
+ */
+
+/** Latest-tick fields returned by the CoinDesk spot API (and related UI). */
 export interface TickResult {
     MARKET: string;
     CURRENT_DAY_LOW: number;
@@ -20,6 +25,7 @@ export interface TickResult {
     [key: string]: unknown;
 }
 
+/** Query params for crypto historical / latest-tick hooks and API routes. */
 export interface Params {
     market: string;
     instrument: string;

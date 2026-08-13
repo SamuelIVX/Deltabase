@@ -1,3 +1,6 @@
+/**
+ * Unit tests for the pure {@link simulateDCA} dollar-cost-averaging math.
+ */
 import { describe, it, expect } from "vitest";
 import { simulateDCA, type DCAResultItem } from "./simulateDCA";
 

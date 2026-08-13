@@ -1,3 +1,6 @@
+/**
+ * Shared layout styles for the dashboard shell (content grid / containers).
+ */
 .container {
     display: flex;
   }

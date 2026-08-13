@@ -1,10 +1,14 @@
 'use client';
+/**
+ * What-If comparison charts container — mounts the two side-by-side DCA series charts.
+ */
 import { AssetContext } from "../assetselector/assetselector";
 import React from 'react';
 import styles from "./comparisoncharts.module.css";
 import Chart1 from "./charts/chart1";
 import Chart2 from "./charts/chart2";
 
+/** Layout wrapper rendering Chart1 and Chart2 side by side. */
 const ComparisonCharts = () => {
     const {
         selectedAsset1,

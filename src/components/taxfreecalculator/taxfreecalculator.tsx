@@ -1,4 +1,7 @@
 'use client';
+/**
+ * Tax- and fee-adjusted investment return calculator (form + results summary).
+ */
 import { useState } from "react";
 import useCryptoLatestTick from '@/hooks/useCryptoLatestTick';
 import useYahooStockQuote from '@/hooks/useYahooStockQuote';
@@ -25,6 +28,7 @@ interface ResultProps {
     netReturn: number
 }
 
+/** Renders the calculated gross/fee/tax/net return summary panel. */
 const Results: React.FC<ResultProps> = ({ grossProfit, feeCost, taxAmount, netProfit, netReturn }) => (
     <div className={styles.results}>
         <h3 className={styles.resultsTitle}>Results</h3>
@@ -64,6 +68,10 @@ const Results: React.FC<ResultProps> = ({ grossProfit, feeCost, taxAmount, netPr
     </div>
 );
 
+/**
+ * Interactive tax/fee calculator — collects inputs and shows net return results.
+ * @returns Tax-adjusted returns form + results panel.
+ */
 export default function TaxAdjustedReturns() {
     const [marketType, setMarketType] = useState<'crypto' | 'stock' | ''>('');
     const [symbol, setSymbol] = useState('');
@@ -85,6 +93,11 @@ export default function TaxAdjustedReturns() {
         instrument: debouncedSymbol
     });
 
+    /**
+     * Computes tax/fee-adjusted returns from a Yahoo quote open vs last price.
+     * @param quote - Yahoo quote with `regularMarketOpen` and `regularMarketPrice`.
+     * @returns Breakdown totals, or null if quote prices are missing.
+     */
     const calculateStockReturns = (quote: YahooQuote) => {
         if (!quote?.regularMarketPrice || !quote?.regularMarketOpen) {
             return null;
@@ -107,6 +120,11 @@ export default function TaxAdjustedReturns() {
         };
     };
 
+    /**
+     * Computes tax/fee-adjusted returns from a CoinDesk latest-tick open vs price.
+     * @param result - CoinDesk tick with `CURRENT_DAY_OPEN` and `PRICE`.
+     * @returns Breakdown totals, or null if tick prices are missing.
+     */
     const calculateCryptoReturns = (result: CryptoTickResult) => {
         if (!result?.PRICE || !result?.CURRENT_DAY_OPEN) {
             return null;

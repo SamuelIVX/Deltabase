@@ -1,3 +1,6 @@
+/**
+ * Styles for the What-If comparison summary cards.
+ */
 .unselected {
     background-color: var(--bgSoft);
     border-radius: 10px;

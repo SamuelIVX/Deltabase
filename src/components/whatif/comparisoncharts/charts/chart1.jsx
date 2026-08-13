@@ -1,4 +1,7 @@
 "use client";
+/**
+ * What-If chart for asset 1 portfolio value over the DCA window (Recharts).
+ */
 import React from 'react';
 import { MoonLoader } from 'react-spinners';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
@@ -34,6 +37,7 @@ const CustomTooltip = ({ active, payload, data }) => {
   );
 };
 
+/** Recharts area/line chart for the first What-If asset's DCA portfolio. */
 const Chart1 = () => {
   const { selectedAsset1, value1, initialInvestment1, monthlyInvestment1, setAsset1Data } = React.useContext(AssetContext);
   const { results, isLoading, error } = useYahooHistoricalData(selectedAsset1?.symbol, value1[0]);

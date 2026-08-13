@@ -1,5 +1,9 @@
+/**
+ * Dashboard footer with product credit / copyright line.
+ */
 import styles from "./footer.module.css";
 
+/** Dashboard footer credit line. */
 const Footer = () => {
   return (
     <div className={styles.container}>

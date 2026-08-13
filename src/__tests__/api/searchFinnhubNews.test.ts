@@ -1,3 +1,7 @@
+/**
+ * Unit tests for the Finnhub news API route (`searchFinnhubNews`).
+ * Mocks Next.js req/res and fetch; asserts key-missing, success, and error paths.
+ */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import handler from "@/pages/api/searchFinnhubNews";
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -9,6 +13,7 @@ interface MockRes {
     json(body: unknown): MockRes;
 }
 
+/** Minimal `NextApiResponse`-like stub for route unit tests. */
 function mockRes(): MockRes {
     const res: MockRes = {
         statusCode: 0,

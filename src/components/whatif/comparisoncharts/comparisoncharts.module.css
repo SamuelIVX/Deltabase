@@ -1,3 +1,6 @@
+/**
+ * Styles for the What-If dual-chart comparison container.
+ */
 .wrapper {
     background-color: var(--bgSoft);
     border-radius: 10px;

@@ -1,5 +1,16 @@
+/**
+ * Debounced Yahoo symbol search via `/api/searchSymbol` for asset pickers.
+ * Aborts in-flight requests when the search term changes or the hook unmounts.
+ */
 import { useState, useEffect } from 'react';
 
+/**
+ * Searches Yahoo for tickers matching `searchTerm`.
+ * @param {string} searchTerm - Free-text query; empty clears results.
+ * @returns {{ results: Array, isLoading: boolean, error: string|null }} Quote hits from Yahoo search.
+ * @example
+ * const { results } = useYahooStockSymbols("apple");
+ */
 function useYahooStockSymbols(searchTerm) {
     const [results, setResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);

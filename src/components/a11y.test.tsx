@@ -1,3 +1,6 @@
+/**
+ * Accessibility smoke tests (axe) for key dashboard / What-If surfaces.
+ */
 import { describe, it, expect, vi } from "vitest";
 import { render } from "@testing-library/react";
 import axe from "axe-core";

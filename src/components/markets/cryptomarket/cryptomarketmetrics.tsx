@@ -1,4 +1,7 @@
 'use client'
+/**
+ * Crypto market metrics panel — latest tick stats for the selected instrument.
+ */
 import styles from '../marketsmetrics.module.css';
 import { useContext } from 'react'
 import { CryptoMarketContext } from './cryptomarketchart';
@@ -16,6 +19,7 @@ const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
     </div>
 );
 
+/** Displays latest CoinDesk tick metrics for the selected instrument. */
 const CryptoMarketMetrics = () => {
     const { selectedCrypto } = useContext(CryptoMarketContext);
     const debouncedCrypto = useDebounce(selectedCrypto, 500);

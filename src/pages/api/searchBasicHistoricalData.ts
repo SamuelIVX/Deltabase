@@ -1,3 +1,7 @@
+/**
+ * Next.js Pages API: Yahoo chart series for stock-market range toggles.
+ * Proxies `yahoo-finance2.chart` with mapped intervals for `1d`…`5y` (no API key).
+ */
 import { NextApiRequest, NextApiResponse } from "next";
 import yahooFinance from "yahoo-finance2";
 
@@ -18,6 +22,11 @@ type YahooChartResult = {
     quotes?: YahooChartQuote[];
 };
 
+/**
+ * GET `?symbol=&range=` — returns `{ date, time, close, volume }[]` for the range.
+ * @param req - `symbol` required; `range` one of `1d|5d|1m|3m|6m|1y|5y` (default `1y`).
+ * @param res - Formatted quote array on 200; 400/500 on invalid input or Yahoo errors.
+ */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { symbol, range = "1y" } = req.query;
 

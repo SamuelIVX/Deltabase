@@ -1,3 +1,6 @@
+/**
+ * Styles for dashboard overview KPI cards.
+ */
 .container {
   background-color: var(--bgSoft);
   padding: 20px;

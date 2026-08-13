@@ -1,9 +1,19 @@
 'use client'
+/**
+ * What-If investment inputs — initial/monthly amounts and time-horizon slider.
+ */
 import styles from "./investmentform.module.css";
 import * as Slider from "@radix-ui/react-slider"
 import { useContext } from "react"
 import { AssetContext } from "@/components/whatif/assetselector/assetselector";
 
+/**
+ * Radix year-horizon slider (1–10) for one What-If asset.
+ * @param {{ value: number[], setValue: (v: number[]) => void }} props
+ * @param {number[]} props.value - Controlled slider value (`[years]`).
+ * @param {(v: number[]) => void} props.setValue - Updates the horizon in AssetContext.
+ * @returns {JSX.Element}
+ */
 function TimeSlider({ value, setValue }) {
   const years = value[0];
   const label = years === 1 ? 'Year' : 'Years';
@@ -28,6 +38,7 @@ function TimeSlider({ value, setValue }) {
   );
 }
 
+/** Form controls for initial/monthly investment and time horizon. */
 const InvestmentForm = () => {
   const {
     value1, setValue1,

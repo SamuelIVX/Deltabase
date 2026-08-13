@@ -1,5 +1,15 @@
+/**
+ * Derives Recharts tooltip fields (label, delta %) for What-If portfolio series.
+ */
 import { useMemo } from 'react';
 
+/**
+ * Builds tooltip display data from the active Recharts payload and full series.
+ * @param {boolean} active - Whether the tooltip is currently active.
+ * @param {Array} payload - Recharts tooltip payload for the hovered point.
+ * @param {Array} data - Full monthly portfolio series (`name`, `portfolioValue`, …).
+ * @returns {object|null} Tooltip fields (`label`, `value`, `performance`, …) or null when inactive.
+ */
 const useTooltipData = (active, payload, data) => {
     return useMemo(() => {
         if (!active || !payload?.[0] || !data) {

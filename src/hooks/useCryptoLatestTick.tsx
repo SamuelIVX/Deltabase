@@ -1,7 +1,18 @@
+/**
+ * Fetches the latest CoinDesk spot tick via `/api/searchCoinLatestTick`.
+ * Market is fixed to `kraken` for dashboard crypto metrics.
+ */
 import { useEffect, useState } from "react";
 import { TickResult } from '@/types/crypto';
 import { Params } from "@/types/crypto";
 
+/**
+ * Loads the latest tick for `instrument` (Kraken market).
+ * @param params - Must include `instrument` (e.g. `BTC-USD`); empty clears state.
+ * @returns `{ result, isLoading, error }` where `result` is a {@link TickResult}.
+ * @example
+ * const { result } = useCryptoLatestTick({ market: "kraken", instrument: "BTC-USD" });
+ */
 export default function useCryptoLatestTick({ instrument }: Params) {
     const [result, setResult] = useState<TickResult | null>(null);
     const [isLoading, setIsLoading] = useState(false);

@@ -1,3 +1,6 @@
+/**
+ * Styles for the dashboard home chart panel.
+ */
 .container {
   height: 450px;
   background-color: var(--bgSoft);
