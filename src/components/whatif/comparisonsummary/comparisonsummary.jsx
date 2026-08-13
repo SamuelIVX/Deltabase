@@ -5,7 +5,10 @@ import React, { useContext } from 'react';
 import { AssetContext } from '@/components/whatif/assetselector/assetselector';
 import styles from './comparisonsummary.module.css';
 
-/** Summarizes DCA totals and opportunity cost between the two assets. */
+/**
+ * Summarizes DCA totals and opportunity cost between the two assets.
+ * @returns {JSX.Element}
+ */
 const ComparisonSummary = () => {
     const {
         asset1Data,

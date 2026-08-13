@@ -7,7 +7,10 @@ import StockMarketMetrics from "@/components/markets/stockmarket/stockmarketmetr
 import { StockMarketContext } from "@/components/markets/stockmarket/stockmarketchart";
 import { useState } from "react";
 
-/** Stock market view composing chart + metrics components. */
+/**
+ * Stock market view composing chart + metrics components.
+ * @returns {JSX.Element}
+ */
 const StockMarket = () => {
     const [selectedStock, setSelectedStock] = useState(null);
 

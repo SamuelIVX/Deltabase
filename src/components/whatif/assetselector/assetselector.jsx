@@ -8,7 +8,10 @@ import styles from "./assetselector.module.css";
 import useYahooStockSymbols from '@/hooks/useYahooStockSymbols';
 import useDebounce from '@/hooks/useDebounce';
 
-/** Cross-component What-If state (selected assets, investments, horizon). */
+/**
+ * Cross-component What-If state (selected assets, investments, horizon).
+ * Provided by `whatif/page.jsx`; consumed by selector/form/charts/summary.
+ */
 export const AssetContext = createContext({
     selectedAsset1: null,
     setSelectedAsset1: (value) => { },
@@ -32,7 +35,12 @@ export const AssetContext = createContext({
     setAsset2Data: (value) => { },
 });
 
-/** Dual asset search/select UI bound to AssetContext. */
+/**
+ * Dual asset search/select UI bound to AssetContext.
+ * @returns {JSX.Element}
+ * @example
+ * <AssetSelector />
+ */
 const AssetSelector = () => {
     const [searchTerm1, setSearchTerm1] = useState('');
     const [searchTerm2, setSearchTerm2] = useState('');

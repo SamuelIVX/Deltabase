@@ -3,7 +3,10 @@
  */
 import TaxFreeCalculator from "@/components/taxfreecalculator/taxfreecalculator"
 
-/** Renders the tax-adjusted returns calculator. */
+/**
+ * Renders the tax-adjusted returns calculator.
+ * @returns {JSX.Element}
+ */
 const Calculator = () => {
 
     return (

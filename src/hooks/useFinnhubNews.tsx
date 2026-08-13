@@ -5,7 +5,11 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
 
-/** Fetches news JSON from the internal Finnhub proxy route. */
+/**
+ * Fetches news JSON from the internal Finnhub proxy route.
+ * @returns Parsed news article array from `/api/searchFinnhubNews`.
+ * @throws {Error} When the proxy responds non-OK (uses JSON `error` when present).
+ */
 const fetchFromFinnhub = async () => {
     const response = await fetch("/api/searchFinnhubNews");
     if (!response.ok) {

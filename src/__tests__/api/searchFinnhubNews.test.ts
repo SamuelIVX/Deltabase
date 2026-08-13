@@ -13,7 +13,13 @@ interface MockRes {
     json(body: unknown): MockRes;
 }
 
-/** Minimal `NextApiResponse`-like stub for route unit tests. */
+/**
+ * Minimal `NextApiResponse`-like stub for route unit tests.
+ * @returns Mutable status/body recorder with chainable `status`/`json`.
+ * @example
+ * const res = mockRes();
+ * await handler({} as NextApiRequest, res as unknown as NextApiResponse);
+ */
 function mockRes(): MockRes {
     const res: MockRes = {
         statusCode: 0,

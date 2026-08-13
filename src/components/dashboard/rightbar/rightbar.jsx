@@ -6,7 +6,10 @@ import styles from "./rightbar.module.css";
 import { FaArrowTrendUp } from "react-icons/fa6";
 import useFinnhubNews from "@/hooks/useFinnhubNews"
 
-/** Right rail with Finnhub news feed and static promo blocks. */
+/**
+ * Right rail with Finnhub news feed and static promo blocks.
+ * @returns {JSX.Element}
+ */
 const Rightbar = () => {
   const {data, isPending, isError, error} = useFinnhubNews();
   if(isPending) { return <div>Loading...</div> };

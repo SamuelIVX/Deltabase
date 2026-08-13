@@ -26,6 +26,8 @@ type YahooChartResult = {
  * GET `?symbol=&range=` — returns `{ date, time, close, volume }[]` for the range.
  * @param req - `symbol` required; `range` one of `1d|5d|1m|3m|6m|1y|5y` (default `1y`).
  * @param res - Formatted quote array on 200; 400/500 on invalid input or Yahoo errors.
+ * @example
+ * // GET /api/searchBasicHistoricalData?symbol=MSFT&range=6m → 200 [{ date, time, close, volume }]
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { symbol, range = "1y" } = req.query;

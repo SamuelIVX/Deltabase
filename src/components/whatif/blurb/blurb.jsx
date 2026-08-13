@@ -3,7 +3,10 @@
  */
 import styles from "./blurb.module.css";
 
-/** Short marketing/explanation copy for the What-If tool. */
+/**
+ * Short marketing/explanation copy for the What-If tool.
+ * @returns {JSX.Element}
+ */
 const Blurb = () => {
     return (
         <div className={styles.container}>

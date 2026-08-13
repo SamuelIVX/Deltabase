@@ -19,6 +19,8 @@ interface CandleData {
  * @param req - Optional `market` (default `kraken`), `instrument` (default `BTC-USD`),
  *   `range` (`1d|5d|1mo|3mo|6mo|1y|5y`).
  * @param res - Normalized candle rows on 200; 500 if key missing or CoinDesk fails.
+ * @example
+ * // GET /api/searchCoinHistoricalData?instrument=ETH-USD&range=1y → 200 [{ TIMESTAMP, CLOSE, ... }]
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const apiKey = process.env.COINDESK_API_KEY;

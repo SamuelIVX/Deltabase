@@ -19,6 +19,8 @@ type YahooChartResult = {
  * GET `?symbol=&years=` — monthly quotes from `years` ago through today.
  * @param req - `symbol` (string) and `years` (numeric string) required.
  * @param res - JSON array of monthly quote rows on 200; 400/500 on failure.
+ * @example
+ * // GET /api/searchHistoricalData?symbol=AAPL&years=5 → 200 [{ date, adjclose, ... }]
  */
 async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { symbol, years } = req.query;

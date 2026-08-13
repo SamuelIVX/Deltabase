@@ -19,7 +19,10 @@ interface CryptoMarketContextType {
     setSelectedCrypto: (value: string) => void;
 }
 
-/** Shared crypto chart selection context (instrument + range). */
+/**
+ * Shared crypto chart selection context (instrument + range).
+ * Provided by the crypto market page; consumed by chart + metrics.
+ */
 export const CryptoMarketContext = createContext<CryptoMarketContextType>({
     selectedCrypto: "",
     setSelectedCrypto: () => { },
@@ -43,7 +46,12 @@ const CryptoTooltip: React.FC<
         );
     };
 
-/** Interactive crypto price chart with range controls. */
+/**
+ * Interactive crypto price chart with range controls (CoinDesk history via hooks).
+ * @returns The chart panel including instrument input and range toggles.
+ * @example
+ * <CryptoMarketChart />
+ */
 const CryptoMarketChart = () => {
     const { selectedCrypto, setSelectedCrypto } = useContext(CryptoMarketContext);
     const debouncedCrypto = useDebounce(selectedCrypto, 700);

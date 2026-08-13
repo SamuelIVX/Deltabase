@@ -11,6 +11,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
  * SECURITY: uses `COINDESK_API_KEY` in the query string; do not log the full URL.
  * @param req - Optional `market` (default `kraken`), `instrument` (default `BTC-USD`).
  * @param res - Tick object on 200; 400 if instrument missing from payload; 500 on key/API failure.
+ * @example
+ * // GET /api/searchCoinLatestTick?instrument=BTC-USD → 200 { PRICE, ... }
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const apiKey = process.env.COINDESK_API_KEY;

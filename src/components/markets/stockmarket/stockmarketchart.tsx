@@ -21,7 +21,10 @@ interface StockMarketContextType {
     setSelectedStock: (value: string) => void;
 }
 
-/** Shared stock chart selection context (symbol + range). */
+/**
+ * Shared stock chart selection context (symbol + range).
+ * Provided by the stock market page; consumed by chart + metrics.
+ */
 export const StockMarketContext = createContext<StockMarketContextType>({
     selectedStock: "",
     setSelectedStock: () => { },
@@ -44,7 +47,12 @@ const StockTooltip: React.FC<
         );
     };
 
-/** Interactive stock price chart with range controls. */
+/**
+ * Interactive stock price chart with range controls (Yahoo history via hooks).
+ * @returns The chart panel including symbol input and range toggles.
+ * @example
+ * <StockMarketChart />
+ */
 const StockMarketChart = () => {
     const { selectedStock, setSelectedStock } = useContext(StockMarketContext);
     const debouncedStock = useDebounce(selectedStock, 500);

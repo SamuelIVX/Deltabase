@@ -15,6 +15,8 @@ import ComparisonSummary from "@/components/whatif/comparisonsummary/comparisons
  * What-If flagship page — holds investment/asset state in AssetContext and
  * composes selector, form, charts, and summary.
  * @returns {JSX.Element}
+ * @example
+ * // Routed at /dashboard/whatif
  */
 const WhatIf = () => {
     // Asset 1 state

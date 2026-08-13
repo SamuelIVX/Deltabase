@@ -11,7 +11,10 @@ import {
   MdSearch,
 } from "react-icons/md";
 
-/** Top navbar showing the current pathname segment as title. */
+/**
+ * Top navbar showing the current pathname segment as title.
+ * @returns {JSX.Element}
+ */
 const Navbar = () => {
   const pathname = usePathname();
 

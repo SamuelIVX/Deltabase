@@ -8,7 +8,10 @@ import styles from "./comparisoncharts.module.css";
 import Chart1 from "./charts/chart1";
 import Chart2 from "./charts/chart2";
 
-/** Layout wrapper rendering Chart1 and Chart2 side by side. */
+/**
+ * Layout wrapper rendering Chart1 and Chart2 side by side.
+ * @returns {JSX.Element}
+ */
 const ComparisonCharts = () => {
     const {
         selectedAsset1,

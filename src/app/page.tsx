@@ -5,7 +5,11 @@
 import styles from "@/components/page/page.module.css";
 import { useRouter } from "next/navigation";
 
-/** Landing page with brand intro and CTA into `/dashboard`. */
+/**
+ * Landing page with brand intro and CTA into `/dashboard`.
+ * Demo login form — no real auth; submit navigates to the dashboard.
+ * @returns The landing/login view.
+ */
 const LoginPage = () => {
 
   const router = useRouter();

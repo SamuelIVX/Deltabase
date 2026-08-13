@@ -28,7 +28,11 @@ interface ResultProps {
     netReturn: number
 }
 
-/** Renders the calculated gross/fee/tax/net return summary panel. */
+/**
+ * Renders the calculated gross/fee/tax/net return summary panel.
+ * @param props - Computed result fields from {@link TaxAdjustedReturns}.
+ * @returns The results panel.
+ */
 const Results: React.FC<ResultProps> = ({ grossProfit, feeCost, taxAmount, netProfit, netReturn }) => (
     <div className={styles.results}>
         <h3 className={styles.resultsTitle}>Results</h3>
@@ -71,6 +75,8 @@ const Results: React.FC<ResultProps> = ({ grossProfit, feeCost, taxAmount, netPr
 /**
  * Interactive tax/fee calculator — collects inputs and shows net return results.
  * @returns Tax-adjusted returns form + results panel.
+ * @example
+ * <TaxAdjustedReturns />
  */
 export default function TaxAdjustedReturns() {
     const [marketType, setMarketType] = useState<'crypto' | 'stock' | ''>('');
