@@ -26,10 +26,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (!response.ok) {
             const errorText = await response.text();
             console.error("Finnhub API Error:", response.status, errorText);
-            throw new Error(`Finnhub error: ${response.status}`);
+            return res.status(500).json({ error: `Finnhub error: ${response.status}` });
         }
 
-        const data = await response.json();
+        let data: unknown;
+        try {
+            data = await response.json();
+        } catch {
+            return res.status(502).json({ error: "Unexpected response from Finnhub" });
+        }
 
         if (!Array.isArray(data)) {
             return res.status(502).json({ error: "Unexpected response from Finnhub" });
@@ -38,11 +43,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json(data);
     } catch (err: unknown) {
         console.error(err);
-
-        if (err instanceof Error) {
-            res.status(500).json({ error: err.message });
-        } else {
-            res.status(500).json({ error: "Failed to fetch data" });
-        }
+        res.status(500).json({ error: "Failed to fetch data" });
     }
 }

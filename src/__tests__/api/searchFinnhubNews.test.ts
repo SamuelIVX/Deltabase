@@ -80,6 +80,21 @@ describe("searchFinnhubNews", () => {
         const res = mockRes();
         await handler(req, res as unknown as NextApiResponse);
         expect(res.statusCode).toBe(502);
+        expect(res.body).toEqual({ error: "Unexpected response from Finnhub" });
+    });
+
+    it("returns 502 when the upstream body is malformed JSON", async () => {
+        process.env.FINNHUB_API_KEY = "test-key";
+        vi.mocked(fetch).mockResolvedValue({
+            ok: true,
+            json: async () => { throw new SyntaxError("Unexpected token"); },
+        } as unknown as Response);
+
+        const req = {} as NextApiRequest;
+        const res = mockRes();
+        await handler(req, res as unknown as NextApiResponse);
+        expect(res.statusCode).toBe(502);
+        expect(res.body).toEqual({ error: "Unexpected response from Finnhub" });
     });
 
     it("returns 500 when the upstream request fails", async () => {
