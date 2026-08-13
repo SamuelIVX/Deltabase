@@ -47,7 +47,10 @@ const menuItems = [
   }
 ];
 
-/** Async server sidebar listing dashboard navigation sections. */
+/**
+ * Async server sidebar listing dashboard navigation sections.
+ * @returns {Promise<JSX.Element>}
+ */
 const Sidebar = async () => {
   return (
     <div className={styles.container}>

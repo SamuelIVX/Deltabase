@@ -51,7 +51,10 @@ const data = [
   },
 ];
 
-/** Renders the dashboard home demo line chart. */
+/**
+ * Renders the dashboard home demo line chart (static sample series).
+ * @returns {JSX.Element}
+ */
 const Chart = () => {
   return (
     <div className={styles.container}>

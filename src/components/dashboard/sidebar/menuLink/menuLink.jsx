@@ -10,6 +10,8 @@ import { usePathname } from "next/navigation";
  * Sidebar link that highlights when the pathname matches `item.path`.
  * @param {{ item: { title: string, path: string, icon: import('react').ReactNode } }} props
  * @returns {JSX.Element}
+ * @example
+ * <MenuLink item={{ title: 'What-If', path: '/dashboard/whatif', icon: <Icon /> }} />
  */
 const MenuLink = ({ item }) => {
   const pathname = usePathname();

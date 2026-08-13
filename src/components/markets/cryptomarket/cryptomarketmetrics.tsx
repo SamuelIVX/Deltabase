@@ -19,7 +19,10 @@ const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
     </div>
 );
 
-/** Displays latest CoinDesk tick metrics for the selected instrument. */
+/**
+ * Displays latest CoinDesk tick metrics for the selected instrument.
+ * @returns The key-statistics panel.
+ */
 const CryptoMarketMetrics = () => {
     const { selectedCrypto } = useContext(CryptoMarketContext);
     const debouncedCrypto = useDebounce(selectedCrypto, 500);

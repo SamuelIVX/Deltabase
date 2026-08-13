@@ -3,7 +3,10 @@
  */
 import styles from "./footer.module.css";
 
-/** Dashboard footer credit line. */
+/**
+ * Dashboard footer credit line.
+ * @returns {JSX.Element}
+ */
 const Footer = () => {
   return (
     <div className={styles.container}>

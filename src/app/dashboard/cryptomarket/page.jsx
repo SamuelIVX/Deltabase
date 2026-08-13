@@ -7,7 +7,10 @@ import CryptoMarketChart from "@/components/markets/cryptomarket/cryptomarketcha
 import CryptoMarketMetrics from "@/components/markets/cryptomarket/cryptomarketmetrics";
 import { CryptoMarketContext } from "@/components/markets/cryptomarket/cryptomarketchart";
 
-/** Crypto market view composing chart + metrics components. */
+/**
+ * Crypto market view composing chart + metrics components.
+ * @returns {JSX.Element}
+ */
 const CryptoMarket = () => {
     const [selectedCrypto, setSelectedCrypto] = useState(null);
 

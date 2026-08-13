@@ -37,7 +37,11 @@ const CustomTooltip = ({ active, payload, data }) => {
   );
 };
 
-/** Recharts area/line chart for the second What-If asset's DCA portfolio. */
+/**
+ * Recharts area/line chart for the second What-If asset's DCA portfolio.
+ * Reads AssetContext; writes `asset2Data` when the series updates.
+ * @returns {JSX.Element}
+ */
 const Chart2 = () => {
   const { selectedAsset2, value2, initialInvestment2, monthlyInvestment2, setAsset2Data } = React.useContext(AssetContext);
   const { results, isLoading, error } = useYahooHistoricalData(selectedAsset2?.symbol, value2[0]);

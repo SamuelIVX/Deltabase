@@ -6,7 +6,10 @@ import Card from "@/components/dashboard/card/card";
 import Rightbar from "@/components/dashboard/rightbar/rightbar";
 import Chart from "@/components/dashboard/chart/chart"
 
-/** Dashboard home composing Card, Chart, and Rightbar panels. */
+/**
+ * Dashboard home composing Card, Chart, and Rightbar panels.
+ * @returns {JSX.Element}
+ */
 const Dashboard = () => {
   return (
     <div className={styles.wrapper}>

@@ -13,6 +13,8 @@ import { AssetContext } from "@/components/whatif/assetselector/assetselector";
  * @param {number[]} props.value - Controlled slider value (`[years]`).
  * @param {(v: number[]) => void} props.setValue - Updates the horizon in AssetContext.
  * @returns {JSX.Element}
+ * @example
+ * <TimeSlider value={[3]} setValue={setValue1} />
  */
 function TimeSlider({ value, setValue }) {
   const years = value[0];
@@ -38,7 +40,12 @@ function TimeSlider({ value, setValue }) {
   );
 }
 
-/** Form controls for initial/monthly investment and time horizon. */
+/**
+ * Form controls for initial/monthly investment and time horizon (reads AssetContext).
+ * @returns {JSX.Element}
+ * @example
+ * <InvestmentForm />
+ */
 const InvestmentForm = () => {
   const {
     value1, setValue1,

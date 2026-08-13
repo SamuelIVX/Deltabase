@@ -5,7 +5,10 @@ import { FaPiggyBank, FaMoneyBillWave } from "react-icons/fa";
 import { FaUserTie } from "react-icons/fa6";
 import styles from "./card.module.css";
 
-/** Renders three hard-coded overview KPI cards. */
+/**
+ * Renders three hard-coded overview KPI cards (demo portfolio metrics).
+ * @returns {JSX.Element}
+ */
 const Card = () => {
     return (
       <>

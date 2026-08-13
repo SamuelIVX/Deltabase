@@ -9,6 +9,8 @@ import yahooFinance from 'yahoo-finance2';
  * GET `?symbol=` — returns a Yahoo quote payload for the given ticker.
  * @param req - Must include a string `symbol` query param.
  * @param res - JSON quote on 200; 400 if symbol missing; 500 on Yahoo errors.
+ * @example
+ * // GET /api/searchStockQuote?symbol=AAPL → 200 { symbol, regularMarketPrice, ... }
  */
 async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { symbol } = req.query;

@@ -9,6 +9,9 @@ import { useMemo } from 'react';
  * @param {Array} payload - Recharts tooltip payload for the hovered point.
  * @param {Array} data - Full monthly portfolio series (`name`, `portfolioValue`, …).
  * @returns {object|null} Tooltip fields (`label`, `value`, `performance`, …) or null when inactive.
+ * @example
+ * const tip = useTooltipData(active, payload, monthlyPortfolio);
+ * // tip?.formattedValue, tip?.performance
  */
 const useTooltipData = (active, payload, data) => {
     return useMemo(() => {

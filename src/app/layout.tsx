@@ -14,6 +14,8 @@ const queryClient = new QueryClient();
  * Wraps all routes with QueryClientProvider and the root HTML shell.
  * @param children - Nested App Router page content.
  * @returns The root HTML document structure.
+ * @example
+ * // Applied automatically by the App Router to every page
  */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 

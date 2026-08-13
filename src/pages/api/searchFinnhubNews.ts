@@ -11,6 +11,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
  * SECURITY: uses `FINNHUB_API_KEY`; do not log the full upstream URL or token.
  * @param req - Unused query params; category is fixed to `general`.
  * @param res - News article array on 200; 500 if key missing or Finnhub fails; 502 on bad payload.
+ * @example
+ * // GET /api/searchFinnhubNews → 200 [{ headline, url, ... }]
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const apiKey = process.env.FINNHUB_API_KEY;

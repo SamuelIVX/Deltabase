@@ -21,7 +21,10 @@ const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
     </div>
 );
 
-/** Displays Yahoo quote metrics for the selected ticker. */
+/**
+ * Displays Yahoo quote metrics for the selected ticker (via StockMarketContext).
+ * @returns The key-statistics panel.
+ */
 const StockMarketMetrics = () => {
     const { selectedStock } = useContext(StockMarketContext);
     const debouncedStock = useDebounce(selectedStock, 500);
