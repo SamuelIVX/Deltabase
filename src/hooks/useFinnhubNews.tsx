@@ -1,12 +1,12 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
 
-const finnhub_api_key = process.env.NEXT_PUBLIC_FINNHUB_API_KEY;
-const url = `https://finnhub.io/api/v1/news?category=general&token=${finnhub_api_key}`;
-
 const fetchFromFinnhub = async () => {
-    const response = await fetch(url);
-    if (!response.ok) { throw new Error("Failed to fetch data.") }
+    const response = await fetch("/api/searchFinnhubNews");
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error ${response.status}`);
+    }
 
     return await response.json();
 }

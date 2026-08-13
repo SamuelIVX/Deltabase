@@ -68,7 +68,7 @@ You'll need free API keys from:
 Create a `.env` file in the root directory:
 
 ```env
-NEXT_PUBLIC_FINNHUB_API_KEY=your_finnhub_key_here
+FINNHUB_API_KEY=your_finnhub_key_here
 COINDESK_API_KEY=your_coindesk_key_here
 ```
 
