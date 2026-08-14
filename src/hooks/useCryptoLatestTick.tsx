@@ -1,67 +1,39 @@
 /**
- * Fetches the latest CoinDesk spot tick via `/api/searchCoinLatestTick`.
+ * Fetches the latest CoinDesk spot tick via `/api/searchCoinLatestTick` using React Query.
  * Market is fixed to `kraken` for dashboard crypto metrics.
  */
-import { useEffect, useState } from "react";
-import { TickResult } from '@/types/crypto';
-import { Params } from "@/types/crypto";
+import { useQuery } from "@tanstack/react-query";
+import { TickResult, Params } from "@/types/crypto";
+
+const fetchCryptoLatestTick = async (instrument: string): Promise<TickResult> => {
+    const params = new URLSearchParams({ market: 'kraken', instrument });
+    const res = await fetch(`/api/searchCoinLatestTick?${params.toString()}`);
+    if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || `HTTP error ${res.status}`);
+    }
+    return await res.json();
+};
 
 /**
  * Loads the latest tick for `instrument` (Kraken market).
  * @param params - Must include `instrument` (e.g. `BTC-USD`); empty clears state.
- * @returns `{ result, isLoading, error }` where `result` is a {@link TickResult}.
+ * @returns `{ result, isLoading, error }` shim where `result` is a {@link TickResult}.
  * @example
  * const { result } = useCryptoLatestTick({ market: "kraken", instrument: "BTC-USD" });
  */
 export default function useCryptoLatestTick({ instrument }: Params) {
-    const [result, setResult] = useState<TickResult | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const enabled = Boolean(instrument);
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['cryptoLatestTick', instrument],
+        queryFn: () => fetchCryptoLatestTick(instrument!),
+        enabled,
+        staleTime: 1000 * 60 * 2,
+    });
 
-    useEffect(() => {
-        let cancelled = false;
-
-        if (!instrument) {
-            queueMicrotask(() => {
-                if (cancelled) return;
-                setResult(null);
-                setError(null);
-                setIsLoading(false);
-            });
-            return () => {
-                cancelled = true;
-            };
-        }
-
-        queueMicrotask(() => {
-            if (cancelled) return;
-            setIsLoading(true);
-            setError(null);
-
-            fetch(`/api/searchCoinLatestTick?market=kraken&instrument=${instrument}`)
-                .then(async res => {
-                    if (!res.ok) {
-                        const errorData = await res.json();
-                        throw new Error(errorData.error || `HTTP error ${res.status}`);
-                    }
-                    return res.json();
-                })
-                .then(data => {
-                    if (!cancelled) setResult(data);
-                })
-                .catch(err => {
-                    console.error('Hook error:', err);
-                    if (!cancelled) setError(err.message);
-                })
-                .finally(() => {
-                    if (!cancelled) setIsLoading(false);
-                });
-        });
-
-        return () => {
-            cancelled = true;
-        };
-    }, [instrument]);
-
-    return { result, isLoading, error };
+    return {
+        result: enabled ? (data ?? null) : null,
+        isLoading: enabled ? isLoading : false,
+        error: enabled && error ? (error as Error).message : null,
+    };
 }

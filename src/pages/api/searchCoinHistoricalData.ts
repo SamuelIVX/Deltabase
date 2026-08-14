@@ -4,6 +4,8 @@
  * token — never expose this key to the client or log the Authorization header.
  */
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getCoinDeskHeaders } from "@/lib/coindesk";
+
 interface CandleData {
     TIMESTAMP: number;
     OPEN: number;
@@ -74,10 +76,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
         const response = await fetch(url.toString(), {
             method: 'GET',
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`
-            },
+            headers: getCoinDeskHeaders(apiKey),
         });
 
         if (!response.ok) {
