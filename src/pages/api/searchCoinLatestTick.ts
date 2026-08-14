@@ -1,8 +1,8 @@
 /**
  * Next.js Pages API: CoinDesk latest spot tick for a crypto instrument.
- * SECURITY: reads `COINDESK_API_KEY` from server env and passes it as an
- * `api_key` query param to CoinDesk — never expose this key to the client
- * or log the outbound request URL (it embeds the key).
+ * SECURITY: reads `COINDESK_API_KEY` from server env and sends it as an
+ * `Authorization: Bearer` header to CoinDesk — never expose this key to the client
+ * or log the outbound request headers (it embeds the key).
  */
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getCoinDeskHeaders } from "@/lib/coindesk";

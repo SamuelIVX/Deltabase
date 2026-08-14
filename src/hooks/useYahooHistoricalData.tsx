@@ -5,7 +5,8 @@
 import { useQuery } from "@tanstack/react-query";
 
 const fetchYahooHistoricalData = async (symbol: string, range: string) => {
-    const res = await fetch(`/api/searchHistoricalData?symbol=${symbol}&years=${range}`);
+    const params = new URLSearchParams({ symbol, years: range });
+    const res = await fetch(`/api/searchHistoricalData?${params.toString()}`);
     if (!res.ok) {
         throw new Error(`HTTP error ${res.status}`);
     }

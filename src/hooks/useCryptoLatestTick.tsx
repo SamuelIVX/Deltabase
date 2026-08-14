@@ -6,7 +6,8 @@ import { useQuery } from "@tanstack/react-query";
 import { TickResult, Params } from "@/types/crypto";
 
 const fetchCryptoLatestTick = async (instrument: string): Promise<TickResult> => {
-    const res = await fetch(`/api/searchCoinLatestTick?market=kraken&instrument=${instrument}`);
+    const params = new URLSearchParams({ market: 'kraken', instrument });
+    const res = await fetch(`/api/searchCoinLatestTick?${params.toString()}`);
     if (!res.ok) {
         const errorData = await res.json();
         throw new Error(errorData.error || `HTTP error ${res.status}`);

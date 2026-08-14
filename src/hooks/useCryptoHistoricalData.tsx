@@ -19,14 +19,20 @@ type Result = {
 const fetchCryptoHistoricalData = async (
     market: string,
     instrument: string,
-    range: string
+    range: string,
+    signal?: AbortSignal
 ): Promise<Result[]> => {
-    const res = await fetch(
-        `/api/searchCoinHistoricalData?market=${market}&instrument=${instrument}&range=${range}`
-    );
+    const params = new URLSearchParams({ market, instrument, range });
+    const res = await fetch(`/api/searchCoinHistoricalData?${params.toString()}`, { signal });
     if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || `HTTP error ${res.status}`);
+        let errorMessage: string;
+        try {
+            const errorData = await res.json();
+            errorMessage = errorData.error || `HTTP error ${res.status}`;
+        } catch {
+            errorMessage = `HTTP error ${res.status}`;
+        }
+        throw new Error(errorMessage);
     }
     const data = await res.json();
     if (!Array.isArray(data)) {
@@ -45,12 +51,13 @@ const fetchCryptoHistoricalData = async (
 export default function useCryptoHistoricalData({
     market,
     instrument,
-    range = '1mo'
-}: Params) {
+    range = '1mo',
+    signal,
+}: Params & { signal?: AbortSignal }) {
     const enabled = Boolean(market && instrument);
     const { data, isLoading, error } = useQuery({
         queryKey: ['cryptoHistoricalData', market, instrument, range],
-        queryFn: () => fetchCryptoHistoricalData(market!, instrument!, range),
+        queryFn: ({ signal }) => fetchCryptoHistoricalData(market!, instrument!, range, signal),
         enabled,
         staleTime: 1000 * 60 * 5,
     });

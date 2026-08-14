@@ -39,7 +39,7 @@ Unify server-side CoinDesk API authentication to standard HTTP Bearer headers ac
 
 1. WHEN an API route communicates with CoinDesk (`searchCoinHistoricalData` or `searchCoinLatestTick`), THE SYSTEM SHALL send `COINDESK_API_KEY` via `Authorization: Bearer ${apiKey}` in HTTP headers without passing `api_key` in the URL query string. (R1)
 2. WHEN `useCryptoHistoricalData`, `useCryptoLatestTick`, `useYahooHistoricalData`, `useYahooBasicHistoricalData`, `useYahooStockQuote`, or `useYahooStockSymbols` are called, THE SYSTEM SHALL execute data fetching using React Query (`useQuery`). (R2)
-3. WHEN any component invokes a refactored data hook, THE SYSTEM SHALL return the expected return object keys (`results`, `result`, `quote`, `historicalData`, `data`, `isLoading`, `error`) maintaining 100% backward compatibility. (R3)
+3. WHEN any component invokes a refactored data hook, THE SYSTEM SHALL return the expected return object keys (  `results`, `result`, `quote`, `historicalData`, `isLoading`, `error`) maintaining 100% backward compatibility. (R3)
 4. WHEN `package.json` is audited, THE SYSTEM SHALL omit unused dependencies (`zustand`, `react-router-dom`, `slider`). (R4)
 
 ## Acceptance Criteria
