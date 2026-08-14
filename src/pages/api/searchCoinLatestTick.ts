@@ -5,10 +5,11 @@
  * or log the outbound request URL (it embeds the key).
  */
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getCoinDeskHeaders } from "@/lib/coindesk";
 
 /**
  * GET latest tick for `instrument` on `market`.
- * SECURITY: uses `COINDESK_API_KEY` in the query string; do not log the full URL.
+ * SECURITY: uses `COINDESK_API_KEY`; do not log the key or raw Authorization header.
  * @param req - Optional `market` (default `kraken`), `instrument` (default `BTC-USD`).
  * @param res - Tick object on 200; 400 if instrument missing from payload; 500 on key/API failure.
  * @example
@@ -33,7 +34,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         instruments: instrument as string,
         apply_mapping: "true",
         response_format: "JSON",
-        api_key: apiKey, // ✅ pass key as query param
     };
 
     const url = new URL(baseUrl);
@@ -42,7 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
         const response = await fetch(url.toString(), {
             method: 'GET',
-            headers: { "Content-Type": "application/json" },
+            headers: getCoinDeskHeaders(apiKey),
         });
 
         if (!response.ok) {

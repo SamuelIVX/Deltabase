@@ -1,8 +1,8 @@
 /**
- * Fetches CoinDesk historical candles via `/api/searchCoinHistoricalData`.
+ * Fetches CoinDesk historical candles via `/api/searchCoinHistoricalData` using React Query.
  * Used by crypto market charts and What-If crypto legs.
  */
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Params } from "@/types/crypto";
 
 type Result = {
@@ -16,70 +16,48 @@ type Result = {
     volume: number;
 };
 
+const fetchCryptoHistoricalData = async (
+    market: string,
+    instrument: string,
+    range: string
+): Promise<Result[]> => {
+    const res = await fetch(
+        `/api/searchCoinHistoricalData?market=${market}&instrument=${instrument}&range=${range}`
+    );
+    if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || `HTTP error ${res.status}`);
+    }
+    const data = await res.json();
+    if (!Array.isArray(data)) {
+        throw new Error("Invalid API response format");
+    }
+    return data;
+};
+
 /**
  * Loads historical crypto candles for `market`/`instrument`/`range`.
  * @param params - CoinDesk query params (`market`, `instrument`, optional `range`, default `1mo`).
- * @returns `{ results, isLoading, error }` for the candle series.
+ * @returns `{ results, isLoading, error }` shim for backward compatibility.
  * @example
  * const { results } = useCryptoHistoricalData({ market: "kraken", instrument: "BTC-USD", range: "1y" });
  */
-export default function useCryptoHistoricalData(
-    {
-        market,
-        instrument,
-        range = '1mo'
-    }: Params) {
-    const [results, setResults] = useState<Result[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+export default function useCryptoHistoricalData({
+    market,
+    instrument,
+    range = '1mo'
+}: Params) {
+    const enabled = Boolean(market && instrument);
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['cryptoHistoricalData', market, instrument, range],
+        queryFn: () => fetchCryptoHistoricalData(market!, instrument!, range),
+        enabled,
+        staleTime: 1000 * 60 * 5,
+    });
 
-    useEffect(() => {
-        let cancelled = false;
-
-        if (!market || !instrument) {
-            queueMicrotask(() => {
-                if (cancelled) return;
-                setResults([]);
-                setError(null);
-                setIsLoading(false);
-            });
-            return () => {
-                cancelled = true;
-            };
-        }
-
-        queueMicrotask(() => {
-            if (cancelled) return;
-            setIsLoading(true);
-            setError(null);
-
-            fetch(`/api/searchCoinHistoricalData?market=${market}&instrument=${instrument}&range=${range}`)
-                .then(async res => {
-                    if (!res.ok) {
-                        const errorData = await res.json();
-                        throw new Error(errorData.error || `HTTP error ${res.status}`);
-                    }
-                    return res.json();
-                })
-                .then(data => {
-                    if (!Array.isArray(data)) {
-                        throw new Error("Invalid API response format");
-                    }
-                    if (!cancelled) setResults(data);
-                })
-                .catch(err => {
-                    console.error('Hook error:', err);
-                    if (!cancelled) setError(err.message);
-                })
-                .finally(() => {
-                    if (!cancelled) setIsLoading(false);
-                });
-        });
-
-        return () => {
-            cancelled = true;
-        };
-    }, [market, instrument, range]);
-
-    return { results, isLoading, error };
+    return {
+        results: enabled ? (data ?? []) : [],
+        isLoading: enabled ? isLoading : false,
+        error: enabled && error ? (error as Error).message : null,
+    };
 }

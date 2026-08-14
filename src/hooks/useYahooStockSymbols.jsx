@@ -1,8 +1,19 @@
 /**
- * Debounced Yahoo symbol search via `/api/searchSymbol` for asset pickers.
+ * Yahoo symbol search via `/api/searchSymbol` for asset pickers using React Query.
  * Aborts in-flight requests when the search term changes or the hook unmounts.
  */
-import { useState, useEffect } from 'react';
+import { useQuery } from "@tanstack/react-query";
+
+const fetchYahooStockSymbols = async (searchTerm, signal) => {
+    const res = await fetch(`/api/searchSymbol?searchTerm=${encodeURIComponent(searchTerm)}`, {
+        signal,
+    });
+    if (!res.ok) {
+        throw new Error(`HTTP error ${res.status}`);
+    }
+    const data = await res.json();
+    return data.quotes || [];
+};
 
 /**
  * Searches Yahoo for tickers matching `searchTerm`.
@@ -12,55 +23,19 @@ import { useState, useEffect } from 'react';
  * const { results } = useYahooStockSymbols("apple");
  */
 function useYahooStockSymbols(searchTerm) {
-    const [results, setResults] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const enabled = Boolean(searchTerm);
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['yahooStockSymbols', searchTerm],
+        queryFn: ({ signal }) => fetchYahooStockSymbols(searchTerm, signal),
+        enabled,
+        staleTime: 1000 * 60 * 5,
+    });
 
-    useEffect(() => {
-        const controller = new AbortController();
-        let cancelled = false;
-
-        if (!searchTerm) {
-            queueMicrotask(() => {
-                if (cancelled) return;
-                setResults([]);
-                setError(null);
-                setIsLoading(false);
-            });
-            return () => {
-                cancelled = true;
-                controller.abort();
-            };
-        }
-
-        queueMicrotask(() => {
-            if (cancelled) return;
-            setIsLoading(true);
-            fetch(`/api/searchSymbol?searchTerm=${encodeURIComponent(searchTerm)}`, {
-                signal: controller.signal,
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (cancelled) return;
-                    setResults(data.quotes || []);
-                    setError(null);
-                })
-                .catch(err => {
-                    if (err.name === 'AbortError' || cancelled) return;
-                    setError(err.message);
-                })
-                .finally(() => {
-                    if (!cancelled) setIsLoading(false);
-                });
-        });
-
-        return () => {
-            cancelled = true;
-            controller.abort();
-        };
-    }, [searchTerm]);
-
-    return { results, isLoading, error };
+    return {
+        results: enabled ? (data ?? []) : [],
+        isLoading: enabled ? isLoading : false,
+        error: enabled && error ? error.message : null,
+    };
 }
 
 export default useYahooStockSymbols;
