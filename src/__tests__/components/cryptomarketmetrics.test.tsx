@@ -86,5 +86,26 @@ describe('CryptoMarketMetrics', () => {
         expect(screen.getByText('$61K')).toBeInTheDocument();
         expect(screen.getByText('$62.5K')).toBeInTheDocument();
         expect(screen.getByText('$75K')).toBeInTheDocument();
+        expect(screen.getByText('$1.5M')).toBeInTheDocument();
+    });
+
+    it('displays volume formatted with non-USD quote currency', () => {
+        vi.mocked(useCryptoLatestTick).mockReturnValue({
+            result: {
+                MARKET: 'kraken',
+                QUOTE: 'EUR',
+                CURRENT_DAY_QUOTE_VOLUME: 2500000,
+            },
+            isLoading: false,
+            error: undefined,
+        } as unknown as ReturnType<typeof useCryptoLatestTick>);
+
+        render(
+            <CryptoMarketContext.Provider value={{ selectedCrypto: 'ETH-EUR', setSelectedCrypto: vi.fn() }}>
+                <CryptoMarketMetrics />
+            </CryptoMarketContext.Provider>
+        );
+
+        expect(screen.getByText('2.5M EUR')).toBeInTheDocument();
     });
 });

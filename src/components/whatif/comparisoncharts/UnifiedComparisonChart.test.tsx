@@ -3,9 +3,11 @@
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import React, { useState } from "react";
 import UnifiedComparisonChart, { CustomWhatIfTooltip } from "./UnifiedComparisonChart";
 import { AssetContext } from "../assetselector/assetselector";
 import useYahooHistoricalData from "@/hooks/useYahooHistoricalData";
+import type { MonthlyPortfolioPoint } from "@/types/whatif";
 
 vi.mock("@/hooks/useYahooHistoricalData", () => ({
     default: vi.fn((symbol: string) => ({
@@ -203,5 +205,35 @@ describe("UnifiedComparisonChart component", () => {
         expect(screen.getByText("+20.0%")).toBeInTheDocument();
         // QQQ: (6000 - 4000) / 4000 = +50.0%
         expect(screen.getByText("+50.0%")).toBeInTheDocument();
+    });
+
+    it("populates state and settles without infinite render loops using stateful context", () => {
+        function StatefulWrapper({ symbol1 = "SPY", symbol2 = "QQQ" }: { symbol1?: string; symbol2?: string }) {
+            const [asset1Data, setAsset1Data] = useState<MonthlyPortfolioPoint[]>([]);
+            const [asset2Data, setAsset2Data] = useState<MonthlyPortfolioPoint[]>([]);
+
+            return (
+                <AssetContext.Provider
+                    value={{
+                        ...mockContext,
+                        selectedAsset1: symbol1 ? { symbol: symbol1, shortname: symbol1 } : null,
+                        selectedAsset2: symbol2 ? { symbol: symbol2, shortname: symbol2 } : null,
+                        asset1Data,
+                        setAsset1Data,
+                        asset2Data,
+                        setAsset2Data,
+                    }}
+                >
+                    <UnifiedComparisonChart />
+                </AssetContext.Provider>
+            );
+        }
+
+        const { rerender } = render(<StatefulWrapper />);
+        expect(screen.getByText("Comparative DCA Portfolio Value")).toBeInTheDocument();
+
+        // Clear symbols to trigger empty state reset branch
+        rerender(<StatefulWrapper symbol1="" symbol2="" />);
+        expect(screen.getByText("Comparative DCA Portfolio Value")).toBeInTheDocument();
     });
 });

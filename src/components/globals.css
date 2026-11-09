@@ -7,6 +7,7 @@
 [data-theme="dark"] {
   --bg: #090d16;
   --bgSoft: #0f172a;
+  --card: #0f172a;
   --bg-surface-elevated: #1e293b;
   --border: #1e293b;
   --border-light: #334155;
@@ -14,6 +15,7 @@
   --textSoft: #94a3b8;
   --primary: #0284c7;
   --primary-hover: #0369a1;
+  --accent: #38bdf8;
   --gain: #10b981;
   --gain-bg: rgba(16, 185, 129, 0.12);
   --loss: #f43f5e;
@@ -29,6 +31,7 @@
 [data-theme="light"] {
   --bg: #f8fafc;
   --bgSoft: #ffffff;
+  --card: #ffffff;
   --bg-surface-elevated: #f1f5f9;
   --border: #e2e8f0;
   --border-light: #cbd5e1;
@@ -36,6 +39,7 @@
   --textSoft: #64748b;
   --primary: #0284c7;
   --primary-hover: #0369a1;
+  --accent: #0284c7;
   --gain: #059669;
   --gain-bg: rgba(5, 150, 105, 0.1);
   --loss: #e11d48;

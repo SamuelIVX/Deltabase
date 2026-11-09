@@ -76,6 +76,7 @@ describe("StockMarketMetrics component", () => {
                 trailingPE: 30,
                 beta: 1.24,
                 priceEpsCurrentYear: 6.5,
+                epsTrailingTwelveMonths: 6.5,
                 dividendYield: 0.005,
                 dividendRate: 0.96,
                 dividendDate: "2024-02-15",

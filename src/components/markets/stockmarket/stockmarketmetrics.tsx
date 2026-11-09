@@ -13,7 +13,6 @@ import { StatItemProps } from '@/types/statItem';
 import formatCurrency from '@/utils/formatCurrency';
 import formatNumber from '@/utils/formatNumber';
 import formatPercent from '@/utils/formatPercent';
-import formatDate from '@/utils/formatDate';
 import RangeBar from '../common/RangeBar';
 
 const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
@@ -73,8 +72,12 @@ const StockMarketMetrics = () => {
 
                     <div className={styles.statsGrid}>
                         <StatItem
-                            label="Market Cap"
-                            value={formatCurrency(quote.marketCap)}
+                            label="Previous Close"
+                            value={formatCurrency(quote.regularMarketPreviousClose)}
+                        />
+                        <StatItem
+                            label="Open"
+                            value={formatCurrency(quote.regularMarketOpen)}
                         />
                         <StatItem
                             label="Day Range"
@@ -85,6 +88,18 @@ const StockMarketMetrics = () => {
                             }
                         />
                         <StatItem
+                            label="Volume"
+                            value={formatNumber(quote.regularMarketVolume)}
+                        />
+                        <StatItem
+                            label="Avg Volume (3M)"
+                            value={formatNumber(quote.averageDailyVolume3Month)}
+                        />
+                        <StatItem
+                            label="Market Cap"
+                            value={formatCurrency(quote.marketCap)}
+                        />
+                        <StatItem
                             label="52-Week Range"
                             value={
                                 rangeLow != null && rangeHigh != null
@@ -92,7 +107,6 @@ const StockMarketMetrics = () => {
                                     : 'N/A'
                             }
                         />
-
                         {isETF ? (
                             <StatItem
                                 label="Expense Ratio"
@@ -108,36 +122,35 @@ const StockMarketMetrics = () => {
                                 value={formatNumber(quote.forwardPE)}
                             />
                         )}
-
                         <StatItem
                             label="Trailing P/E"
                             value={formatNumber(quote.trailingPE)}
                         />
-
                         <StatItem
                             label="Beta"
                             value={quote.beta != null ? formatNumber(quote.beta) : 'N/A'}
                         />
-
-                        {!isETF && (
+                        {!isETF ? (
                             <StatItem
                                 label="EPS (TTM)"
-                                value={formatNumber(quote.priceEpsCurrentYear)}
+                                value={formatNumber(quote.epsTrailingTwelveMonths ?? quote.priceEpsCurrentYear)}
+                            />
+                        ) : (
+                            <StatItem
+                                label="Asset Class"
+                                value="Exchange Traded"
                             />
                         )}
-
                         <StatItem
                             label="Dividend Yield"
                             value={formatPercent(quote.dividendYield)}
                         />
-                        <StatItem
-                            label="Dividend Rate"
-                            value={quote.dividendRate != null ? formatCurrency(quote.dividendRate) : 'N/A'}
-                        />
-                        <StatItem
-                            label="Dividend Date"
-                            value={formatDate(quote.dividendDate)}
-                        />
+                        {quote.dividendRate != null && (
+                            <StatItem
+                                label="Dividend Rate"
+                                value={formatCurrency(quote.dividendRate)}
+                            />
+                        )}
                     </div>
                 </>
             )}

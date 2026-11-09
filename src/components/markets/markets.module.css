@@ -94,10 +94,11 @@
 }
 
 .pillActive {
-    background-color: var(--accent);
-    color: var(--bg);
-    border-color: var(--accent);
+    background-color: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
     font-weight: 700;
+    box-shadow: 0 1px 3px rgba(2, 132, 199, 0.35);
 }
 
 .stockInfo {
@@ -151,10 +152,11 @@
 }
 
 .dateButton.selected {
-    background-color: var(--accent);
-    color: var(--bg);
-    border-color: var(--accent);
+    background-color: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
     font-weight: 700;
+    box-shadow: 0 1px 3px rgba(2, 132, 199, 0.35);
 }
 
 .customTooltip {
@@ -185,6 +187,39 @@
     font-size: 12px;
     font-weight: 600;
     color: var(--text);
+}
+
+.chartArea {
+    position: relative;
+    flex: 1;
+    min-height: 280px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chartMessage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    color: var(--textSoft);
+    font-size: 13px;
+    text-align: center;
+    padding: 24px;
+}
+
+.chartLoading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: var(--radius-sm);
+    z-index: 2;
 }
 
 .loadingOverlay {

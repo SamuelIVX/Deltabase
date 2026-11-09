@@ -8,6 +8,9 @@ export interface YahooQuote {
     regularMarketChangePercent?: number;
     regularMarketTime?: string;
     regularMarketOpen?: number;
+    regularMarketPreviousClose?: number;
+    regularMarketVolume?: number;
+    averageDailyVolume3Month?: number;
     postMarketPrice?: number;
     postMarketChangePercent?: number;
     currency?: string;
@@ -28,6 +31,7 @@ export interface YahooQuote {
     forwardPE?: number;
     trailingPE?: number;
     priceEpsCurrentYear?: number;
+    epsTrailingTwelveMonths?: number;
     dividendYield?: number;
     dividendRate?: number;
     dividendDate?: string | number | Date;

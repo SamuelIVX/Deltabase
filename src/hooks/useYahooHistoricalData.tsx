@@ -14,6 +14,8 @@ const fetchYahooHistoricalData = async (symbol: string, range: string) => {
     return data || [];
 };
 
+const EMPTY_RESULTS: unknown[] = [];
+
 /**
  * Loads monthly Yahoo quotes for `symbol` spanning `range` years.
  * @param symbol - Ticker; empty clears state without fetching.
@@ -32,7 +34,7 @@ function useYahooHistoricalData(symbol: string, range: string) {
     });
 
     return {
-        results: enabled ? (data ?? []) : [],
+        results: (enabled && data ? data : EMPTY_RESULTS) as typeof data,
         isLoading: enabled ? isLoading : false,
         error: enabled && error ? (error as Error).message : null,
     };
