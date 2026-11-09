@@ -40,10 +40,10 @@ export const Separator = React.forwardRef<HTMLDivElement, SeparatorProps>(
     return (
       <div
         ref={ref}
+        {...props}
         role={decorative ? 'none' : 'separator'}
         aria-orientation={decorative ? undefined : orientation}
         className={combinedClassName}
-        {...props}
       />
     );
   }

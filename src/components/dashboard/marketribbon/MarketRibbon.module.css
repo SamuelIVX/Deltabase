@@ -25,6 +25,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  padding-right: 16px;
   width: max-content;
   flex-shrink: 0;
   animation: scrollBanner 45s linear infinite;
@@ -44,12 +45,22 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .ribbon {
+    overflow-x: auto;
+    padding: 8px 16px;
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
   .track {
     animation: none;
     transform: none;
-    overflow-x: auto;
-    width: 100%;
-    padding: 0 16px;
+    width: max-content;
+    padding-right: 0;
+  }
+
+  .duplicateItem {
+    display: none !important;
   }
 }
 

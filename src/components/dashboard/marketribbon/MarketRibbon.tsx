@@ -90,11 +90,14 @@ export default function MarketRibbon(): JSX.Element {
             : isNegative
             ? styles.loss
             : styles.neutral;
+          const itemClassName = isDuplicate
+            ? `${styles.item} ${styles.duplicateItem}`
+            : styles.item;
 
           return (
             <div
               key={`${idx.symbol}-${index}`}
-              className={styles.item}
+              className={itemClassName}
               title={`${idx.name} (${idx.symbol})`}
               aria-hidden={isDuplicate ? true : undefined}
             >

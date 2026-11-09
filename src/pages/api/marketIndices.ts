@@ -1,5 +1,6 @@
 /**
- * Next.js Pages API: Top market indices snapshot (S&P 500, NASDAQ, Dow, BTC, ETH).
+ * Next.js Pages API: Top market indices snapshot across 12 major benchmarks
+ * (S&P 500, NASDAQ, Dow, Russell 2000, Bitcoin, Ethereum, Solana, Total Intl Stock, and mega-caps).
  * Returns live/cached quote summaries for the global market ribbon.
  */
 import type { NextApiRequest, NextApiResponse } from "next";
