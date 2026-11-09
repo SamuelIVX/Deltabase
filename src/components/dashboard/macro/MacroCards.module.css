@@ -1,0 +1,142 @@
+/**
+ * Institutional trading cards for benchmark macro indices (S&P 500, NASDAQ, Dow, BTC).
+ */
+.container {
+  display: contents;
+}
+
+.card {
+  background-color: var(--bgSoft);
+  border: 1px solid var(--border);
+  padding: 16px 18px;
+  border-radius: var(--radius-md, 10px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-width: 200px;
+  box-shadow: var(--card-shadow);
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.card:hover {
+  background-color: var(--bg-surface-elevated);
+  border-color: var(--borderHover, var(--border));
+  transform: translateY(-1px);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.symbolBadge {
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--fontMono);
+  color: var(--textSoft);
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 4px);
+  padding: 1px 5px;
+}
+
+.iconPositive {
+  color: var(--gain);
+  font-size: 18px;
+}
+
+.iconNegative {
+  color: var(--loss);
+  font-size: 18px;
+}
+
+.price {
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin: 0;
+}
+
+.changeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.positive {
+  color: var(--gain);
+}
+
+.negative {
+  color: var(--loss);
+}
+
+.neutral {
+  color: var(--textSoft);
+}
+
+.period {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--textSoft);
+}
+
+.skeletonCard {
+  background-color: var(--bgSoft);
+  border: 1px solid var(--border);
+  padding: 16px 18px;
+  border-radius: var(--radius-md, 10px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  min-width: 200px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeletonLineSm {
+  width: 50%;
+  height: 14px;
+  background-color: var(--border);
+  border-radius: 4px;
+}
+
+.skeletonLineLg {
+  width: 75%;
+  height: 24px;
+  background-color: var(--border);
+  border-radius: 4px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

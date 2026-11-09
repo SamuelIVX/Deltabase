@@ -82,15 +82,6 @@ const Sidebar = () => {
               </div>
             )}
           </Link>
-          <button
-            type="button"
-            className={styles.toggleButton}
-            onClick={toggleSidebar}
-            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {isCollapsed ? <MdChevronRight size={18} /> : <MdChevronLeft size={18} />}
-          </button>
         </div>
 
         <nav aria-label="Primary navigation">
@@ -103,6 +94,16 @@ const Sidebar = () => {
           </ul>
         </nav>
       </div>
+
+      <button
+        type="button"
+        className={styles.toggleButtonMiddle}
+        onClick={toggleSidebar}
+        aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+      >
+        {isCollapsed ? <MdChevronRight size={16} /> : <MdChevronLeft size={16} />}
+      </button>
 
       <div
         className={isCollapsed ? styles.footerBadgeCollapsed : styles.footerBadge}

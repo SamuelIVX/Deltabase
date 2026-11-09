@@ -15,15 +15,15 @@ describe("Sidebar component", () => {
     localStorage.clear();
   });
 
-  it("renders branding and direct navigation links without section category header", () => {
+  it("renders collapsed by default and displays direct navigation links with hover tooltips", () => {
     render(
       <SidebarProvider>
         <Sidebar />
       </SidebarProvider>
     );
 
-    expect(screen.getByText("DeltaBase")).toBeInTheDocument();
-    expect(screen.getByText("See the data, not the noise.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Expand sidebar" })).toBeInTheDocument();
+    expect(screen.queryByText("See the data, not the noise.")).not.toBeInTheDocument();
     expect(screen.queryByText(/Analytics & Tools/i)).not.toBeInTheDocument();
 
     expect(screen.getByRole("link", { name: /Dashboard/i })).toBeInTheDocument();
@@ -33,22 +33,24 @@ describe("Sidebar component", () => {
     expect(screen.getByRole("link", { name: /Tax & Fee Calculator/i })).toBeInTheDocument();
   });
 
-  it("toggles to collapsed mode when collapse button is clicked", () => {
+  it("toggles to expanded mode when expand button is clicked and back to collapsed", () => {
     render(
       <SidebarProvider>
         <Sidebar />
       </SidebarProvider>
     );
 
+    const expandBtn = screen.getByRole("button", { name: "Expand sidebar" });
+    fireEvent.click(expandBtn);
+
+    expect(screen.getByText("DeltaBase")).toBeInTheDocument();
+    expect(screen.getByText("See the data, not the noise.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Collapse sidebar" })).toBeInTheDocument();
+
     const collapseBtn = screen.getByRole("button", { name: "Collapse sidebar" });
     fireEvent.click(collapseBtn);
 
     expect(screen.queryByText("See the data, not the noise.")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Expand sidebar" })).toBeInTheDocument();
-
-    const expandBtn = screen.getByRole("button", { name: "Expand sidebar" });
-    fireEvent.click(expandBtn);
-
-    expect(screen.getByText("See the data, not the noise.")).toBeInTheDocument();
   });
 });

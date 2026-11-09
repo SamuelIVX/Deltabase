@@ -3,7 +3,7 @@
  * Institutional trading theme supporting dark and light modes.
  */
 .wrapper {
-    margin-top: 24px;
+    margin-top: 0;
     padding: 24px;
     background: var(--bgSoft);
     border: 1px solid var(--border);

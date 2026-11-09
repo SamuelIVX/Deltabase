@@ -130,6 +130,14 @@ const StockMarketMetrics = () => {
                             label="Beta"
                             value={quote.beta != null ? formatNumber(quote.beta) : 'N/A'}
                         />
+                        <StatItem
+                            label="50-Day Avg"
+                            value={quote.fiftyDayAverage != null ? formatCurrency(quote.fiftyDayAverage) : 'N/A'}
+                        />
+                        <StatItem
+                            label="200-Day Avg"
+                            value={quote.twoHundredDayAverage != null ? formatCurrency(quote.twoHundredDayAverage) : 'N/A'}
+                        />
                         {!isETF ? (
                             <StatItem
                                 label="EPS (TTM)"

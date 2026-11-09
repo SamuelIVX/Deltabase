@@ -35,4 +35,6 @@ export interface YahooQuote {
     dividendYield?: number;
     dividendRate?: number;
     dividendDate?: string | number | Date;
+    fiftyDayAverage?: number;
+    twoHundredDayAverage?: number;
 }

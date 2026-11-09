@@ -1,0 +1,143 @@
+/**
+ * Styles for the S&P 500 Market Benchmark Chart on dashboard home.
+ */
+.container {
+  height: 460px;
+  background-color: var(--bgSoft);
+  border: 1px solid var(--border);
+  padding: 22px 24px;
+  border-radius: var(--radius-md, 12px);
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--fontMono);
+  color: var(--accent);
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 4px);
+  padding: 2px 6px;
+}
+
+.timeframeGroup {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--card);
+  padding: 3px;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--border);
+}
+
+.timeframeBtn {
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--textSoft);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.timeframeBtn:hover {
+  color: var(--text);
+  background-color: var(--bgSoft);
+}
+
+.timeframeBtnActive {
+  background-color: var(--accent);
+  color: #ffffff;
+}
+
+.chartWrapper {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+}
+
+.loadingOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background-color: rgba(var(--bg-rgb, 15, 23, 42), 0.6);
+  backdrop-filter: blur(2px);
+  border-radius: var(--radius-md, 12px);
+  z-index: 20;
+  color: var(--textSoft);
+  font-size: 13px;
+}
+
+.errorState {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--textSoft);
+  font-size: 13px;
+}
+
+.customTooltip {
+  background-color: var(--bg-surface-elevated, var(--bgSoft));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 6px);
+  padding: 8px 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.tooltipDate {
+  font-size: 11px;
+  color: var(--textSoft);
+  margin: 0;
+}
+
+.tooltipPrice {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: var(--fontMono);
+  margin: 0;
+}
+
+.tooltipVolume {
+  font-size: 11px;
+  color: var(--textMuted);
+  margin: 0;
+}

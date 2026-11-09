@@ -21,6 +21,15 @@ interface StockMarketContextType {
     setSelectedStock: (value: string) => void;
 }
 
+const POPULAR_STOCKS = [
+    { label: "SPY", symbol: "SPY" },
+    { label: "QQQ", symbol: "QQQ" },
+    { label: "AAPL", symbol: "AAPL" },
+    { label: "MSFT", symbol: "MSFT" },
+    { label: "NVDA", symbol: "NVDA" },
+    { label: "TSLA", symbol: "TSLA" },
+];
+
 /**
  * Shared stock chart selection context (symbol + range).
  * Provided by the stock market page; consumed by chart + metrics.
@@ -34,13 +43,19 @@ const StockTooltip: React.FC<
     TooltipProps<number, string> & { payload?: { payload: SymbolDataPoint }[] }> = ({ active, payload }) => {
         if (!active || !payload || payload.length === 0) return null;
 
-        const { date, time, volume } = payload[0].payload;
+        const { date, time, close, volume } = payload[0].payload;
 
         return (
-            <div className={styles.customTooltip} style={{ background: "rgba(36, 131, 71, 0.76)" }}>
-                <p className={styles.description}>Current Date</p>
+            <div className={styles.customTooltip}>
+                <p className={styles.description}>Date</p>
                 <span className={styles.date}>{formatDate(date)}</span>
-                <span className={styles.time}> {time}</span>
+                {time && <span className={styles.time}> {time}</span>}
+                {close != null && (
+                    <>
+                        <p className={styles.description}>Price</p>
+                        <p className={styles.price}>${formatNumber(close)}</p>
+                    </>
+                )}
                 <p className={styles.description}>Volume</p>
                 <p className={styles.volume}>{formatNumber(volume)}</p>
             </div>
@@ -80,26 +95,45 @@ const StockMarketChart = () => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <span className={styles.title}>Currently Showing: </span>
+                <div className={styles.searchRow}>
+                    <span className={styles.title}>Ticker:</span>
+                    <span className={styles.search}>
+                        <input
+                            className={styles.input}
+                            type='text'
+                            placeholder="Enter a stock symbol (e.g. AAPL)..."
+                            aria-label="Enter a stock symbol"
+                            value={selectedStock || ''}
+                            onChange={(e) => {
+                                setSelectedStock(e.target.value.trim().toUpperCase())
+                            }}
+                        />
+                    </span>
+                </div>
 
-                <span className={styles.search}>
-                    <input
-                        className={styles.input}
-                        type='text'
-                        placeholder="Enter a stock symbol..."
-                        aria-label="Enter a stock symbol"
-                        value={selectedStock || ''}
-                        onChange={(e) => {
-                            setSelectedStock(e.target.value)
-                        }}
-                    />
-                </span>
+                <div className={styles.quickPills} role="group" aria-label="Popular stock tickers">
+                    <span className={styles.pillLabel}>Popular:</span>
+                    {POPULAR_STOCKS.map((stock) => {
+                        const isActive = selectedStock?.trim().toUpperCase() === stock.symbol;
+                        return (
+                            <button
+                                key={stock.symbol}
+                                type="button"
+                                aria-pressed={isActive}
+                                className={`${styles.pill} ${isActive ? styles.pillActive : ''}`}
+                                onClick={() => setSelectedStock(stock.symbol)}
+                            >
+                                {stock.label}
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
 
             {error && <p className={styles.message}>Error: {error}</p>}
             {isLoading && (
                 <div className={styles.loadingOverlay}>
-                    <MoonLoader color="#47ef60ff" size={100} />
+                    <MoonLoader color="var(--accent, #3b82f6)" size={64} />
                 </div>
             )}
 

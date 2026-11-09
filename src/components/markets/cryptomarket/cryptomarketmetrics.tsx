@@ -116,6 +116,14 @@ const CryptoMarketMetrics = () => {
                             }
                         />
                         <StatItem
+                            label="24h Change ($)"
+                            value={
+                                result.CURRENT_DAY_CHANGE != null
+                                    ? `${result.CURRENT_DAY_CHANGE > 0 ? '+' : ''}${formatCurrency(result.CURRENT_DAY_CHANGE)}`
+                                    : 'N/A'
+                            }
+                        />
+                        <StatItem
                             label="Best Bid"
                             value={formatCurrency(result.BEST_BID)}
                         />

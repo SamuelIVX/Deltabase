@@ -26,18 +26,22 @@ function subscribe(callback: () => void) {
 
 function getSnapshot(): boolean {
   try {
-    return localStorage.getItem(STORAGE_KEY) === "true";
+    const val = localStorage.getItem(STORAGE_KEY);
+    if (val === null) {
+      return true;
+    }
+    return val === "true";
   } catch {
-    return false;
+    return true;
   }
 }
 
 function getServerSnapshot(): boolean {
-  return false;
+  return true;
 }
 
 const SidebarContext = createContext<SidebarContextType>({
-  isCollapsed: false,
+  isCollapsed: true,
   toggleSidebar: () => {},
   setIsCollapsed: () => {},
 });

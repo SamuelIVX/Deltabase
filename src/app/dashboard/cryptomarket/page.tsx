@@ -1,19 +1,18 @@
-'use client'
+"use client";
 /**
  * Crypto market page — chart + metrics for a selected spot instrument.
  */
-import { useState } from "react";
-import CryptoMarketChart from "@/components/markets/cryptomarket/cryptomarketchart";
+import React, { useState } from "react";
+import CryptoMarketChart, { CryptoMarketContext } from "@/components/markets/cryptomarket/cryptomarketchart";
 import CryptoMarketMetrics from "@/components/markets/cryptomarket/cryptomarketmetrics";
-import { CryptoMarketContext } from "@/components/markets/cryptomarket/cryptomarketchart";
 
 /**
  * Crypto market view composing chart + metrics components.
  * Defaults to BTC-USD for an immediate live institutional overview.
- * @returns {JSX.Element}
+ * @returns {JSX.Element} Crypto market dashboard tab.
  */
-const CryptoMarket = () => {
-    const [selectedCrypto, setSelectedCrypto] = useState("BTC-USD");
+const CryptoMarket = (): React.JSX.Element => {
+    const [selectedCrypto, setSelectedCrypto] = useState<string>("BTC-USD");
 
     return (
         <div>

@@ -35,11 +35,15 @@ const MenuLink: React.FC<MenuLinkProps> = ({ item }) => {
       className={`${styles.container} ${isActive ? styles.active : ""} ${
         isCollapsed ? styles.collapsed : ""
       }`}
-      title={isCollapsed ? item.title : undefined}
       aria-label={item.title}
     >
       <span className={styles.iconWrapper}>{item.icon}</span>
       {!isCollapsed && <span className={styles.titleText}>{item.title}</span>}
+      {isCollapsed && (
+        <span className={styles.floatingTooltip} aria-hidden="true">
+          {item.title}
+        </span>
+      )}
     </Link>
   );
 };

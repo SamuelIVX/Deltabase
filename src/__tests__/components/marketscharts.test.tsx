@@ -62,14 +62,18 @@ describe('Market Charts Input', () => {
         expect(input.value).toBe('SOL-USD');
     });
 
-    it('initializes and updates stock input and placeholder', () => {
+    it('initializes and updates stock input and placeholder with quick chips', () => {
         renderWithClient(<StockStatefulWrapper />);
         const input = screen.getByLabelText('Enter a stock symbol') as HTMLInputElement;
         expect(input).toBeInTheDocument();
-        expect(input.placeholder).toBe('Enter a stock symbol...');
+        expect(input.placeholder).toBe('Enter a stock symbol (e.g. AAPL)...');
         expect(input.value).toBe('AAPL');
 
         fireEvent.change(input, { target: { value: 'MSFT' } });
         expect(input.value).toBe('MSFT');
+
+        const nvdaPill = screen.getByRole('button', { name: 'NVDA' });
+        fireEvent.click(nvdaPill);
+        expect(input.value).toBe('NVDA');
     });
 });

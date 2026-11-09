@@ -80,8 +80,8 @@ const Results: React.FC<ResultProps> = ({ grossProfit, feeCost, taxAmount, netPr
  * <TaxAdjustedReturns />
  */
 export default function TaxAdjustedReturns() {
-    const [marketType, setMarketType] = useState<'crypto' | 'stock' | ''>('');
-    const [symbol, setSymbol] = useState('');
+    const [marketType, setMarketType] = useState<'crypto' | 'stock'>('stock');
+    const [symbol, setSymbol] = useState('AAPL');
     const [quantity, setQuantity] = useState('1');
     const [costBasisInput, setCostBasisInput] = useState('');
     const [exitPriceInput, setExitPriceInput] = useState('');

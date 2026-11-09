@@ -15,6 +15,8 @@ import Navbar from "@/components/dashboard/navbar/navbar";
 import Sidebar from "@/components/dashboard/sidebar/sidebar";
 import { SidebarProvider } from "@/components/dashboard/sidebar/SidebarContext";
 import Rightbar from "@/components/dashboard/rightbar/rightbar";
+import MacroCards from "@/components/dashboard/macro/MacroCards";
+import MarketBenchmarkChart from "@/components/dashboard/macro/MarketBenchmarkChart";
 import { AssetContext } from "@/components/whatif/assetselector/assetselector";
 
 vi.mock("@/hooks/useDebounce", () => ({
@@ -49,8 +51,8 @@ vi.mock("@/hooks/useYahooStockSymbols", () => ({
     default: vi.fn(() => ({ results: [], isLoading: false, error: null })),
 }));
 
-vi.mock("@/hooks/useMarketIndices", () => ({
-    useMarketIndices: () => ({
+vi.mock("@/hooks/useMarketIndices", () => {
+    const mockHook = () => ({
         indices: [
             {
                 symbol: "^GSPC",
@@ -60,6 +62,20 @@ vi.mock("@/hooks/useMarketIndices", () => ({
                 changePercent: 0.24,
                 currency: "USD",
             },
+        ],
+        isLoading: false,
+        error: null,
+    });
+    return {
+        default: mockHook,
+        useMarketIndices: mockHook,
+    };
+});
+
+vi.mock("@/hooks/useYahooBasicHistoricalData", () => ({
+    default: () => ({
+        historicalData: [
+            { date: "2024-01-01", close: 5000, volume: 100000 },
         ],
         isLoading: false,
         error: null,
@@ -183,6 +199,16 @@ describe("a11y", () => {
 
     it("rightbar news feed has no critical or serious violations", async () => {
         const { container } = render(<Rightbar />);
+        expect(await seriousViolations(container)).toEqual([]);
+    });
+
+    it("macro cards have no critical or serious violations", async () => {
+        const { container } = render(<MacroCards />);
+        expect(await seriousViolations(container)).toEqual([]);
+    });
+
+    it("market benchmark chart has no critical or serious violations", async () => {
+        const { container } = render(<MarketBenchmarkChart />);
         expect(await seriousViolations(container)).toEqual([]);
     });
 });
