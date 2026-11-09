@@ -4,7 +4,24 @@
  */
 import { useQuery } from "@tanstack/react-query";
 
-const fetchYahooStockQuote = async (symbol: string) => {
+/** Quote data structure returned by the stock quote API. */
+export interface YahooQuote {
+    regularMarketPrice?: number;
+    regularMarketOpen?: number;
+    symbol?: string;
+    currency?: string;
+    shortName?: string;
+    regularMarketChangePercent?: number;
+}
+
+/** Hook state returned by `useYahooStockQuote`. */
+export interface YahooStockQuoteState {
+    quote: YahooQuote | null;
+    isLoading: boolean;
+    error: string | null;
+}
+
+const fetchYahooStockQuote = async (symbol: string): Promise<YahooQuote> => {
     const res = await fetch(`/api/searchStockQuote?symbol=${encodeURIComponent(symbol)}`);
     if (!res.ok) {
         throw new Error(`Error fetching quote: ${res.statusText}`);
@@ -19,7 +36,7 @@ const fetchYahooStockQuote = async (symbol: string) => {
  * @example
  * const { quote, isLoading, error } = useYahooStockQuote("AAPL");
  */
-function useYahooStockQuote(symbol: string) {
+function useYahooStockQuote(symbol: string): YahooStockQuoteState {
     const enabled = Boolean(symbol);
     const { data, isLoading, error } = useQuery({
         queryKey: ['yahooStockQuote', symbol],

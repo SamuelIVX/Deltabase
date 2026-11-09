@@ -31,6 +31,8 @@ describe("calculateTaxReturns", () => {
         expect(result?.taxAmount).toBe(35.6);
         expect(result?.netProfit).toBe(142.4);
         expect(result?.netReturn).toBe(14.24);
+        expect(result?.initialInvestment).toBe(1000);
+        expect(result?.totalExitValue).toBe(1142.4);
     });
 
     it("calculates loss scenario where taxable profit is <= 0 and tax is 0", () => {
@@ -84,5 +86,35 @@ describe("calculateTaxReturns", () => {
         expect(result?.taxAmount).toBe(0);
         expect(result?.netProfit).toBe(10);
         expect(result?.netReturn).toBe(10);
+    });
+
+    it("clamps tax and fee rates exceeding 100% to maximum of 100%", () => {
+        const result = calculateTaxReturns({
+            openPrice: 100,
+            currentPrice: 200,
+            quantity: 1,
+            taxRate: 150,
+            feeRate: 120,
+        });
+
+        expect(result).not.toBeNull();
+        // feeRate clamped to 100%: (100 + 200) * 1 * 100 / 100 = 300
+        expect(result?.feeCost).toBe(300);
+        // grossProfit = 100, taxableProfit = 100 - 300 = -200
+        expect(result?.taxableProfit).toBe(-200);
+        expect(result?.taxAmount).toBe(0);
+
+        // Test taxRate clamped to 100% when taxableProfit is positive
+        const gainResult = calculateTaxReturns({
+            openPrice: 100,
+            currentPrice: 200,
+            quantity: 1,
+            taxRate: 150,
+            feeRate: 0,
+        });
+        expect(gainResult?.feeCost).toBe(0);
+        expect(gainResult?.taxableProfit).toBe(100);
+        expect(gainResult?.taxAmount).toBe(100); // 100% of 100
+        expect(gainResult?.netProfit).toBe(0);
     });
 });

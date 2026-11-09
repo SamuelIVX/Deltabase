@@ -1,23 +1,9 @@
 /**
  * Pure calculation utilities for tax- and fee-adjusted returns on stocks and crypto.
  */
+import type { TaxReturnsInput, TaxReturnsBreakdown } from '@/types/tax';
 
-export interface TaxReturnsInput {
-    openPrice: number;
-    currentPrice: number;
-    quantity: number;
-    taxRate: number; // percentage (e.g. 15 for 15%)
-    feeRate: number; // percentage (e.g. 0.5 for 0.5%)
-}
-
-export interface TaxReturnsBreakdown {
-    grossProfit: number;
-    feeCost: number;
-    taxableProfit: number;
-    taxAmount: number;
-    netProfit: number;
-    netReturn: number; // percentage
-}
+export type { TaxReturnsInput, TaxReturnsBreakdown };
 
 /**
  * Computes tax- and fee-adjusted return breakdown from trade prices and rates.
@@ -42,23 +28,26 @@ export function calculateTaxReturns({
         return null;
     }
 
-    const safeTaxRate = Number.isFinite(taxRate) && taxRate > 0 ? taxRate : 0;
-    const safeFeeRate = Number.isFinite(feeRate) && feeRate > 0 ? feeRate : 0;
+    const safeTaxRate = Number.isFinite(taxRate) ? Math.min(100, Math.max(0, taxRate)) : 0;
+    const safeFeeRate = Number.isFinite(feeRate) ? Math.min(100, Math.max(0, feeRate)) : 0;
 
+    const initialInvestment = openPrice * quantity;
     const grossProfit = (currentPrice - openPrice) * quantity;
     const feeCost = ((openPrice + currentPrice) * quantity * safeFeeRate) / 100;
     const taxableProfit = grossProfit - feeCost;
-    const taxAmount = taxableProfit > 0 ? (taxableProfit * safeTaxRate) / 100 : 0;
+    const taxAmount = (Math.max(0, taxableProfit) * safeTaxRate) / 100;
     const netProfit = taxableProfit - taxAmount;
-    const initialInvestment = openPrice * quantity;
     const netReturn = (netProfit / initialInvestment) * 100;
+    const totalExitValue = initialInvestment + netProfit;
 
     return {
+        initialInvestment,
         grossProfit,
         feeCost,
         taxableProfit,
         taxAmount,
         netProfit,
         netReturn,
+        totalExitValue,
     };
 }
