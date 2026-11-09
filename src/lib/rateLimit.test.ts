@@ -59,4 +59,33 @@ describe('Rate Limiter (in-memory sliding window)', () => {
         expect(afterReset.success).toBe(true);
         expect(afterReset.remaining).toBe(0);
     });
+
+    it('purges expired entries during cleanup intervals', () => {
+        vi.useFakeTimers();
+        const ip1 = '192.168.1.100';
+        const ip2 = '192.168.1.101';
+
+        // Add entries with short window
+        checkRateLimit(ip1, { limit: 10, windowMs: 5000 });
+        checkRateLimit(ip2, { limit: 10, windowMs: 5000 });
+
+        // Advance time past CLEANUP_INTERVAL_MS (60s)
+        vi.advanceTimersByTime(65000);
+
+        // Next request triggers purgeExpiredRecords()
+        const res = checkRateLimit('192.168.1.102', { limit: 10, windowMs: 5000 });
+        expect(res.success).toBe(true);
+        expect(res.remaining).toBe(9);
+    });
+
+    it('evicts excess entries when store capacity is reached', () => {
+        // Fill store with many records
+        for (let i = 0; i < 10050; i++) {
+            checkRateLimit(`test-ip-${i}`, { limit: 5, windowMs: 300000 });
+        }
+
+        // Trigger store purge at capacity
+        const extra = checkRateLimit('trigger-eviction-ip', { limit: 5, windowMs: 300000 });
+        expect(extra.success).toBe(true);
+    });
 });

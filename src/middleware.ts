@@ -6,6 +6,13 @@ import { checkRateLimit } from '@/lib/rateLimit';
 const API_RATE_LIMIT = 60;
 const API_WINDOW_MS = 60 * 1000;
 
+/**
+ * Next.js Edge Middleware for rate limiting and API abuse prevention.
+ * Inspects incoming requests to `/api/*` and enforces an IP-based sliding window quota.
+ *
+ * @param request - Next.js incoming HTTP request
+ * @returns 429 response when rate limit exceeded, or passes control via `NextResponse.next()`
+ */
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
