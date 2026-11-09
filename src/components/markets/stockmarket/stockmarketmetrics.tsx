@@ -1,9 +1,10 @@
 'use client'
 /**
  * Stock market metrics panel — Yahoo quote stats for the selected ticker.
+ * Displays key valuation figures, ETF expense ratios, and an accessible 52-week range bar.
  */
+import React, { useContext } from 'react'
 import styles from '../marketsmetrics.module.css';
-import { useContext } from 'react'
 import { StockMarketContext } from './stockmarketchart';
 import useYahooStockQuote from '@/hooks/useYahooStockQuote';
 import { YahooQuote } from '@/types/stock';
@@ -21,8 +22,61 @@ const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
     </div>
 );
 
+interface RangeBarProps {
+    label: string;
+    low: number | null | undefined;
+    high: number | null | undefined;
+    current: number | null | undefined;
+}
+
 /**
- * Displays Yahoo quote metrics for the selected ticker (via StockMarketContext).
+ * Accessible visual range slider meter (e.g. for 52-Week High/Low).
+ */
+export const RangeBar: React.FC<RangeBarProps> = ({ label, low, high, current }) => {
+    if (low == null || high == null || high <= low) {
+        return null;
+    }
+
+    const currentPrice = current ?? low;
+    const clampedPrice = Math.min(Math.max(currentPrice, low), high);
+    const percent = Math.min(100, Math.max(0, ((clampedPrice - low) / (high - low)) * 100));
+
+    return (
+        <div className={styles.rangeSection}>
+            <div className={styles.rangeHeader}>
+                <span className={styles.rangeLabel}>{label}</span>
+                <div className={styles.rangeValues}>
+                    <span className={styles.rangeBound}>${low}</span>
+                    <span className={styles.rangeCurrent}>
+                        Current: ${currentPrice}
+                    </span>
+                    <span className={styles.rangeBound}>${high}</span>
+                </div>
+            </div>
+            <div
+                className={styles.rangeTrack}
+                role="meter"
+                aria-label={label}
+                aria-valuemin={low}
+                aria-valuemax={high}
+                aria-valuenow={currentPrice}
+            >
+                <div
+                    className={styles.rangeFill}
+                    style={{ width: `${percent.toFixed(1)}%` }}
+                />
+                <div
+                    className={styles.rangeThumb}
+                    style={{ left: `${percent.toFixed(1)}%` }}
+                    aria-hidden="true"
+                />
+            </div>
+        </div>
+    );
+};
+
+/**
+ * Displays Yahoo quote metrics and key valuation ratios for the selected ticker.
  * @returns The key-statistics panel.
  */
 const StockMarketMetrics = () => {
@@ -34,64 +88,110 @@ const StockMarketMetrics = () => {
         error: string | null;
     };
 
+    const isETF = Boolean(
+        quote && (quote.quoteType === 'ETF' || quote.netExpenseRatio != null)
+    );
+
+    const rangeLow = quote?.fiftyTwoWeekRange?.low ?? quote?.fiftyTwoWeekLow;
+    const rangeHigh = quote?.fiftyTwoWeekRange?.high ?? quote?.fiftyTwoWeekHigh;
+    const currentPrice = quote?.regularMarketPrice;
+
     return (
         <div className={styles.container}>
-            <h2 className={styles.title}>📊 Key Statistics</h2>
+            <div className={styles.headerRow}>
+                <h2 className={styles.title}>Key Statistics</h2>
+                {quote && (
+                    <span className={styles.badge}>
+                        {isETF ? 'ETF' : 'Equity'}
+                    </span>
+                )}
+            </div>
 
-            {error && <p className={styles.error}>⚠️ Error fetching stock data</p>}
-            {isLoading && <p className={styles.loading}>Loading...</p>}
+            {error && <p className={styles.error}>Error fetching stock data</p>}
+            {isLoading && <p className={styles.loading}>Loading statistics...</p>}
 
             {!quote && !isLoading && (
-                <p className={styles.error}>⚠️ Please select a stock</p>
+                <p className={styles.error}>Please select a stock</p>
             )}
 
             {quote && !isLoading && (
-                <div className={styles.statsGrid}>
-                    <StatItem
-                        label="Market Cap"
-                        value={formatCurrency(quote.marketCap)}
-                    />
-                    <StatItem
-                        label="Day Range"
-                        value={
-                            quote.regularMarketDayRange?.low != null && quote.regularMarketDayRange?.high != null
-                                ? `$${quote.regularMarketDayRange.low} - $${quote.regularMarketDayRange.high}`
-                                : 'N/A'
-                        }
-                    />
-                    <StatItem
+                <>
+                    <RangeBar
                         label="52-Week Range"
-                        value={
-                            quote.fiftyTwoWeekRange?.low != null && quote.fiftyTwoWeekRange?.high != null
-                                ? `$${quote.fiftyTwoWeekRange.low} - $${quote.fiftyTwoWeekRange.high}`
-                                : 'N/A'
-                        }
+                        low={rangeLow}
+                        high={rangeHigh}
+                        current={currentPrice}
                     />
-                    <StatItem
-                        label="Forward P/E"
-                        value={formatNumber(quote.forwardPE)}
-                    />
-                    <StatItem
-                        label="Trailing P/E"
-                        value={formatNumber(quote.trailingPE)}
-                    />
-                    <StatItem
-                        label="EPS (TTM)"
-                        value={formatNumber(quote.priceEpsCurrentYear)}
-                    />
-                    <StatItem
-                        label="Dividend Yield"
-                        value={formatPercent(quote.dividendYield)}
-                    />
-                    <StatItem
-                        label="Dividend Rate"
-                        value={quote.dividendRate != null ? formatCurrency(quote.dividendRate) : 'N/A'}
-                    />
-                    <StatItem
-                        label="Dividend Date"
-                        value={formatDate(quote.dividendDate)}
-                    />
-                </div>
+
+                    <div className={styles.statsGrid}>
+                        <StatItem
+                            label="Market Cap"
+                            value={formatCurrency(quote.marketCap)}
+                        />
+                        <StatItem
+                            label="Day Range"
+                            value={
+                                quote.regularMarketDayRange?.low != null && quote.regularMarketDayRange?.high != null
+                                    ? `$${quote.regularMarketDayRange.low} - $${quote.regularMarketDayRange.high}`
+                                    : 'N/A'
+                            }
+                        />
+                        <StatItem
+                            label="52-Week Range"
+                            value={
+                                rangeLow != null && rangeHigh != null
+                                    ? `$${rangeLow} - $${rangeHigh}`
+                                    : 'N/A'
+                            }
+                        />
+
+                        {isETF ? (
+                            <StatItem
+                                label="Expense Ratio"
+                                value={
+                                    quote.netExpenseRatio != null
+                                        ? `${quote.netExpenseRatio.toFixed(2)}%`
+                                        : 'N/A'
+                                }
+                            />
+                        ) : (
+                            <StatItem
+                                label="Forward P/E"
+                                value={formatNumber(quote.forwardPE)}
+                            />
+                        )}
+
+                        <StatItem
+                            label="Trailing P/E"
+                            value={formatNumber(quote.trailingPE)}
+                        />
+
+                        <StatItem
+                            label="Beta"
+                            value={quote.beta != null ? formatNumber(quote.beta) : 'N/A'}
+                        />
+
+                        {!isETF && (
+                            <StatItem
+                                label="EPS (TTM)"
+                                value={formatNumber(quote.priceEpsCurrentYear)}
+                            />
+                        )}
+
+                        <StatItem
+                            label="Dividend Yield"
+                            value={formatPercent(quote.dividendYield)}
+                        />
+                        <StatItem
+                            label="Dividend Rate"
+                            value={quote.dividendRate != null ? formatCurrency(quote.dividendRate) : 'N/A'}
+                        />
+                        <StatItem
+                            label="Dividend Date"
+                            value={formatDate(quote.dividendDate)}
+                        />
+                    </div>
+                </>
             )}
         </div>
     );

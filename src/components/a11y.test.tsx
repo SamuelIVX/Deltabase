@@ -13,6 +13,7 @@ import ThemeToggle from "@/components/theme/ThemeToggle";
 import MarketRibbon from "@/components/dashboard/marketribbon/MarketRibbon";
 import Navbar from "@/components/dashboard/navbar/navbar";
 import Sidebar from "@/components/dashboard/sidebar/sidebar";
+import Rightbar from "@/components/dashboard/rightbar/rightbar";
 import { AssetContext } from "@/components/whatif/assetselector/assetselector";
 
 vi.mock("@/hooks/useDebounce", () => ({
@@ -25,6 +26,22 @@ vi.mock("@/hooks/useYahooStockQuote", () => ({
 
 vi.mock("@/hooks/useCryptoLatestTick", () => ({
     default: () => ({ result: null, isLoading: false, error: null }),
+}));
+
+vi.mock("@/hooks/useFinnhubNews", () => ({
+    default: () => ({
+        data: [
+            {
+                id: "1",
+                headline: "Axe test market headline",
+                source: "Bloomberg",
+                url: "https://bloomberg.com",
+                datetime: 1731110000,
+            },
+        ],
+        isPending: false,
+        isError: false,
+    }),
 }));
 
 vi.mock("@/hooks/useYahooStockSymbols", () => ({
@@ -156,6 +173,11 @@ describe("a11y", () => {
 
     it("market ribbon has no critical or serious violations", async () => {
         const { container } = render(<MarketRibbon />);
+        expect(await seriousViolations(container)).toEqual([]);
+    });
+
+    it("rightbar news feed has no critical or serious violations", async () => {
+        const { container } = render(<Rightbar />);
         expect(await seriousViolations(container)).toEqual([]);
     });
 });
