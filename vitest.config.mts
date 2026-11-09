@@ -8,7 +8,8 @@ export default defineConfig({
     test: {
         environment: "jsdom",
         setupFiles: ["./vitest.setup.ts"],
-        include: ["**/*.test.ts", "**/*.test.tsx"],
+        include: ["src/**/*.{test,spec}.{ts,tsx}"],
+        exclude: ["**/node_modules/**", "**/.stryker-tmp/**", "**/dist/**", "**/.next/**"],
         globals: true,
         css: false,
         env: {

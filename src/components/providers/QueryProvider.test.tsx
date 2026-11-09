@@ -5,7 +5,13 @@ import QueryProvider from './QueryProvider';
 
 function ConsumerComponent() {
     const client = useQueryClient();
-    return <div>{client ? 'Client Initialized' : 'No Client'}</div>;
+    const defaultOptions = client.getDefaultOptions().queries;
+    return (
+        <div>
+            <span data-testid="stale-time">{String(defaultOptions?.staleTime)}</span>
+            <span data-testid="refetch-focus">{String(defaultOptions?.refetchOnWindowFocus)}</span>
+        </div>
+    );
 }
 
 describe('QueryProvider', () => {
@@ -20,13 +26,14 @@ describe('QueryProvider', () => {
         expect(screen.getByText('Hello QueryProvider')).toBeInTheDocument();
     });
 
-    it('provides QueryClient context to consumers', () => {
+    it('provides QueryClient context with default options to consumers', () => {
         render(
             <QueryProvider>
                 <ConsumerComponent />
             </QueryProvider>
         );
 
-        expect(screen.getByText('Client Initialized')).toBeInTheDocument();
+        expect(screen.getByTestId('stale-time').textContent).toBe('60000');
+        expect(screen.getByTestId('refetch-focus').textContent).toBe('false');
     });
 });

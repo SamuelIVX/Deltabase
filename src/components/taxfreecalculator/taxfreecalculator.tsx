@@ -8,17 +8,7 @@ import useYahooStockQuote from '@/hooks/useYahooStockQuote';
 import { YahooQuote } from "@/types/stock";
 import useDebounce from '@/hooks/useDebounce';
 import styles from './taxfreecalculator.module.css'
-
-interface CryptoTickResult {
-    PRICE: number;
-    CURRENT_DAY_OPEN: number;
-    CURRENT_DAY_CHANGE_PERCENTAGE: number;
-    CURRENT_HOUR_CHANGE_PERCENTAGE: number;
-    MOVING_24_HOUR_CHANGE_PERCENTAGE: number;
-    CURRENT_DAY_CHANGE: number;
-    CURRENT_DAY_QUOTE_VOLUME: number;
-    [key: string]: unknown;
-}
+import { calculateTaxReturns } from '@/utils/calculateTaxReturns';
 
 interface ResultProps {
     grossProfit: number,
@@ -107,61 +97,25 @@ export default function TaxAdjustedReturns() {
     const validTaxRate = Number.isFinite(numTaxRate) && numTaxRate >= 0 ? numTaxRate : 0;
     const validFeeRate = Number.isFinite(numFeeRate) && numFeeRate >= 0 ? numFeeRate : 0;
 
-    /**
-     * Computes tax/fee-adjusted returns from a Yahoo quote open vs last price.
-     * @param quote - Yahoo quote with `regularMarketOpen` and `regularMarketPrice`.
-     * @returns Breakdown totals, or null if quote prices are missing.
-     */
-    const calculateStockReturns = (quote: YahooQuote) => {
-        if (!quote?.regularMarketPrice || !quote?.regularMarketOpen || validQuantity <= 0) {
-            return null;
-        }
+    const stockReturns = quote?.regularMarketOpen && quote?.regularMarketPrice && validQuantity > 0
+        ? calculateTaxReturns({
+            openPrice: quote.regularMarketOpen,
+            currentPrice: quote.regularMarketPrice,
+            quantity: validQuantity,
+            taxRate: validTaxRate,
+            feeRate: validFeeRate,
+        })
+        : null;
 
-        const grossProfit = (quote.regularMarketPrice - quote.regularMarketOpen) * validQuantity;
-        const feeCost = ((quote.regularMarketOpen + quote.regularMarketPrice) * validQuantity * validFeeRate) / 100;
-        const taxableProfit = grossProfit - feeCost;
-        const taxAmount = taxableProfit > 0 ? (taxableProfit * validTaxRate) / 100 : 0;
-        const netProfit = taxableProfit - taxAmount;
-        const netReturn = quote.regularMarketOpen > 0 ? (netProfit / (quote.regularMarketOpen * validQuantity)) * 100 : 0;
-
-        return {
-            grossProfit,
-            feeCost,
-            taxableProfit,
-            taxAmount,
-            netProfit,
-            netReturn
-        };
-    };
-
-    /**
-     * Computes tax/fee-adjusted returns from a CoinDesk latest-tick open vs price.
-     * @param result - CoinDesk tick with `CURRENT_DAY_OPEN` and `PRICE`.
-     * @returns Breakdown totals, or null if tick prices are missing.
-     */
-    const calculateCryptoReturns = (result: CryptoTickResult) => {
-        if (!result?.PRICE || !result?.CURRENT_DAY_OPEN || validQuantity <= 0) {
-            return null;
-        }
-
-        const grossProfit = (result.PRICE - result.CURRENT_DAY_OPEN) * validQuantity;
-        const feeCost = ((result.CURRENT_DAY_OPEN + result.PRICE) * validQuantity * validFeeRate) / 100;
-        const taxableProfit = grossProfit - feeCost;
-        const taxAmount = taxableProfit > 0 ? (taxableProfit * validTaxRate) / 100 : 0;
-        const netProfit = taxableProfit - taxAmount;
-        const netReturn = result.CURRENT_DAY_OPEN > 0 ? (netProfit / (result.CURRENT_DAY_OPEN * validQuantity)) * 100 : 0;
-        return {
-            grossProfit,
-            feeCost,
-            taxableProfit,
-            taxAmount,
-            netProfit,
-            netReturn
-        };
-    };
-
-    const stockReturns = quote ? calculateStockReturns(quote) : null;
-    const cryptoReturns = result ? calculateCryptoReturns(result) : null;
+    const cryptoReturns = result?.CURRENT_DAY_OPEN && result?.PRICE && validQuantity > 0
+        ? calculateTaxReturns({
+            openPrice: result.CURRENT_DAY_OPEN,
+            currentPrice: result.PRICE,
+            quantity: validQuantity,
+            taxRate: validTaxRate,
+            feeRate: validFeeRate,
+        })
+        : null;
 
     return (
         <div className={styles.wrapper}>
