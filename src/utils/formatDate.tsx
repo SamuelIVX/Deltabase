@@ -14,7 +14,8 @@ function formatDate(dateString: string | number | Date): string {
     return new Date(dateString).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
-        day: 'numeric'
+        day: 'numeric',
+        timeZone: 'UTC',
     });
 };
 

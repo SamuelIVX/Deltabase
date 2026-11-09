@@ -30,9 +30,14 @@ type YahooChartResult = {
  * // GET /api/searchBasicHistoricalData?symbol=MSFT&range=6m → 200 [{ date, time, close, volume }]
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.method && req.method !== 'GET') {
+        if (typeof res.setHeader === 'function') res.setHeader('Allow', ['GET']);
+        return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+    }
+
     const { symbol, range = "1y" } = req.query;
 
-    if (typeof symbol !== "string") {
+    if (typeof symbol !== "string" || !symbol.trim()) {
         return res.status(400).json({ error: "Invalid symbol parameter" });
     }
 
@@ -58,7 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     startDate.setDate(today.getDate() - days);
 
     try {
-        const results = await yahooFinance.chart(symbol, {
+        const results = await yahooFinance.chart(symbol.trim(), {
             period1: startDate,
             period2: today,
             interval: interval,
@@ -73,15 +78,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             volume: quote.volume ?? 0
         }));
 
+        if (typeof res.setHeader === 'function') {
+            res.setHeader('Cache-Control', 'public, s-maxage=120, stale-while-revalidate=300');
+        }
+
         res.status(200).json(formattedData);
 
     } catch (err: unknown) {
-        console.error(err);
-
-        if (err instanceof Error) {
-            res.status(500).json({ error: err.message });
-        } else {
-            res.status(500).json({ error: "Failed to fetch data" });
-        }
+        console.error('Yahoo Finance basic historical error:', err);
+        res.status(500).json({ error: "Failed to fetch historical chart data" });
     }
 }

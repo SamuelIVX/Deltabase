@@ -8,17 +8,7 @@ import useYahooStockQuote from '@/hooks/useYahooStockQuote';
 import { YahooQuote } from "@/types/stock";
 import useDebounce from '@/hooks/useDebounce';
 import styles from './taxfreecalculator.module.css'
-
-interface CryptoTickResult {
-    PRICE: number;
-    CURRENT_DAY_OPEN: number;
-    CURRENT_DAY_CHANGE_PERCENTAGE: number;
-    CURRENT_HOUR_CHANGE_PERCENTAGE: number;
-    MOVING_24_HOUR_CHANGE_PERCENTAGE: number;
-    CURRENT_DAY_CHANGE: number;
-    CURRENT_DAY_QUOTE_VOLUME: number;
-    [key: string]: unknown;
-}
+import { calculateTaxReturns } from '@/utils/calculateTaxReturns';
 
 interface ResultProps {
     grossProfit: number,
@@ -81,14 +71,14 @@ const Results: React.FC<ResultProps> = ({ grossProfit, feeCost, taxAmount, netPr
 export default function TaxAdjustedReturns() {
     const [marketType, setMarketType] = useState<'crypto' | 'stock' | ''>('');
     const [symbol, setSymbol] = useState('');
-    const [quantity, setQuantity] = useState(1);
-    const [taxRate, setTaxRate] = useState(15);
-    const [feeRate, setFeeRate] = useState(0.5);
+    const [quantity, setQuantity] = useState('1');
+    const [taxRate, setTaxRate] = useState('15');
+    const [feeRate, setFeeRate] = useState('0.5');
 
-    // fetch data from correct API
+    // fetch data from correct API only when the matching market is active
     const debouncedSymbol = useDebounce(symbol, 500);
 
-    const { quote } = useYahooStockQuote(debouncedSymbol) as {
+    const { quote } = useYahooStockQuote(marketType === 'stock' ? debouncedSymbol : '') as {
         quote: YahooQuote | null;
         isLoading: boolean;
         error: string | null;
@@ -96,67 +86,36 @@ export default function TaxAdjustedReturns() {
 
     const { result } = useCryptoLatestTick({
         market: 'kraken',
-        instrument: debouncedSymbol
+        instrument: marketType === 'crypto' ? debouncedSymbol : ''
     });
 
-    /**
-     * Computes tax/fee-adjusted returns from a Yahoo quote open vs last price.
-     * @param quote - Yahoo quote with `regularMarketOpen` and `regularMarketPrice`.
-     * @returns Breakdown totals, or null if quote prices are missing.
-     */
-    const calculateStockReturns = (quote: YahooQuote) => {
-        if (!quote?.regularMarketPrice || !quote?.regularMarketOpen) {
-            return null;
-        }
+    const numQuantity = parseFloat(quantity);
+    const numTaxRate = parseFloat(taxRate);
+    const numFeeRate = parseFloat(feeRate);
 
-        const grossProfit = (quote?.regularMarketPrice - quote?.regularMarketOpen) * quantity;
-        const feeCost = ((quote?.regularMarketOpen + quote?.regularMarketPrice) * quantity * feeRate) / 100;
-        const taxableProfit = grossProfit - feeCost;
-        const taxAmount = taxableProfit > 0 ? (taxableProfit * taxRate) / 100 : 0;
-        const netProfit = taxableProfit - taxAmount;
-        const netReturn = quote?.regularMarketOpen > 0 ? (netProfit / (quote?.regularMarketOpen * quantity)) * 100 : 0;
+    const validQuantity = Number.isFinite(numQuantity) && numQuantity > 0 ? numQuantity : 0;
+    const validTaxRate = Number.isFinite(numTaxRate) && numTaxRate >= 0 ? Math.min(numTaxRate, 100) : 0;
+    const validFeeRate = Number.isFinite(numFeeRate) && numFeeRate >= 0 ? Math.min(numFeeRate, 100) : 0;
 
-        return {
-            grossProfit,
-            feeCost,
-            taxableProfit,
-            taxAmount,
-            netProfit,
-            netReturn
-        };
-    };
+    const stockReturns = quote?.regularMarketOpen && quote?.regularMarketPrice && validQuantity > 0
+        ? calculateTaxReturns({
+            openPrice: quote.regularMarketOpen,
+            currentPrice: quote.regularMarketPrice,
+            quantity: validQuantity,
+            taxRate: validTaxRate,
+            feeRate: validFeeRate,
+        })
+        : null;
 
-    /**
-     * Computes tax/fee-adjusted returns from a CoinDesk latest-tick open vs price.
-     * @param result - CoinDesk tick with `CURRENT_DAY_OPEN` and `PRICE`.
-     * @returns Breakdown totals, or null if tick prices are missing.
-     */
-    const calculateCryptoReturns = (result: CryptoTickResult) => {
-        if (!result?.PRICE || !result?.CURRENT_DAY_OPEN) {
-            return null;
-        }
-
-        const grossProfit = (result?.PRICE - result?.CURRENT_DAY_OPEN) * quantity;
-        const feeCost = ((result?.CURRENT_DAY_OPEN + result?.PRICE) * quantity * feeRate) / 100;
-        const taxableProfit = grossProfit - feeCost;
-        const taxAmount = taxableProfit > 0 ? (taxableProfit * taxRate) / 100 : 0;
-        const netProfit = taxableProfit - taxAmount;
-        const netReturn = result?.CURRENT_DAY_OPEN > 0 ? (netProfit / (result?.CURRENT_DAY_OPEN * quantity)) * 100 : 0;
-        console.log('CURRENT_DAY_OPEN:', result?.CURRENT_DAY_OPEN);
-        console.log('PRICE:', result?.PRICE);
-        console.log('Difference:', result?.PRICE - result?.CURRENT_DAY_OPEN);
-        return {
-            grossProfit,
-            feeCost,
-            taxableProfit,
-            taxAmount,
-            netProfit,
-            netReturn
-        };
-    };
-
-    const stockReturns = quote ? calculateStockReturns(quote) : null;
-    const cryptoReturns = result ? calculateCryptoReturns(result) : null;
+    const cryptoReturns = result?.CURRENT_DAY_OPEN && result?.PRICE && validQuantity > 0
+        ? calculateTaxReturns({
+            openPrice: result.CURRENT_DAY_OPEN,
+            currentPrice: result.PRICE,
+            quantity: validQuantity,
+            taxRate: validTaxRate,
+            feeRate: validFeeRate,
+        })
+        : null;
 
     return (
         <div className={styles.wrapper}>
@@ -184,8 +143,9 @@ export default function TaxAdjustedReturns() {
                     <div className={styles.section}>
                         {/* Symbol Input */}
                         <div className={styles.field}>
-                            <label className={styles.label}>Symbol</label>
+                            <label className={styles.label} htmlFor="calc-symbol">Symbol</label>
                             <input
+                                id="calc-symbol"
                                 className={styles.input}
                                 value={symbol}
                                 onChange={(e) => setSymbol(e.target.value.toUpperCase())}
@@ -198,35 +158,50 @@ export default function TaxAdjustedReturns() {
                         {/* Quantity / Tax / Fee inputs */}
                         <div className={styles.grid}>
                             <div className={styles.field}>
-                                <label className={styles.label}>Quantity</label>
+                                <label className={styles.label} htmlFor="calc-quantity">Quantity</label>
                                 <input
+                                    id="calc-quantity"
                                     type="number"
+                                    min="0"
+                                    step="any"
                                     className={styles.input}
                                     value={quantity}
-                                    onChange={(e) => setQuantity(parseFloat(e.target.value))}
+                                    onChange={(e) => setQuantity(e.target.value)}
                                 />
                             </div>
 
                             <div className={styles.field}>
-                                <label className={styles.label}>Tax Rate (%)</label>
+                                <label className={styles.label} htmlFor="calc-tax-rate">Tax Rate (%)</label>
                                 <input
+                                    id="calc-tax-rate"
                                     type="number"
+                                    min="0"
+                                    max="100"
+                                    step="any"
                                     className={styles.input}
                                     value={taxRate}
-                                    onChange={(e) => setTaxRate(parseFloat(e.target.value))}
+                                    onChange={(e) => setTaxRate(e.target.value)}
                                 />
                             </div>
 
                             <div className={styles.field}>
-                                <label className={styles.label}>Fee Rate (%)</label>
+                                <label className={styles.label} htmlFor="calc-fee-rate">Fee Rate (%)</label>
                                 <input
+                                    id="calc-fee-rate"
                                     type="number"
+                                    min="0"
+                                    max="100"
+                                    step="any"
                                     className={styles.input}
                                     value={feeRate}
-                                    onChange={(e) => setFeeRate(parseFloat(e.target.value))}
+                                    onChange={(e) => setFeeRate(e.target.value)}
                                 />
                             </div>
                         </div>
+
+                        {symbol && validQuantity <= 0 && (
+                            <p className={styles.hint}>Please enter a quantity greater than 0 to calculate returns.</p>
+                        )}
                     </div>
                 )}
 

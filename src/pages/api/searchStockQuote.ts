@@ -13,6 +13,11 @@ import yahooFinance from 'yahoo-finance2';
  * // GET /api/searchStockQuote?symbol=AAPL → 200 { symbol, regularMarketPrice, ... }
  */
 async function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.method && req.method !== 'GET') {
+        if (typeof res.setHeader === 'function') res.setHeader('Allow', ['GET']);
+        return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+    }
+
     const { symbol } = req.query;
     if (!symbol || typeof symbol !== 'string') {
         return res.status(400).json({ error: 'Missing or invalid symbol parameter.' });
@@ -20,15 +25,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     try {
         const results = await yahooFinance.quote(symbol);
+        if (typeof res.setHeader === 'function') {
+            res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+        }
         res.status(200).json(results);
     } catch (err: unknown) {
-        console.error(err);
-
-        if (err instanceof Error) {
-            res.status(500).json({ error: err.message });
-        } else {
-            res.status(500).json({ error: "Failed to fetch data" });
-        }
+        console.error('Yahoo Finance quote error:', err);
+        res.status(500).json({ error: "Failed to fetch stock quote" });
     }
 }
 

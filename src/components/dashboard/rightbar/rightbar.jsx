@@ -11,15 +11,12 @@ import useFinnhubNews from "@/hooks/useFinnhubNews"
  * @returns {JSX.Element}
  */
 const Rightbar = () => {
-  const {data, isPending, isError, error} = useFinnhubNews();
-  if(isPending) { return <div>Loading...</div> };
-  if(isError) { return <div>Error: {error.message}</div> };
+  const { data, isPending, isError } = useFinnhubNews();
+  const articles = Array.isArray(data) ? data.slice(0, 1) : [];
 
   return (
     <div className={styles.container}>
       <div className={styles.item}>
-        <div className={styles.bgContainer}>
-        </div>
         <div className={styles.text}>
           <span className={styles.notification}>Total Balance</span>
           <h3 className={styles.balance}>
@@ -32,9 +29,11 @@ const Rightbar = () => {
       <div className={styles.item}>
         <div className={styles.text}>
           <span className={styles.notification}>🚀 Newsletter Of The Day</span>
-          {data.slice(0,1).map((article) => (
+          {isPending && <p className={styles.desc}>Loading market news...</p>}
+          {isError && <p className={styles.desc}>Unable to load news right now.</p>}
+          {!isPending && !isError && articles.map((article) => (
                <div key={article.id}>
-                  <a href={article.url}>
+                  <a href={article.url} target="_blank" rel="noopener noreferrer">
                     {article.image && article.image.trim() !== '' ? (
                       <img 
                         src={article.image} 

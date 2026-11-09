@@ -35,7 +35,7 @@ const CryptoMarketMetrics = () => {
         <div className={styles.container}>
             <h2 className={styles.title}>📊 Key Statistics</h2>
 
-            {error && <p className={styles.error}>⚠️ Error fetching stock data</p>}
+            {error && <p className={styles.error}>⚠️ Error fetching crypto data</p>}
             {isLoading && <p className={styles.loading}>Loading...</p>}
 
             {!result && !isLoading && (

@@ -16,9 +16,9 @@ const Card = () => {
         <FaUserTie size={24} />
         <div className={styles.texts}>
           <span className={styles.title}>Total Portfolio Value</span>
-          <span className={styles.number}>$63,097</span>
+          <span className={styles.number}>$148,601</span>
           <span className={styles.detail}>
-            <span className={styles.positive}>23.12%</span> more than previous week
+            <span className={styles.positive}>+18.00%</span> from last week
           </span>
         </div>
       </div>

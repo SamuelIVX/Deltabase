@@ -2,7 +2,7 @@
 /**
  * Dashboard home Recharts line chart with hard-coded demo weekly series.
  */
-import React, { PureComponent } from 'react';
+import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from "./chart.module.css"
 

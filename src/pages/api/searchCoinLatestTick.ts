@@ -16,6 +16,11 @@ import { getCoinDeskHeaders } from "@/lib/coindesk";
  * // GET /api/searchCoinLatestTick?instrument=BTC-USD → 200 { PRICE, ... }
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.method && req.method !== 'GET') {
+        if (typeof res.setHeader === 'function') res.setHeader('Allow', ['GET']);
+        return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+    }
+
     const apiKey = process.env.COINDESK_API_KEY;
 
     if (!apiKey) {
@@ -53,21 +58,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const data = await response.json();
 
-        // Extract the tick for the requested instrument
-        const tick = data.Data[instrument as string];
+        // Extract the tick for the requested instrument safely checking own property
+        const instrumentKey = instrument as string;
+        const tick =
+            data &&
+            data.Data &&
+            typeof data.Data === 'object' &&
+            Object.prototype.hasOwnProperty.call(data.Data, instrumentKey)
+                ? data.Data[instrumentKey]
+                : undefined;
 
         if (!tick) {
             return res.status(400).json({ error: "No tick data found" });
         }
 
+        if (typeof res.setHeader === 'function') {
+            res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
+        }
+
         res.status(200).json(tick);
     } catch (err: unknown) {
-        console.error(err);
-
-        if (err instanceof Error) {
-            res.status(500).json({ error: err.message });
-        } else {
-            res.status(500).json({ error: "Failed to fetch data" });
-        }
+        console.error('CoinDesk latest tick error:', err);
+        res.status(500).json({ error: "Failed to fetch crypto tick" });
     }
 }

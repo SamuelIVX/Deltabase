@@ -34,30 +34,53 @@
     background: #2e374a;
     padding: 10px;
     border-radius: 10px;
-    max-width: 26%;
-    margin: 0 auto;
-    margin-top: 10px;
+    width: 100%;
+    max-width: 320px;
+    margin: 10px auto 0;
+    transition: outline 0.15s ease, box-shadow 0.15s ease;
+}
+
+.search:focus-within {
+    outline: 2px solid #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
 
 .input {
     background-color: transparent;
     border: none;
     color: var(--text);
-    cursor: pointer;
+    width: 100%;
+    outline: none;
+}
+
+.statusText {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--textSoft);
+}
+
+.dropdown {
+    margin-top: 10px;
+    max-height: 220px;
+    overflow-y: auto;
+    border-radius: 8px;
 }
 
 .output {
-    margin: 10px;
+    margin: 6px 0;
     cursor: pointer;
     background: #2e374a;
     color: var(--text);
     transition: background-color 0.2s ease;
-    border-radius: 10px;
-    padding: 5px;
+    border-radius: 8px;
+    padding: 8px 12px;
+    text-align: left;
 }
 
-.output:hover {
+.output:hover,
+.output:focus-visible {
     background-color: #3e4a5a;
+    outline: 2px solid #2563eb;
 }
 
 .selected {

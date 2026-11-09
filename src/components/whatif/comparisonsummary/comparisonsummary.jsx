@@ -31,12 +31,18 @@ const ComparisonSummary = () => {
     }
 
     // Calculate final values
-    const asset1Final = asset1Data[asset1Data.length - 1]?.portfolioValue || 0;
-    const asset2Final = asset2Data[asset2Data.length - 1]?.portfolioValue || 0;
+    const asset1Final = Number(asset1Data[asset1Data.length - 1]?.portfolioValue) || 0;
+    const asset2Final = Number(asset2Data[asset2Data.length - 1]?.portfolioValue) || 0;
 
     // Difference (opportunity cost)
     const difference = asset2Final - asset1Final;
     const betterAsset = difference > 0 ? selectedAsset2 : selectedAsset1;
+
+    const formatMoney = (val) =>
+        (Number(val) || 0).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
 
     return (
         <div className={styles.wrapper}>
@@ -46,32 +52,32 @@ const ComparisonSummary = () => {
 
                 <div className={styles.content}>
                     <p>
-                        For <strong style={{ color: 'silver' }}>{selectedAsset1?.symbol}</strong> with an initial investment of
-                        <strong style={{ color: 'beige' }}> ${initialInvestment1.toLocaleString()}</strong> and monthly contributions of
-                        <strong style={{ color: 'beige' }}> ${monthlyInvestment1.toLocaleString()}</strong>:
+                        For <strong className={styles.symbolHighlight}>{selectedAsset1?.symbol}</strong> with an initial investment of
+                        <strong className={styles.amountHighlight}> ${formatMoney(initialInvestment1)}</strong> and monthly contributions of
+                        <strong className={styles.amountHighlight}> ${formatMoney(monthlyInvestment1)}</strong>:
                         <br />
-                        Final Value: <strong style={{ color: 'gold' }}>${asset1Final.toLocaleString()}</strong>
+                        Final Value: <strong className={styles.finalHighlight}>${formatMoney(asset1Final)}</strong>
                     </p>
 
                     <p>
-                        For <strong style={{ color: 'silver' }}>{selectedAsset2?.symbol}</strong> with an initial investment of
-                        <strong style={{ color: 'beige' }}> ${initialInvestment2.toLocaleString()}</strong> and monthly contributions of
-                        <strong style={{ color: 'beige' }}> ${monthlyInvestment2.toLocaleString()}</strong>:
+                        For <strong className={styles.symbolHighlight}>{selectedAsset2?.symbol}</strong> with an initial investment of
+                        <strong className={styles.amountHighlight}> ${formatMoney(initialInvestment2)}</strong> and monthly contributions of
+                        <strong className={styles.amountHighlight}> ${formatMoney(monthlyInvestment2)}</strong>:
                         <br />
-                        Final Value: <strong style={{ color: 'gold' }}>${asset2Final.toLocaleString()}</strong>
+                        Final Value: <strong className={styles.finalHighlight}>${formatMoney(asset2Final)}</strong>
                     </p>
 
                     <p className={styles.summary}>
-                        Choosing <strong style={{ color: 'silver' }}>{selectedAsset1?.symbol}</strong> over <strong style={{ color: 'silver' }}>{selectedAsset2?.symbol}</strong> would have:
+                        Choosing <strong className={styles.symbolHighlight}>{selectedAsset1?.symbol}</strong> over <strong className={styles.symbolHighlight}>{selectedAsset2?.symbol}</strong> would have:
                     </p>
 
-                    <p className={styles.costAmount} style={{ color: difference > 0 ? 'red' : 'green' }}>
-                        <strong>{difference > 0 ? 'Cost you' : 'Saved you'} ${Math.abs(difference).toLocaleString()}</strong>
+                    <p className={`${styles.costAmount} ${difference > 0 ? styles.costNegative : styles.costPositive}`}>
+                        <strong>{difference > 0 ? 'Cost you' : 'Saved you'} ${formatMoney(Math.abs(difference))}</strong>
                     </p>
 
                     <div>
                         <span className={styles.betterChoice}> You would have been better off investing in </span>
-                        <span><strong style={{ color: 'green' }}>{betterAsset?.symbol}</strong>.</span>
+                        <span><strong className={styles.winnerHighlight}>{betterAsset?.symbol}</strong>.</span>
                     </div>
 
                     <hr />

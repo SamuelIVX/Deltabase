@@ -189,3 +189,10 @@
     justify-content: center;
     z-index: 10;
 }
+
+.hint {
+    font-size: 13px;
+    color: var(--textSoft);
+    text-align: center;
+    margin-top: 10px;
+}
