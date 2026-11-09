@@ -82,7 +82,7 @@ const ComparisonSummary = () => {
                         <h3 className={styles.title}>What-If Analysis Results</h3>
                     </div>
                     <div className={styles.winnerPill}>
-                        <span className={styles.winnerTrophy} aria-hidden="true">★</span>
+                        <span className={styles.winnerDot} aria-hidden="true" />
                         <span>Leader: <strong>{betterAsset?.symbol}</strong></span>
                     </div>
                 </div>

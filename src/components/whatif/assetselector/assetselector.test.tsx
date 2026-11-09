@@ -1,7 +1,7 @@
 /**
- * Unit tests for What-If AssetSelector component and preset quick-picks.
+ * Comprehensive unit tests for What-If AssetSelector component and keyboard navigation.
  */
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import AssetSelector, { AssetContext } from "./assetselector";
 import useYahooStockSymbols from "@/hooks/useYahooStockSymbols";
@@ -39,6 +39,10 @@ const mockContext = {
 };
 
 describe("AssetSelector component", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
     it("renders popular comparison presets and applies a preset on click", () => {
         render(
             <AssetContext.Provider value={mockContext}>
@@ -56,9 +60,12 @@ describe("AssetSelector component", () => {
         expect(mockContext.setSelectedAsset2).toHaveBeenCalledWith(
             expect.objectContaining({ symbol: "QQQ" })
         );
+        expect(mockContext.setInitialInvestment1).toHaveBeenCalledWith("1000");
+        expect(mockContext.setMonthlyInvestment1).toHaveBeenCalledWith("250");
+        expect(mockContext.setValue1).toHaveBeenCalledWith([5]);
     });
 
-    it("renders search inputs with accessible labels", () => {
+    it("renders search inputs with accessible labels and handles input events", () => {
         render(
             <AssetContext.Provider value={mockContext}>
                 <AssetSelector />
@@ -72,9 +79,12 @@ describe("AssetSelector component", () => {
 
         fireEvent.change(input1, { target: { value: "MSFT" } });
         expect((input1 as HTMLInputElement).value).toBe("MSFT");
+
+        fireEvent.change(input2, { target: { value: "GOOGL" } });
+        expect((input2 as HTMLInputElement).value).toBe("GOOGL");
     });
 
-    it("displays dropdown results and selects an option on click and keydown", () => {
+    it("handles keyboard navigation and selection on Asset 1 dropdown options", () => {
         vi.mocked(useYahooStockSymbols).mockReturnValue({
             results: [
                 { symbol: "AAPL", shortname: "Apple Inc." },
@@ -98,12 +108,59 @@ describe("AssetSelector component", () => {
         expect(mockContext.setSelectedAsset1).toHaveBeenCalledWith(
             expect.objectContaining({ symbol: "AAPL" })
         );
+
+        // Keyboard arrow navigation on option
+        fireEvent.keyDown(appleOption, { key: "ArrowDown" });
+        fireEvent.keyDown(appleOption, { key: "ArrowUp" });
+        fireEvent.keyDown(appleOption, { key: "Enter" });
+        fireEvent.keyDown(appleOption, { key: " " });
+
+        // Input ArrowDown navigates to listbox
+        const input1 = screen.getByLabelText("Search symbol for Asset 1");
+        fireEvent.keyDown(input1, { key: "ArrowDown" });
     });
 
-    it("renders selected badge and allows clearing via Change button", () => {
+    it("handles keyboard navigation and selection on Asset 2 dropdown options", () => {
+        vi.mocked(useYahooStockSymbols).mockReturnValue({
+            results: [
+                { symbol: "NVDA", shortname: "Nvidia Corp." },
+                { symbol: "TSLA", shortname: "Tesla Inc." },
+            ] as never,
+            isLoading: false,
+            error: null,
+        });
+
+        render(
+            <AssetContext.Provider value={mockContext}>
+                <AssetSelector />
+            </AssetContext.Provider>
+        );
+
+        const listbox2 = screen.getByRole("listbox", { name: "Asset 2 results" });
+        expect(listbox2).toBeInTheDocument();
+
+        const nvdaOption = within(listbox2).getByText("NVDA");
+        fireEvent.click(nvdaOption);
+        expect(mockContext.setSelectedAsset2).toHaveBeenCalledWith(
+            expect.objectContaining({ symbol: "NVDA" })
+        );
+
+        // Keyboard navigation on Asset 2
+        fireEvent.keyDown(nvdaOption, { key: "ArrowDown" });
+        fireEvent.keyDown(nvdaOption, { key: "ArrowUp" });
+        fireEvent.keyDown(nvdaOption, { key: "Enter" });
+        fireEvent.keyDown(nvdaOption, { key: " " });
+
+        // Input ArrowDown on input 2
+        const input2 = screen.getByLabelText("Search symbol for Asset 2");
+        fireEvent.keyDown(input2, { key: "ArrowDown" });
+    });
+
+    it("renders selected badges and allows clearing via Change buttons", () => {
         const selectedContext = {
             ...mockContext,
             selectedAsset1: { symbol: "VOO", shortname: "Vanguard S&P 500 ETF" },
+            selectedAsset2: { symbol: "QQQ", shortname: "Invesco QQQ Trust" },
         };
 
         render(
@@ -113,10 +170,58 @@ describe("AssetSelector component", () => {
         );
 
         expect(screen.getByText("VOO")).toBeInTheDocument();
-        const changeBtn = screen.getByRole("button", { name: "Change Asset 1" });
-        expect(changeBtn).toBeInTheDocument();
+        expect(screen.getByText("QQQ")).toBeInTheDocument();
 
-        fireEvent.click(changeBtn);
+        const changeBtn1 = screen.getByRole("button", { name: "Change Asset 1" });
+        const changeBtn2 = screen.getByRole("button", { name: "Change Asset 2" });
+
+        fireEvent.click(changeBtn1);
         expect(selectedContext.setSelectedAsset1).toHaveBeenCalledWith(null);
+
+        fireEvent.click(changeBtn2);
+        expect(selectedContext.setSelectedAsset2).toHaveBeenCalledWith(null);
+    });
+
+    it("clears selection when search input text diverges from selected symbol", () => {
+        const selectedContext = {
+            ...mockContext,
+            selectedAsset1: { symbol: "VOO", shortname: "Vanguard S&P 500 ETF" },
+            selectedAsset2: { symbol: "QQQ", shortname: "Invesco QQQ Trust" },
+        };
+
+        render(
+            <AssetContext.Provider value={selectedContext}>
+                <AssetSelector />
+            </AssetContext.Provider>
+        );
+
+        const input1 = screen.getByLabelText("Search symbol for Asset 1");
+        const input2 = screen.getByLabelText("Search symbol for Asset 2");
+
+        fireEvent.change(input1, { target: { value: "VOO-DIFF" } });
+        expect(selectedContext.setSelectedAsset1).toHaveBeenCalledWith(null);
+
+        fireEvent.change(input2, { target: { value: "QQQ-DIFF" } });
+        expect(selectedContext.setSelectedAsset2).toHaveBeenCalledWith(null);
+    });
+
+    it("renders loading and error states for both assets", () => {
+        vi.mocked(useYahooStockSymbols).mockReturnValue({
+            results: [],
+            isLoading: true,
+            error: "Upstream rate limit",
+        });
+
+        render(
+            <AssetContext.Provider value={mockContext}>
+                <AssetSelector />
+            </AssetContext.Provider>
+        );
+
+        const loadingTexts = screen.getAllByText("Searching market tickers...");
+        expect(loadingTexts.length).toBe(2);
+
+        const errorTexts = screen.getAllByText(/An error occurred: Upstream rate limit/i);
+        expect(errorTexts.length).toBe(2);
     });
 });

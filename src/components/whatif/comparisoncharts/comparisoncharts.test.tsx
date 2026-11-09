@@ -1,22 +1,13 @@
 /**
- * Unit tests for What-If ComparisonCharts and UnifiedComparisonChart components.
+ * Unit tests for What-If ComparisonCharts container component.
  */
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import ComparisonCharts from "./comparisoncharts";
 import { AssetContext } from "../assetselector/assetselector";
 
-vi.mock("@/hooks/useYahooHistoricalData", () => ({
-    default: (symbol: string) => ({
-        results: symbol
-            ? [
-                  { date: "2023-01-01", adjclose: 100 },
-                  { date: "2023-02-01", adjclose: 110 },
-              ]
-            : [],
-        isLoading: false,
-        error: null,
-    }),
+vi.mock("./UnifiedComparisonChart", () => ({
+    default: () => <div data-testid="unified-chart">Unified Chart</div>,
 }));
 
 const mockContext = {
@@ -43,7 +34,7 @@ const mockContext = {
     setAsset2Data: vi.fn(),
 };
 
-describe("ComparisonCharts component", () => {
+describe("ComparisonCharts container component", () => {
     it("renders guidance message when required fields are unselected", () => {
         const incompleteContext = {
             ...mockContext,
@@ -61,21 +52,13 @@ describe("ComparisonCharts component", () => {
         ).toBeInTheDocument();
     });
 
-    it("renders unified comparative chart header and interactive legend when populated", () => {
+    it("renders unified comparative chart when required fields are populated", () => {
         render(
             <AssetContext.Provider value={mockContext}>
                 <ComparisonCharts />
             </AssetContext.Provider>
         );
 
-        expect(screen.getByText("Comparative DCA Portfolio Value")).toBeInTheDocument();
-        const focusSpyBtn = screen.getByRole("button", { name: "Focus SPY" });
-        const focusQqqBtn = screen.getByRole("button", { name: "Focus QQQ" });
-        expect(focusSpyBtn).toBeInTheDocument();
-        expect(focusQqqBtn).toBeInTheDocument();
-
-        // Hovering legend item triggers active series state
-        fireEvent.mouseEnter(focusSpyBtn);
-        fireEvent.mouseLeave(focusSpyBtn);
+        expect(screen.getByTestId("unified-chart")).toBeInTheDocument();
     });
 });

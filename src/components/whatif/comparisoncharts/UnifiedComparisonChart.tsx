@@ -30,7 +30,7 @@ const formatCurrencyVal = (val: number | null | undefined): string => {
     });
 };
 
-interface TooltipProps {
+export interface TooltipProps {
     active?: boolean;
     payload?: Array<{
         name?: string;
@@ -43,7 +43,11 @@ interface TooltipProps {
     asset2Symbol?: string;
 }
 
-const CustomWhatIfTooltip = ({
+/**
+ * Glassmorphic custom tooltip for What-If comparative chart.
+ * Renders date, values, return percentages, and leader spread.
+ */
+export const CustomWhatIfTooltip = ({
     active,
     payload,
     label,

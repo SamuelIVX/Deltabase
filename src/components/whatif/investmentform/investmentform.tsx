@@ -3,6 +3,7 @@
  * What-If investment inputs — initial/monthly amounts and time-horizon slider.
  */
 import { useContext, useState } from "react";
+import { MdLink, MdLinkOff } from "react-icons/md";
 import styles from "./investmentform.module.css";
 import * as Slider from "@radix-ui/react-slider";
 import { AssetContext } from "@/components/whatif/assetselector/assetselector";
@@ -143,7 +144,9 @@ const InvestmentForm = () => {
                     onClick={() => setIsLinked(!isLinked)}
                     aria-pressed={isLinked}
                 >
-                    <span className={styles.linkIcon} aria-hidden="true">{isLinked ? '🔗' : '🔓'}</span>
+                    <span className={styles.linkIcon} aria-hidden="true">
+                        {isLinked ? <MdLink size={16} /> : <MdLinkOff size={16} />}
+                    </span>
                     <span>{isLinked ? 'Equal Strategy (Linked)' : 'Custom per Asset'}</span>
                 </button>
             </div>

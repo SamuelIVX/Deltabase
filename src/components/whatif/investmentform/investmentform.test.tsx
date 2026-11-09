@@ -1,7 +1,7 @@
 /**
- * Unit tests for What-If InvestmentForm component.
+ * Comprehensive unit tests for What-If InvestmentForm component.
  */
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import InvestmentForm from "./investmentform";
 import { AssetContext } from "../assetselector/assetselector";
@@ -31,6 +31,10 @@ const mockContext = {
 };
 
 describe("InvestmentForm component", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
     it("renders investment input fields with accessible labels and initial values", () => {
         render(
             <AssetContext.Provider value={mockContext}>
@@ -44,18 +48,47 @@ describe("InvestmentForm component", () => {
         expect(monthly1.value).toBe("250");
     });
 
-    it("synchronizes investment parameters across both assets when linked", () => {
+    it("synchronizes initial, monthly, and time parameters across both assets when linked", () => {
         render(
             <AssetContext.Provider value={mockContext}>
                 <InvestmentForm />
             </AssetContext.Provider>
         );
 
+        // Initial 1 changes both
         const init1 = screen.getByLabelText("Initial Investment for Asset 1");
         fireEvent.change(init1, { target: { value: "5000" } });
-
         expect(mockContext.setInitialInvestment1).toHaveBeenCalledWith("5000");
         expect(mockContext.setInitialInvestment2).toHaveBeenCalledWith("5000");
+
+        // Monthly 1 changes both
+        const monthly1 = screen.getByLabelText("Monthly Investment for Asset 1");
+        fireEvent.change(monthly1, { target: { value: "500" } });
+        expect(mockContext.setMonthlyInvestment1).toHaveBeenCalledWith("500");
+        expect(mockContext.setMonthlyInvestment2).toHaveBeenCalledWith("500");
+
+        // Initial 2 changes both
+        const init2 = screen.getByLabelText("Initial Investment for Asset 2");
+        fireEvent.change(init2, { target: { value: "6000" } });
+        expect(mockContext.setInitialInvestment2).toHaveBeenCalledWith("6000");
+        expect(mockContext.setInitialInvestment1).toHaveBeenCalledWith("6000");
+
+        // Monthly 2 changes both
+        const monthly2 = screen.getByLabelText("Monthly Investment for Asset 2");
+        fireEvent.change(monthly2, { target: { value: "600" } });
+        expect(mockContext.setMonthlyInvestment2).toHaveBeenCalledWith("600");
+        expect(mockContext.setMonthlyInvestment1).toHaveBeenCalledWith("600");
+
+        // Time button on Asset 1 changes both
+        const threeYBtns = screen.getAllByRole("button", { name: "3Y" });
+        fireEvent.click(threeYBtns[0]);
+        expect(mockContext.setValue1).toHaveBeenCalledWith([3]);
+        expect(mockContext.setValue2).toHaveBeenCalledWith([3]);
+
+        // Time button on Asset 2 changes both
+        fireEvent.click(threeYBtns[1]);
+        expect(mockContext.setValue2).toHaveBeenCalledWith([3]);
+        expect(mockContext.setValue1).toHaveBeenCalledWith([3]);
     });
 
     it("allows independent parameter editing when unlinked", () => {
@@ -68,24 +101,37 @@ describe("InvestmentForm component", () => {
         const linkToggle = screen.getByRole("button", { name: /Equal Strategy/i });
         fireEvent.click(linkToggle);
 
+        // Initial 1 only updates asset 1
         const init1 = screen.getByLabelText("Initial Investment for Asset 1");
         fireEvent.change(init1, { target: { value: "2500" } });
-
         expect(mockContext.setInitialInvestment1).toHaveBeenCalledWith("2500");
         expect(mockContext.setInitialInvestment2).not.toHaveBeenCalledWith("2500");
-    });
 
-    it("updates time horizon when clicking quick year pill buttons", () => {
-        render(
-            <AssetContext.Provider value={mockContext}>
-                <InvestmentForm />
-            </AssetContext.Provider>
-        );
+        // Monthly 1 only updates asset 1
+        const monthly1 = screen.getByLabelText("Monthly Investment for Asset 1");
+        fireEvent.change(monthly1, { target: { value: "150" } });
+        expect(mockContext.setMonthlyInvestment1).toHaveBeenCalledWith("150");
+        expect(mockContext.setMonthlyInvestment2).not.toHaveBeenCalledWith("150");
 
-        const threeYBtns = screen.getAllByRole("button", { name: "3Y" });
-        expect(threeYBtns.length).toBeGreaterThanOrEqual(1);
+        // Initial 2 only updates asset 2
+        const init2 = screen.getByLabelText("Initial Investment for Asset 2");
+        fireEvent.change(init2, { target: { value: "7000" } });
+        expect(mockContext.setInitialInvestment2).toHaveBeenCalledWith("7000");
+        expect(mockContext.setInitialInvestment1).not.toHaveBeenCalledWith("7000");
 
-        fireEvent.click(threeYBtns[0]);
-        expect(mockContext.setValue1).toHaveBeenCalledWith([3]);
+        // Monthly 2 only updates asset 2
+        const monthly2 = screen.getByLabelText("Monthly Investment for Asset 2");
+        fireEvent.change(monthly2, { target: { value: "700" } });
+        expect(mockContext.setMonthlyInvestment2).toHaveBeenCalledWith("700");
+        expect(mockContext.setMonthlyInvestment1).not.toHaveBeenCalledWith("700");
+
+        // Time buttons update independently
+        const oneYBtns = screen.getAllByRole("button", { name: "1Y" });
+        fireEvent.click(oneYBtns[0]);
+        expect(mockContext.setValue1).toHaveBeenCalledWith([1]);
+        expect(mockContext.setValue2).not.toHaveBeenCalledWith([1]);
+
+        fireEvent.click(oneYBtns[1]);
+        expect(mockContext.setValue2).toHaveBeenCalledWith([1]);
     });
 });
