@@ -15,6 +15,8 @@ describe('API Input Validation', () => {
             expect(isValidStockSymbol('BF-B')).toBe(true);
             expect(isValidStockSymbol('^GSPC')).toBe(true);
             expect(isValidStockSymbol('^IXIC')).toBe(true);
+            expect(isValidStockSymbol('GC=F')).toBe(true);
+            expect(isValidStockSymbol('EURUSD=X')).toBe(true);
         });
 
         it('rejects un-trimmed whitespace and invalid symbols', () => {
@@ -35,6 +37,7 @@ describe('API Input Validation', () => {
             expect(isValidCryptoSymbol('BTC-USD')).toBe(true);
             expect(isValidCryptoSymbol('ETH-USD')).toBe(true);
             expect(isValidCryptoSymbol('SOL-USD')).toBe(true);
+            expect(isValidCryptoSymbol('SOL/USD')).toBe(true);
         });
 
         it('rejects malicious or malformed crypto symbols', () => {
@@ -42,7 +45,8 @@ describe('API Input Validation', () => {
             expect(isValidCryptoSymbol('')).toBe(false);
             expect(isValidCryptoSymbol(null)).toBe(false);
             expect(isValidCryptoSymbol('BTC-USD?param=1')).toBe(false);
-            expect(isValidCryptoSymbol('BTC/USD')).toBe(false);
+            expect(isValidCryptoSymbol('BTC\\USD')).toBe(false);
+            expect(isValidCryptoSymbol('A'.repeat(25))).toBe(false);
         });
     });
 
@@ -66,10 +70,12 @@ describe('API Input Validation', () => {
             expect(isValidSearchTerm('apple')).toBe(true);
             expect(isValidSearchTerm('S&P 500')).toBe(true);
             expect(isValidSearchTerm('Berkshire Hathaway Inc.')).toBe(true);
+            expect(isValidSearchTerm('Nestlé')).toBe(true);
         });
 
-        it('rejects malicious payload injection strings', () => {
+        it('rejects malicious payload injection strings and empty terms', () => {
             expect(isValidSearchTerm('')).toBe(false);
+            expect(isValidSearchTerm('   ')).toBe(false);
             expect(isValidSearchTerm(null)).toBe(false);
             expect(isValidSearchTerm('<svg onload=alert(1)>')).toBe(false);
             expect(isValidSearchTerm('A'.repeat(50))).toBe(false);

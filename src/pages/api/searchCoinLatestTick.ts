@@ -32,25 +32,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const {
-        market = 'kraken',
-        instrument = 'BTC-USD'
+        market,
+        instrument
     } = req.query;
 
-    const rawMarket = typeof market === 'string' ? market : 'kraken';
-    if (!isValidCryptoMarket(rawMarket)) {
+    if (market !== undefined && typeof market !== 'string') {
+        return res.status(400).json({ error: "Invalid market parameter" });
+    }
+    const resolvedMarket = market ?? 'kraken';
+    if (!isValidCryptoMarket(resolvedMarket)) {
         return res.status(400).json({ error: "Invalid market parameter" });
     }
 
-    const rawInstrument = typeof instrument === 'string' ? instrument : 'BTC-USD';
-    if (!isValidCryptoSymbol(rawInstrument)) {
+    if (instrument !== undefined && typeof instrument !== 'string') {
         return res.status(400).json({ error: "Invalid instrument parameter" });
     }
-    const normalizedInstrument = normalizeCryptoSymbol(rawInstrument);
+    const resolvedInstrument = instrument ?? 'BTC-USD';
+    if (!isValidCryptoSymbol(resolvedInstrument)) {
+        return res.status(400).json({ error: "Invalid instrument parameter" });
+    }
+    const normalizedInstrument = normalizeCryptoSymbol(resolvedInstrument);
 
     const baseUrl = 'https://data-api.coindesk.com/spot/v1/latest/tick';
 
     const params = {
-        market: market as string,
+        market: resolvedMarket,
         instruments: normalizedInstrument,
         apply_mapping: "true",
         response_format: "JSON",
@@ -80,8 +86,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             typeof data.Data === 'object' &&
             (Object.prototype.hasOwnProperty.call(data.Data, normalizedInstrument)
                 ? data.Data[normalizedInstrument]
-                : Object.prototype.hasOwnProperty.call(data.Data, rawInstrument)
-                    ? data.Data[rawInstrument]
+                : Object.prototype.hasOwnProperty.call(data.Data, resolvedInstrument)
+                    ? data.Data[resolvedInstrument]
                     : undefined);
 
         if (!tick) {

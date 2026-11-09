@@ -21,9 +21,10 @@ export function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
-    // Extract client IP from standard reverse proxy headers
-    // When behind reverse proxies (Vercel, Cloudflare, AWS), the rightmost IP in X-Forwarded-For
-    // or CF-Connecting-IP represents the verified client address.
+    // Extract client IP from reverse proxy headers.
+    // In standard reverse proxy configurations (e.g. Vercel, Cloudflare, AWS CloudFront),
+    // the trusted edge proxy sets cf-connecting-ip or appends the real client IP to the
+    // end of the X-Forwarded-For header chain.
     const cfIp = request.headers.get('cf-connecting-ip');
     const forwardedFor = request.headers.get('x-forwarded-for');
     const realIp = request.headers.get('x-real-ip');
@@ -32,14 +33,15 @@ export function middleware(request: NextRequest) {
     if (cfIp) {
         clientIp = cfIp.trim();
     } else if (forwardedFor) {
-        // Use the first non-empty IP entry from proxy hops
+        // Use the rightmost entry added by the trusted edge proxy hop
         const hops = forwardedFor.split(',').map((h) => h.trim()).filter(Boolean);
-        clientIp = hops[0] || 'unknown-client';
+        clientIp = hops[hops.length - 1] || 'unknown-client';
     } else if (realIp) {
         clientIp = realIp.trim();
     } else {
         clientIp = 'unknown-client';
     }
+
 
 
     const result = checkRateLimit(clientIp, {

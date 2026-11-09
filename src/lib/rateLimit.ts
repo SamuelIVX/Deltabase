@@ -1,9 +1,12 @@
 /**
- * Zero-dependency sliding-window in-memory rate limiter.
+ * Fixed-window in-memory rate limiter per process instance.
  * Designed for Next.js API middleware and serverless edge execution.
+ * Note: Requests may reach up to twice the configured limit across window boundaries,
+ * and quotas are maintained per serverless instance (not globally shared).
  */
 
 interface RateLimitRecord {
+
     count: number;
     resetAt: number;
 }
@@ -80,6 +83,10 @@ export function checkRateLimit(
             count: 1,
             resetAt: now + windowMs,
         };
+        // Delete before set to refresh Map insertion order (LRU eviction favor)
+        if (existing) {
+            ipRequestStore.delete(identifier);
+        }
         ipRequestStore.set(identifier, newRecord);
         return {
             success: true,
@@ -105,6 +112,13 @@ export function checkRateLimit(
         remaining: limit - existing.count,
         resetAt: existing.resetAt,
     };
+}
+
+/**
+ * Returns the current count of active keys in the rate limit store. Primarily for testing.
+ */
+export function getRateLimitStoreSize(): number {
+    return ipRequestStore.size;
 }
 
 /**

@@ -6,13 +6,14 @@ const cspHeader = `
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: https:;
   font-src 'self' data:;
-  connect-src 'self' https://query1.finance.yahoo.com https://query2.finance.yahoo.com https://data-api.coindesk.com https://finnhub.io;
+  connect-src 'self';
   frame-ancestors 'none';
   base-uri 'self';
   form-action 'self';
 `.replace(/\s{2,}/g, ' ').trim();
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   agentRules: false,
   async headers() {
     return [
@@ -26,10 +27,6 @@ const nextConfig: NextConfig = {
           {
             key: "X-Frame-Options",
             value: "DENY",
-          },
-          {
-            key: "X-XSS-Protection",
-            value: "1; mode=block",
           },
           {
             key: "Referrer-Policy",

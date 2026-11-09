@@ -1,11 +1,16 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { checkRateLimit, resetRateLimitStore } from '@/lib/rateLimit';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { checkRateLimit, resetRateLimitStore, getRateLimitStoreSize } from '@/lib/rateLimit';
 
 describe('Rate Limiter (in-memory sliding window)', () => {
     beforeEach(() => {
         resetRateLimitStore();
         vi.useRealTimers();
     });
+
+    afterEach(() => {
+        vi.useRealTimers();
+    });
+
 
     it('allows requests within the limit', () => {
         const clientIp = '192.168.1.1';
@@ -87,5 +92,6 @@ describe('Rate Limiter (in-memory sliding window)', () => {
         // Trigger store purge at capacity
         const extra = checkRateLimit('trigger-eviction-ip', { limit: 5, windowMs: 300000 });
         expect(extra.success).toBe(true);
+        expect(getRateLimitStoreSize()).toBeLessThan(10000);
     });
 });
