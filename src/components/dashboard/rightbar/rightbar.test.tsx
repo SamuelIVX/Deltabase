@@ -38,7 +38,7 @@ describe("Rightbar component", () => {
     } as never);
 
     render(<Rightbar />);
-    expect(screen.getByText("Market Intelligence")).toBeInTheDocument();
+    expect(screen.getByText("Market News")).toBeInTheDocument();
     expect(screen.getByText("Loading headlines...")).toBeInTheDocument();
   });
 

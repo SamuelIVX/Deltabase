@@ -71,9 +71,8 @@ describe("ComparisonSummary component", () => {
         expect(screen.getByText("$16,200.75")).toBeInTheDocument();
         expect(screen.getByText(/Cost you \$3,700.25/i)).toBeInTheDocument();
 
-        // Table has accessible name and caption
+        // Table has accessible name
         const table = screen.getByRole("table", { name: /Investment Performance Scorecard/i });
         expect(table).toBeInTheDocument();
-        expect(screen.getByText(/Head-to-head investment performance comparison scorecard/i)).toBeInTheDocument();
     });
 });

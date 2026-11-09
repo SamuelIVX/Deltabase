@@ -107,7 +107,6 @@ const ComparisonSummary = () => {
                 {/* Head-to-Head Comparison Table */}
                 <div className={styles.tableWrapper}>
                     <table className={styles.table} aria-label="Investment Performance Scorecard">
-                        <caption className="sr-only">Head-to-head investment performance comparison scorecard</caption>
                         <thead>
                             <tr>
                                 <th scope="col" className={styles.thMetric}>Performance Metric</th>

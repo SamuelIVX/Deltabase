@@ -1,18 +1,18 @@
-'use client'
+"use client";
 /**
  * Stock market page — chart + metrics for a selected Yahoo ticker.
+ * Defaults to AAPL for an immediate live institutional overview.
  */
-import StockMarketChart from "@/components/markets/stockmarket/stockmarketchart";
+import React, { useState } from "react";
+import StockMarketChart, { StockMarketContext } from "@/components/markets/stockmarket/stockmarketchart";
 import StockMarketMetrics from "@/components/markets/stockmarket/stockmarketmetrics";
-import { StockMarketContext } from "@/components/markets/stockmarket/stockmarketchart";
-import { useState } from "react";
 
 /**
  * Stock market view composing chart + metrics components.
- * @returns {JSX.Element}
+ * @returns {JSX.Element} Stock market dashboard tab.
  */
-const StockMarket = () => {
-    const [selectedStock, setSelectedStock] = useState(null);
+const StockMarket = (): React.JSX.Element => {
+    const [selectedStock, setSelectedStock] = useState<string>("AAPL");
 
     return (
         <div>

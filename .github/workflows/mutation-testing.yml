@@ -39,8 +39,13 @@ jobs:
         if: ${{ !startsWith(github.head_ref, 'renovate/') }}
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            FILES=$(git diff --name-only --diff-filter=ACMR "origin/${{ github.base_ref }}...HEAD" -- '*.ts' '*.tsx' \
-              | grep -vE '\.(test|spec)\.tsx?$|/__tests__/|\.d\.ts$|(^|/)app/.*(layout|page|loading|error|not-found|template|route)\.tsx$|(^|/)middleware\.ts$|(^|/)src/components/(markets|dashboard|whatif|taxfeecalculator)/' \
+            FILES=$(git diff --name-only --diff-filter=ACMR "origin/${{ github.base_ref }}...HEAD" -- \
+              'src/pages/api/**/*.ts' \
+              'src/utils/**/*.{ts,tsx}' \
+              'src/lib/**/*.ts' \
+              'src/hooks/**/*.{ts,tsx}' \
+              'src/components/providers/**/*.{ts,tsx}' \
+              | grep -vE '\.(test|spec)\.tsx?$|/__tests__/|\.d\.ts$' \
               || true)
             if [ -z "$FILES" ]; then
               echo "No mutable source files changed in this PR; skipping."

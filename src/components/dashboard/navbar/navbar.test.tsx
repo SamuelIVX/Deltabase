@@ -32,6 +32,14 @@ describe("Navbar", () => {
     expect(screen.getByText(/Historical Dollar-Cost Averaging/i)).toBeDefined();
   });
 
+  it("renders Stock Market metadata when on /dashboard/stockmarket", () => {
+    vi.spyOn(navigationModule, "usePathname").mockReturnValue("/dashboard/stockmarket");
+
+    render(<Navbar />);
+    expect(screen.getByRole("heading", { level: 1, name: "Stock Market" })).toBeDefined();
+    expect(screen.getByText(/Live quotes, ETF metrics/i)).toBeDefined();
+  });
+
   it("renders fallback title when route is unknown or pathname is null", () => {
     vi.spyOn(navigationModule, "usePathname").mockReturnValue(null as never);
 

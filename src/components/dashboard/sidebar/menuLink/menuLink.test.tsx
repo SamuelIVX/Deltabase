@@ -33,7 +33,7 @@ describe("MenuLink", () => {
   });
 
   it("renders only icon with title tooltip and aria-label when collapsed", () => {
-    render(
+    const { container } = render(
       <SidebarContext.Provider
         value={{ isCollapsed: true, toggleSidebar: vi.fn(), setIsCollapsed: vi.fn() }}
       >
@@ -41,10 +41,12 @@ describe("MenuLink", () => {
       </SidebarContext.Provider>
     );
 
-    expect(screen.queryByText("Dashboard")).not.toBeInTheDocument();
+    const tooltip = container.querySelector('[class*="floatingTooltip"]');
+    expect(tooltip).toHaveTextContent("Dashboard");
+    expect(tooltip).toHaveAttribute("aria-hidden", "true");
+    expect(container.querySelector('[class*="titleText"]')).toBeNull();
     expect(screen.getByTestId("icon")).toBeInTheDocument();
     const link = screen.getByRole("link", { name: "Dashboard" });
-    expect(link).toHaveAttribute("title", "Dashboard");
     expect(link).toHaveAttribute("href", "/dashboard");
   });
 });

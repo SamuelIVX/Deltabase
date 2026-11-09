@@ -22,7 +22,7 @@ const routeMetadata: Record<string, RouteMeta> = {
     subtitle: "Historical Dollar-Cost Averaging & opportunity cost backtester",
   },
   stockmarket: {
-    title: "Stock Market Intelligence",
+    title: "Stock Market",
     subtitle: "Live quotes, ETF metrics, valuation, and technical ranges",
   },
   cryptomarket: {

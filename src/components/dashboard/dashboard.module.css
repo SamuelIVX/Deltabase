@@ -10,6 +10,8 @@
 }
 
 .menu {
+  position: relative;
+  z-index: 50;
   width: 260px;
   min-width: 260px;
   max-width: 260px;
@@ -43,7 +45,7 @@
 .wrapper {
   display: flex;
   gap: 20px;
-  margin-top: 20px;
+  margin-top: 0;
   min-width: 0;
   max-width: 100%;
 }
@@ -69,6 +71,8 @@
   flex: 1;
   min-width: 280px;
   max-width: 360px;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 1024px) {

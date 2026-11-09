@@ -28,24 +28,21 @@ describe("TaxAdjustedReturns", () => {
         expect(screen.getByRole("button", { name: "Crypto" })).toBeInTheDocument();
     });
 
-    it("does not show the symbol form until a market type is chosen", () => {
+    it("initializes with Stock mode active by default to prevent blank white space", () => {
         render(<TaxAdjustedReturns />);
-        expect(screen.queryByPlaceholderText("e.g. AAPL")).not.toBeInTheDocument();
-        expect(screen.queryByPlaceholderText("e.g. BTC-USD")).not.toBeInTheDocument();
-    });
-
-    it("reveals the stock symbol input after selecting Stock", () => {
-        render(<TaxAdjustedReturns />);
-        fireEvent.click(screen.getByRole("button", { name: "Stock" }));
+        expect(screen.getByRole("button", { name: "Stock" })).toHaveAttribute("aria-pressed", "true");
+        expect(screen.getByRole("button", { name: "Crypto" })).toHaveAttribute("aria-pressed", "false");
         expect(screen.getByPlaceholderText("e.g. AAPL")).toBeInTheDocument();
-        expect(screen.queryByPlaceholderText("e.g. BTC-USD")).not.toBeInTheDocument();
+        expect(screen.getByLabelText("Symbol")).toHaveValue("AAPL");
     });
 
-    it("reveals the crypto symbol input after selecting Crypto", () => {
+    it("switches to crypto market when Crypto button is selected", () => {
         render(<TaxAdjustedReturns />);
         fireEvent.click(screen.getByRole("button", { name: "Crypto" }));
+        expect(screen.getByRole("button", { name: "Crypto" })).toHaveAttribute("aria-pressed", "true");
+        expect(screen.getByRole("button", { name: "Stock" })).toHaveAttribute("aria-pressed", "false");
         expect(screen.getByPlaceholderText("e.g. BTC-USD")).toBeInTheDocument();
-        expect(screen.queryByPlaceholderText("e.g. AAPL")).not.toBeInTheDocument();
+        expect(screen.getByLabelText("Symbol")).toHaveValue("BTC-USD");
     });
 
     it("computes and displays stock returns breakdown accurately", () => {

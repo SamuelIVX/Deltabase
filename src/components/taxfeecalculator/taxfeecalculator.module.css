@@ -3,7 +3,7 @@
  * Institutional trading theme supporting dark and light modes.
  */
 .wrapper {
-    margin-top: 24px;
+    margin-top: 0;
     padding: 24px;
     background: var(--bgSoft);
     border: 1px solid var(--border);
@@ -40,7 +40,7 @@
     border: 1px solid var(--border);
     padding: 3px;
     border-radius: var(--radius-sm);
-    margin: 0 auto;
+    margin: 0;
 }
 
 .toggleButton {
@@ -221,19 +221,80 @@
     color: #ffffff;
 }
 
+.calculatorGrid {
+    display: grid;
+    grid-template-columns: minmax(360px, 1.15fr) minmax(340px, 1fr);
+    gap: 24px;
+    align-items: start;
+    margin-top: 20px;
+}
+
+@media (max-width: 960px) {
+    .calculatorGrid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+.inputsColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.resultsColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    position: sticky;
+    top: 24px;
+}
+
 .results {
     background-color: var(--bg-surface-elevated, var(--card));
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     padding: 20px;
-    margin-top: 8px;
+    margin-top: 0;
 }
 
 .resultsTitle {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     color: var(--text);
-    margin: 0 0 16px 0;
+    margin: 0 0 14px 0;
+    letter-spacing: -0.01em;
+}
+
+.resultsHero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.heroCard {
+    background-color: var(--bgSoft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.heroLabel {
+    color: var(--textSoft);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.heroValue {
+    font-size: 20px;
+    font-weight: 700;
+    font-family: var(--fontMono);
 }
 
 .resultRow {

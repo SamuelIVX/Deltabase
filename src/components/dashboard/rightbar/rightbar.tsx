@@ -37,10 +37,10 @@ const Rightbar = () => {
   const articles = rawArticles.slice(0, 5);
 
   return (
-    <aside className={styles.container} aria-label="Market Intelligence">
+    <aside className={styles.container} aria-label="Market News">
       <div className={styles.card}>
         <div className={styles.header}>
-          <h2 className={styles.title}>Market Intelligence</h2>
+          <h2 className={styles.title}>Market News</h2>
           <span className={styles.liveBadge}>Live Wire</span>
         </div>
 

@@ -259,14 +259,22 @@ const CryptoMarketChart = () => {
             <hr style={{ border: '1px solid var(--border)' }} />
 
             <div className={styles.dateRangeButtons}>
-                {['1d', '5d', '1mo', '3mo', '6mo', '1y', '5y'].map((range) => (
+                {[
+                    { value: '1d', label: '1D' },
+                    { value: '5d', label: '5D' },
+                    { value: '1mo', label: '1M' },
+                    { value: '3mo', label: '3M' },
+                    { value: '6mo', label: '6M' },
+                    { value: '1y', label: '1Y' },
+                    { value: '5y', label: '5Y' },
+                ].map(({ value, label }) => (
                     <button
-                        key={range}
+                        key={value}
                         type="button"
-                        className={`${styles.dateButton} ${selectedRange === range ? styles.selected : ''}`}
-                        onClick={() => handleRangeChange(range)}
+                        className={`${styles.dateButton} ${selectedRange === value ? styles.selected : ''}`}
+                        onClick={() => handleRangeChange(value)}
                     >
-                        {range.toUpperCase()}
+                        {label}
                     </button>
                 ))}
             </div>

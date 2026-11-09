@@ -91,28 +91,34 @@
   text-overflow: ellipsis;
 }
 
-.toggleButton {
-  background: transparent;
+.toggleButtonMiddle {
+  position: absolute;
+  top: 50%;
+  right: -13px;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: var(--bg-surface-elevated, var(--bgSoft));
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm, 6px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   color: var(--textSoft);
-  width: 28px;
-  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.15s ease;
-  flex-shrink: 0;
+  z-index: 40;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
-.toggleButton:hover {
+.toggleButtonMiddle:hover {
   background-color: var(--card);
   color: var(--text);
-  border-color: var(--borderHover, var(--border));
+  border-color: var(--accent);
+  transform: translateY(-50%) scale(1.1);
 }
 
-.toggleButton:focus-visible {
+.toggleButtonMiddle:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
@@ -179,7 +185,8 @@
 @media (max-width: 1024px) {
   .container,
   .containerCollapsed {
-    position: static;
+    position: relative;
+    top: auto;
     min-height: auto;
   }
 }

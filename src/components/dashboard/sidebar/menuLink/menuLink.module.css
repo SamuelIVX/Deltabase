@@ -66,3 +66,31 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.floatingTooltip {
+  position: absolute;
+  left: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-4px);
+  background-color: var(--bg-surface-elevated, var(--bgSoft));
+  color: var(--text);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+  border-radius: var(--radius-sm, 6px);
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+  z-index: 60;
+}
+
+.collapsed:hover .floatingTooltip,
+.collapsed:focus-visible .floatingTooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(0);
+}

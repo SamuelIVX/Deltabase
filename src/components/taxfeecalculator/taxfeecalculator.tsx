@@ -26,7 +26,7 @@ interface ResultProps {
     netReturn: number;
 }
 
-const POPULAR_STOCKS = ['AAPL', 'MSFT', 'NVDA', 'SPY', 'QQQ', 'TSLA'];
+const POPULAR_STOCKS = ['AAPL', 'MSFT', 'NVDA', 'SPY', 'QQQ', 'TSLA', 'VXUS'];
 const POPULAR_CRYPTOS = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'DOGE-USD'];
 
 /**
@@ -36,7 +36,22 @@ const POPULAR_CRYPTOS = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'DOGE-USD'];
  */
 const Results: React.FC<ResultProps> = ({ grossProfit, feeCost, taxAmount, netProfit, netReturn }) => (
     <div className={styles.results} role="region" aria-label="Calculation Results">
-        <h3 className={styles.resultsTitle}>Results</h3>
+        <h3 className={styles.resultsTitle}>Calculation Results</h3>
+
+        <div className={styles.resultsHero}>
+            <div className={styles.heroCard}>
+                <span className={styles.heroLabel}>Net Profit</span>
+                <span className={`${styles.heroValue} ${netProfit < 0 ? styles.negative : styles.positive}`}>
+                    {formatTaxCurrency(netProfit)}
+                </span>
+            </div>
+            <div className={styles.heroCard}>
+                <span className={styles.heroLabel}>Net Return</span>
+                <span className={`${styles.heroValue} ${netReturn < 0 ? styles.negative : styles.positive}`}>
+                    {netReturn.toFixed(2)}%
+                </span>
+            </div>
+        </div>
 
         <div className={styles.resultRow}>
             <span className={styles.resultLabel}>Gross Profit</span>
@@ -54,22 +69,6 @@ const Results: React.FC<ResultProps> = ({ grossProfit, feeCost, taxAmount, netPr
             <span className={styles.resultLabel}>Tax</span>
             <span className={styles.resultValue}>{formatTaxCurrency(taxAmount)}</span>
         </div>
-
-        <div className={styles.divider}></div>
-
-        <div className={`${styles.resultRow} ${styles.resultRowHighlight}`}>
-            <span className={styles.resultLabel}>Net Profit</span>
-            <span className={`${styles.resultValue} ${styles.resultValueLarge} ${netProfit < 0 ? styles.negative : styles.positive}`}>
-                {formatTaxCurrency(netProfit)}
-            </span>
-        </div>
-
-        <div className={styles.returnBadge}>
-            <span className={styles.returnLabel}>Net Return</span>
-            <span className={`${styles.returnValue} ${netReturn < 0 ? styles.negative : styles.positive}`}>
-                {netReturn.toFixed(2)}%
-            </span>
-        </div>
     </div>
 );
 
@@ -80,8 +79,8 @@ const Results: React.FC<ResultProps> = ({ grossProfit, feeCost, taxAmount, netPr
  * <TaxAdjustedReturns />
  */
 export default function TaxAdjustedReturns() {
-    const [marketType, setMarketType] = useState<'crypto' | 'stock' | ''>('');
-    const [symbol, setSymbol] = useState('');
+    const [marketType, setMarketType] = useState<'crypto' | 'stock'>('stock');
+    const [symbol, setSymbol] = useState('AAPL');
     const [quantity, setQuantity] = useState('1');
     const [costBasisInput, setCostBasisInput] = useState('');
     const [exitPriceInput, setExitPriceInput] = useState('');
@@ -177,31 +176,33 @@ export default function TaxAdjustedReturns() {
             <div className={styles.container}>
                 <div className={styles.headerRow}>
                     <h2 className={styles.title}>Tax-Adjusted Returns</h2>
+
+                    {/* Market type selector */}
+                    <div className={styles.buttonContainer} role="group" aria-label="Market selection">
+                        <button
+                            type="button"
+                            onClick={() => handleMarketSelect('stock')}
+                            aria-pressed={marketType === 'stock'}
+                            className={`${styles.toggleButton} ${marketType === 'stock' ? styles.toggleButtonActive : ''}`}
+                        >
+                            Stock
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => handleMarketSelect('crypto')}
+                            aria-pressed={marketType === 'crypto'}
+                            className={`${styles.toggleButton} ${marketType === 'crypto' ? styles.toggleButtonActive : ''}`}
+                        >
+                            Crypto
+                        </button>
+                    </div>
                 </div>
 
-                {/* Market type selector */}
-                <div className={styles.buttonContainer} role="group" aria-label="Market selection">
-                    <button
-                        type="button"
-                        onClick={() => handleMarketSelect('stock')}
-                        aria-pressed={marketType === 'stock'}
-                        className={`${styles.toggleButton} ${marketType === 'stock' ? styles.toggleButtonActive : ''}`}
-                    >
-                        Stock
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => handleMarketSelect('crypto')}
-                        aria-pressed={marketType === 'crypto'}
-                        className={`${styles.toggleButton} ${marketType === 'crypto' ? styles.toggleButtonActive : ''}`}
-                    >
-                        Crypto
-                    </button>
-                </div>
-
-                {/* Common input fields for stock or crypto */}
-                {marketType && (
-                    <div className={styles.section}>
+                <div className={styles.calculatorGrid}>
+                    <div className={styles.inputsColumn}>
+                        {/* Common input fields for stock or crypto */}
+                        {marketType && (
+                            <div className={styles.section}>
                         {/* Symbol Input & Popular Chips */}
                         <div className={styles.field}>
                             <label className={styles.label} htmlFor="calc-symbol">Symbol</label>
@@ -432,25 +433,29 @@ export default function TaxAdjustedReturns() {
                         )}
                     </div>
                 )}
+                    </div>
 
-                {/* Display standard results breakdown */}
-                {returns && (
-                    <>
-                        <Results
-                            grossProfit={returns.grossProfit}
-                            feeCost={returns.feeCost}
-                            taxAmount={returns.taxAmount}
-                            netProfit={returns.netProfit}
-                            netReturn={returns.netReturn}
-                        />
+                    {/* Results column */}
+                    <div className={styles.resultsColumn}>
+                        {returns && (
+                            <>
+                                <Results
+                                    grossProfit={returns.grossProfit}
+                                    feeCost={returns.feeCost}
+                                    taxAmount={returns.taxAmount}
+                                    netProfit={returns.netProfit}
+                                    netReturn={returns.netReturn}
+                                />
 
-                        {/* Visual Retained Waterfall Breakdown */}
-                        <TaxBreakdownChart
-                            breakdown={returns}
-                            symbol={symbol}
-                        />
-                    </>
-                )}
+                                {/* Visual Retained Waterfall Breakdown */}
+                                <TaxBreakdownChart
+                                    breakdown={returns}
+                                    symbol={symbol}
+                                />
+                            </>
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );
