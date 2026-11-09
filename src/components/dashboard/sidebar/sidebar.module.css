@@ -73,7 +73,6 @@
   height: 8px;
   border-radius: 50%;
   background-color: var(--gain);
-  box-shadow: 0 0 8px var(--gain);
   display: inline-block;
 }
 

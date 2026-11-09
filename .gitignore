@@ -45,4 +45,6 @@ next-env.d.ts
 outdated.json
 reports/
 .stryker-tmp/
+/AGENTS.md
+
 

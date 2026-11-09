@@ -5,12 +5,17 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   background-color: var(--bgSoft);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 8px 16px;
   margin-bottom: 20px;
   overflow-x: auto;
+  contain: paint;
   scrollbar-width: none;
   -ms-overflow-style: none;
   box-shadow: var(--card-shadow);
@@ -26,6 +31,7 @@
   align-items: center;
   gap: 8px;
   white-space: nowrap;
+  flex-shrink: 0;
   padding: 4px 8px;
   border-radius: 6px;
   font-size: 13px;
@@ -99,6 +105,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
   padding: 4px 8px;
 }
 

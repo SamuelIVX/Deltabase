@@ -1,19 +1,18 @@
 /**
- * Styles for the ThemeToggle button.
+ * Styles for the icon-only ThemeToggle button.
  */
 .toggleButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  width: 36px;
+  height: 36px;
   background-color: var(--bg-surface-elevated);
   color: var(--text);
   border: 1px solid var(--border-light);
   border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 13px;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  padding: 0;
+  transition: all 0.15s ease;
   user-select: none;
 }
 
@@ -21,17 +20,4 @@
   background-color: var(--border-light);
   color: var(--text);
   border-color: var(--textSoft);
-}
-
-.label {
-  display: inline-block;
-}
-
-@media (max-width: 640px) {
-  .label {
-    display: none;
-  }
-  .toggleButton {
-    padding: 6px 8px;
-  }
 }

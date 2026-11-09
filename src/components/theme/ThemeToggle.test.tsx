@@ -7,6 +7,7 @@ import ThemeToggle, {
   getActiveTheme,
   applyTheme,
   THEME_STORAGE_KEY,
+  THEME_EVENT_NAME,
 } from "./ThemeToggle";
 
 describe("ThemeToggle", () => {
@@ -50,26 +51,24 @@ describe("ThemeToggle", () => {
 
     fireEvent.click(button);
     expect(document.documentElement.getAttribute("data-theme")).toBe("light");
-    expect(screen.getByText("Light Mode")).toBeDefined();
+    expect(screen.getByRole("button", { name: /Switch to dark theme/i })).toBeDefined();
 
     fireEvent.click(button);
     expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
-    expect(screen.getByText("Dark Mode")).toBeDefined();
+    expect(screen.getByRole("button", { name: /Switch to light theme/i })).toBeDefined();
   });
 
-  it("syncs theme when a storage event fires from another tab", () => {
+  it("syncs theme when custom theme event is dispatched", () => {
     render(<ThemeToggle />);
-    expect(screen.getByText("Dark Mode")).toBeDefined();
+    expect(screen.getByRole("button", { name: /Switch to light theme/i })).toBeDefined();
 
     act(() => {
+      document.documentElement.setAttribute("data-theme", "light");
       window.dispatchEvent(
-        new StorageEvent("storage", {
-          key: THEME_STORAGE_KEY,
-          newValue: "light",
-        })
+        new CustomEvent(THEME_EVENT_NAME, { detail: "light" })
       );
     });
 
-    expect(screen.getByText("Light Mode")).toBeDefined();
+    expect(screen.getByRole("button", { name: /Switch to dark theme/i })).toBeDefined();
   });
 });

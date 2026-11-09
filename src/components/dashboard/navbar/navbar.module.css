@@ -1,5 +1,5 @@
 /**
- * Styles for the dashboard top navbar supporting themes and responsive glassmorphism.
+ * Styles for the dashboard top navbar supporting themes and responsive layouts.
  */
 .container {
   padding: 14px 20px;
@@ -36,23 +36,4 @@
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.iconLink {
-  background: var(--bg-surface-elevated);
-  border: 1px solid var(--border-light);
-  color: var(--text);
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s ease;
-}
-
-.iconLink:hover {
-  background-color: var(--border-light);
-  color: var(--text);
-  border-color: var(--textSoft);
 }

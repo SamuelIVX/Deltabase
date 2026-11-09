@@ -4,6 +4,8 @@
 .container {
   display: flex;
   min-height: 100vh;
+  max-width: 100vw;
+  overflow-x: hidden;
   background-color: var(--bg);
 }
 
@@ -11,6 +13,7 @@
   width: 260px;
   min-width: 240px;
   max-width: 280px;
+  flex-shrink: 0;
   background-color: var(--bgSoft);
   border-right: 1px solid var(--border);
   padding: 20px;
@@ -23,6 +26,8 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
   padding: 20px 28px;
   background-color: var(--bg);
   transition: background-color 0.2s ease;
@@ -32,6 +37,8 @@
   display: flex;
   gap: 20px;
   margin-top: 20px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .main {
@@ -40,17 +47,21 @@
   flex-direction: column;
   gap: 20px;
   min-width: 0;
+  max-width: 100%;
 }
 
 .cards {
   display: flex;
   gap: 20px;
   justify-content: space-between;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .side {
   flex: 1;
-  min-width: 300px;
+  min-width: 280px;
+  max-width: 360px;
 }
 
 @media (max-width: 1024px) {
@@ -66,5 +77,8 @@
   }
   .wrapper {
     flex-direction: column;
+  }
+  .side {
+    max-width: 100%;
   }
 }

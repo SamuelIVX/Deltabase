@@ -69,7 +69,7 @@ function getServerThemeSnapshot(): Theme {
 }
 
 /**
- * Interactive button permitting users to toggle between dark and light themes.
+ * Interactive icon-only button permitting users to toggle between dark and light themes.
  * @returns The rendered theme toggle button.
  */
 export default function ThemeToggle(): JSX.Element {
@@ -85,7 +85,6 @@ export default function ThemeToggle(): JSX.Element {
   };
 
   const isLight = theme === "light";
-  const label = isLight ? "Light Mode" : "Dark Mode";
   const ariaLabel = isLight ? "Switch to dark theme" : "Switch to light theme";
 
   return (
@@ -96,8 +95,7 @@ export default function ThemeToggle(): JSX.Element {
       aria-label={ariaLabel}
       title={ariaLabel}
     >
-      {isLight ? <MdLightMode size={16} aria-hidden="true" /> : <MdDarkMode size={16} aria-hidden="true" />}
-      <span className={styles.label}>{label}</span>
+      {isLight ? <MdLightMode size={18} aria-hidden="true" /> : <MdDarkMode size={18} aria-hidden="true" />}
     </button>
   );
 }

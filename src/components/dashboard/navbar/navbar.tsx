@@ -1,12 +1,11 @@
 "use client";
 
 /**
- * Dashboard top navbar — route title, global theme toggle, and repository link.
+ * Dashboard top navbar — route title and global theme toggle.
  */
 import { usePathname } from "next/navigation";
 import styles from "./navbar.module.css";
 import ThemeToggle from "@/components/theme/ThemeToggle";
-import { FaGithub } from "react-icons/fa";
 
 interface RouteMeta {
   title: string;
@@ -37,7 +36,7 @@ const routeMetadata: Record<string, RouteMeta> = {
 };
 
 /**
- * Top navbar showing the formatted section title, global theme toggle, and repo actions.
+ * Top navbar showing the formatted section title and global theme toggle.
  * @returns {JSX.Element}
  */
 const Navbar = () => {
@@ -58,16 +57,6 @@ const Navbar = () => {
 
       <div className={styles.actions}>
         <ThemeToggle />
-        <a
-          href="https://github.com/SamuelIVX/Deltabase"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.iconLink}
-          aria-label="View DeltaBase repository on GitHub"
-          title="GitHub Repository"
-        >
-          <FaGithub size={18} aria-hidden="true" />
-        </a>
       </div>
     </header>
   );
