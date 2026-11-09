@@ -3,7 +3,7 @@
  * Proxies `yahoo-finance2.quote` so the client never talks to Yahoo directly.
  */
 import type { NextApiRequest, NextApiResponse } from 'next';
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from '@/lib/yahooFinance';
 
 /**
  * GET `?symbol=` — returns a Yahoo quote payload for the given ticker.

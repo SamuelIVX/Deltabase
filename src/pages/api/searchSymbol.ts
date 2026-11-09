@@ -3,7 +3,7 @@
  * Proxies `yahoo-finance2.search` for typeahead / asset picker UIs.
  */
 import type { NextApiRequest, NextApiResponse } from 'next';
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from '@/lib/yahooFinance';
 
 /**
  * GET `?searchTerm=` — returns Yahoo search hits for the query string.
