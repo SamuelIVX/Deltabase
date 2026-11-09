@@ -4,8 +4,10 @@
  */
 import { NextApiRequest, NextApiResponse } from "next";
 import yahooFinance from "@/lib/yahooFinance";
+import { isValidStockSymbol } from "@/lib/validation";
 
 const validRanges = ['1d', '5d', '1m', '3m', '6m', '1y', '5y'];
+
 
 type YahooInterval =
     | "1d" | "5d" | "1m" | "2m" | "5m"
@@ -37,7 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const { symbol, range = "1y" } = req.query;
 
-    if (typeof symbol !== "string" || !symbol.trim()) {
+    if (!isValidStockSymbol(symbol)) {
         return res.status(400).json({ error: "Invalid symbol parameter" });
     }
 

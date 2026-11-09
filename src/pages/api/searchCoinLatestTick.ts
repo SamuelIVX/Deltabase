@@ -7,8 +7,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getCoinDeskHeaders } from "@/lib/coindesk";
 import { normalizeCryptoSymbol } from "@/utils/normalizeCryptoSymbol";
+import { isValidCryptoSymbol } from "@/lib/validation";
 
 /**
+
  * GET latest tick for `instrument` on `market`.
  * SECURITY: uses `COINDESK_API_KEY`; do not log the key or raw Authorization header.
  * @param req - Optional `market` (default `kraken`), `instrument` (default `BTC-USD`).
@@ -34,6 +36,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } = req.query;
 
     const rawInstrument = typeof instrument === 'string' ? instrument : 'BTC-USD';
+    if (!isValidCryptoSymbol(rawInstrument)) {
+        return res.status(400).json({ error: "Invalid instrument parameter" });
+    }
     const normalizedInstrument = normalizeCryptoSymbol(rawInstrument);
 
     const baseUrl = 'https://data-api.coindesk.com/spot/v1/latest/tick';

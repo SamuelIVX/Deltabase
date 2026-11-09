@@ -4,11 +4,12 @@
  */
 import type { NextApiRequest, NextApiResponse } from 'next';
 import yahooFinance from '@/lib/yahooFinance';
+import { isValidSearchTerm } from '@/lib/validation';
 
 /**
  * GET `?searchTerm=` — returns Yahoo search hits for the query string.
  * @param req - Must include a string `searchTerm` query param.
- * @param res - JSON search results on 200; 400 if term missing; 500 on Yahoo errors.
+ * @param res - JSON search results on 200; 400 if term missing or invalid; 500 on Yahoo errors.
  * @example
  * // GET /api/searchSymbol?searchTerm=apple → 200 { quotes: [...] }
  */
@@ -19,11 +20,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const { searchTerm } = req.query;
-    if (!searchTerm || typeof searchTerm !== 'string') {
+    if (!isValidSearchTerm(searchTerm)) {
         return res.status(400).json({ error: 'Missing or invalid searchTerm parameter.' });
     }
     try {
-        const results = await yahooFinance.search(searchTerm);
+        const results = await yahooFinance.search(searchTerm.trim());
+
         if (typeof res.setHeader === 'function') {
             res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
         }

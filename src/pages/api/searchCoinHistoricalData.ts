@@ -6,8 +6,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getCoinDeskHeaders } from "@/lib/coindesk";
 import { normalizeCryptoSymbol } from "@/utils/normalizeCryptoSymbol";
+import { isValidCryptoSymbol } from "@/lib/validation";
 
 interface CandleData {
+
     TIMESTAMP: number;
     OPEN: number;
     HIGH: number;
@@ -44,6 +46,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } = req.query;
 
     const rawInstrument = typeof instrument === 'string' ? instrument : 'BTC-USD';
+    if (!isValidCryptoSymbol(rawInstrument)) {
+        return res.status(400).json({ error: "Invalid instrument parameter" });
+    }
     const normalizedInstrument = normalizeCryptoSymbol(rawInstrument);
 
     // Calculate timestamps based on range
