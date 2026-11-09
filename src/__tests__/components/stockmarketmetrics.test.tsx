@@ -1,6 +1,7 @@
 /**
  * Unit tests for the StockMarketMetrics component.
- * Verifies safe rendering when range fields are undefined, null, or empty.
+ * Verifies safe rendering when range fields are undefined, ETF expense ratio display,
+ * and key statistics presentation.
  */
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
@@ -68,10 +69,12 @@ describe("StockMarketMetrics component", () => {
             quote: {
                 symbol: "AAPL",
                 marketCap: 3000000000000,
+                regularMarketPrice: 182.5,
                 regularMarketDayRange: { low: 180, high: 185 },
                 fiftyTwoWeekRange: { low: 150, high: 195 },
                 forwardPE: 28,
                 trailingPE: 30,
+                beta: 1.24,
                 priceEpsCurrentYear: 6.5,
                 dividendYield: 0.005,
                 dividendRate: 0.96,
@@ -90,5 +93,36 @@ describe("StockMarketMetrics component", () => {
         expect(screen.getByText("$180 - $185")).toBeInTheDocument();
         expect(screen.getByText("$150 - $195")).toBeInTheDocument();
         expect(screen.getByText("$0.96")).toBeInTheDocument();
+        expect(screen.getByText("Equity")).toBeInTheDocument();
+        expect(screen.getByText("1.24")).toBeInTheDocument();
+    });
+
+    it("renders ETF badge and Expense Ratio when quote is an ETF", () => {
+        mockQuoteState = {
+            quote: {
+                symbol: "SPY",
+                quoteType: "ETF",
+                netExpenseRatio: 0.0945,
+                regularMarketPrice: 500,
+                marketCap: 500000000000,
+                fiftyTwoWeekLow: 400,
+                fiftyTwoWeekHigh: 520,
+                trailingPE: 24.5,
+                dividendYield: 0.013,
+            },
+            isLoading: false,
+            error: null,
+        };
+
+        render(
+            <StockMarketContext.Provider value={{ selectedStock: "SPY", setSelectedStock: vi.fn() }}>
+                <StockMarketMetrics />
+            </StockMarketContext.Provider>
+        );
+
+        expect(screen.getByText("ETF")).toBeInTheDocument();
+        expect(screen.getByText("Expense Ratio")).toBeInTheDocument();
+        expect(screen.getByText("0.09%")).toBeInTheDocument();
+        expect(screen.queryByText("Forward P/E")).not.toBeInTheDocument();
     });
 });

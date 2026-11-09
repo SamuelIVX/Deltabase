@@ -56,6 +56,10 @@ describe('Market Charts Input', () => {
 
         fireEvent.change(input, { target: { value: 'eth-usd' } });
         expect(input.value).toBe('ETH-USD');
+
+        const solPill = screen.getByRole('button', { name: 'SOL' });
+        fireEvent.click(solPill);
+        expect(input.value).toBe('SOL-USD');
     });
 
     it('initializes and updates stock input and placeholder', () => {

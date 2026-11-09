@@ -9,8 +9,8 @@
  * @example
  * formatCurrency(1250000); // "$1.25M"
  */
-const formatCurrency = (value: number) => {
-    if (!value) return 'N/A';
+const formatCurrency = (value?: number | null) => {
+    if (value == null || !value) return 'N/A';
 
     return new Intl.NumberFormat('en-US', {
         style: 'currency',

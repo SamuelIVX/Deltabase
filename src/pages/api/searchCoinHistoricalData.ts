@@ -5,6 +5,7 @@
  */
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getCoinDeskHeaders } from "@/lib/coindesk";
+import { normalizeCryptoSymbol } from "@/utils/normalizeCryptoSymbol";
 
 interface CandleData {
     TIMESTAMP: number;
@@ -42,6 +43,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         range = '1d'
     } = req.query;
 
+    const rawInstrument = typeof instrument === 'string' ? instrument : 'BTC-USD';
+    const normalizedInstrument = normalizeCryptoSymbol(rawInstrument);
+
     // Calculate timestamps based on range
     const now = Math.floor(Date.now() / 1000); // Current time in seconds
     const rangeMap: { [key: string]: { seconds: number, interval: string } } = {
@@ -67,7 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const params = {
         market: market as string,
-        instrument: instrument as string,
+        instrument: normalizedInstrument,
         limit: '2000',
         aggregate: '1',
         fill: "true",

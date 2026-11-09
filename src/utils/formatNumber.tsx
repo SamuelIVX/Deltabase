@@ -9,8 +9,8 @@
  * @example
  * formatNumber(1500000); // "1.5M"
  */
-const formatNumber = (value: number) => {
-    if (!value) return 'N/A';
+const formatNumber = (value?: number | null) => {
+    if (value == null || !value) return 'N/A';
     return new Intl.NumberFormat('en-US', {
         notation: 'compact',
         compactDisplay: 'short',

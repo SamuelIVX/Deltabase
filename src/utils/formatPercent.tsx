@@ -10,8 +10,8 @@
  * @example
  * formatPercent(0.0525); // "5.25%"
  */
-const formatPercent = (value: number) => {
-    if (!value) return 'N/A';
+const formatPercent = (value?: number | null) => {
+    if (value == null || !value) return 'N/A';
     return `${(value * 100).toFixed(2)}%`;
 };
 

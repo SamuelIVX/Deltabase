@@ -11,14 +11,21 @@
 
 .menu {
   width: 260px;
-  min-width: 240px;
-  max-width: 280px;
+  min-width: 260px;
+  max-width: 260px;
   flex-shrink: 0;
   background-color: var(--bgSoft);
   border-right: 1px solid var(--border);
   padding: 20px;
   min-height: 100vh;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.2s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.2s cubic-bezier(0.4, 0, 0.2, 1), padding 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.menuCollapsed {
+  width: 72px;
+  min-width: 72px;
+  max-width: 72px;
+  padding: 20px 8px;
 }
 
 .content {

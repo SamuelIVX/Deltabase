@@ -6,6 +6,7 @@
  */
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getCoinDeskHeaders } from "@/lib/coindesk";
+import { normalizeCryptoSymbol } from "@/utils/normalizeCryptoSymbol";
 
 /**
  * GET latest tick for `instrument` on `market`.
@@ -32,11 +33,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         instrument = 'BTC-USD'
     } = req.query;
 
+    const rawInstrument = typeof instrument === 'string' ? instrument : 'BTC-USD';
+    const normalizedInstrument = normalizeCryptoSymbol(rawInstrument);
+
     const baseUrl = 'https://data-api.coindesk.com/spot/v1/latest/tick';
 
     const params = {
         market: market as string,
-        instruments: instrument as string,
+        instruments: normalizedInstrument,
         apply_mapping: "true",
         response_format: "JSON",
     };
@@ -59,14 +63,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const data = await response.json();
 
         // Extract the tick for the requested instrument safely checking own property
-        const instrumentKey = instrument as string;
         const tick =
             data &&
             data.Data &&
             typeof data.Data === 'object' &&
-            Object.prototype.hasOwnProperty.call(data.Data, instrumentKey)
-                ? data.Data[instrumentKey]
-                : undefined;
+            (Object.prototype.hasOwnProperty.call(data.Data, normalizedInstrument)
+                ? data.Data[normalizedInstrument]
+                : Object.prototype.hasOwnProperty.call(data.Data, rawInstrument)
+                    ? data.Data[rawInstrument]
+                    : undefined);
 
         if (!tick) {
             return res.status(400).json({ error: "No tick data found" });

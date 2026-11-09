@@ -20,7 +20,7 @@ describe('CryptoMarketMetrics', () => {
             </CryptoMarketContext.Provider>
         );
 
-        expect(screen.getByText('⚠️ Please select a coin')).toBeInTheDocument();
+        expect(screen.getByText('Please select a coin')).toBeInTheDocument();
     });
 
     it('renders loading state when isLoading is true', () => {
@@ -36,7 +36,7 @@ describe('CryptoMarketMetrics', () => {
             </CryptoMarketContext.Provider>
         );
 
-        expect(screen.getByText('Loading...')).toBeInTheDocument();
+        expect(screen.getByText('Loading statistics...')).toBeInTheDocument();
     });
 
     it('renders error message when error exists', () => {
@@ -52,7 +52,7 @@ describe('CryptoMarketMetrics', () => {
             </CryptoMarketContext.Provider>
         );
 
-        expect(screen.getByText('⚠️ Error fetching crypto data')).toBeInTheDocument();
+        expect(screen.getByText('Error fetching crypto data')).toBeInTheDocument();
     });
 
     it('renders key metrics when result is returned', () => {

@@ -9,7 +9,7 @@
  * @example
  * formatDate("2024-01-15"); // "Jan 15, 2024"
  */
-function formatDate(dateString: string | number | Date): string {
+function formatDate(dateString?: string | number | Date | null): string {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('en-US', {
         year: 'numeric',

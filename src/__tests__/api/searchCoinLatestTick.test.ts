@@ -120,6 +120,25 @@ describe("searchCoinLatestTick", () => {
         expect(parsedUrl.searchParams.get("instruments")).toBe("BTC-USD");
     });
 
+    it("normalizes lowercase crypto query such as btc to BTC-USD", async () => {
+        process.env.COINDESK_API_KEY = "coindesk-secret-key";
+        const tickData = { PRICE: 70000, INSTRUMENT: "BTC-USD" };
+        vi.mocked(fetch).mockResolvedValue({
+            ok: true,
+            json: async () => ({ Data: { "BTC-USD": tickData } }),
+        } as Response);
+
+        const req = { method: "GET", query: { instrument: "btc" } } as unknown as NextApiRequest;
+        const res = mockRes();
+        await handler(req, res as unknown as NextApiResponse);
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toEqual(tickData);
+        const [calledUrl] = vi.mocked(fetch).mock.calls[0];
+        const parsedUrl = new URL(calledUrl.toString());
+        expect(parsedUrl.searchParams.get("instruments")).toBe("BTC-USD");
+    });
+
     it("rejects inherited prototype properties such as constructor", async () => {
         process.env.COINDESK_API_KEY = "coindesk-secret-key";
         vi.mocked(fetch).mockResolvedValue({

@@ -1,10 +1,17 @@
 /**
- * Unit tests for the Finnhub news API route (`searchFinnhubNews`).
- * Mocks Next.js req/res and fetch; asserts key-missing, success, and error paths.
+ * Unit tests for the market news API route (`searchFinnhubNews`).
+ * Tests Finnhub primary with Yahoo Finance fallback and fail-closed error handling.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import handler from "@/pages/api/searchFinnhubNews";
+import yahooFinance from "@/lib/yahooFinance";
 import type { NextApiRequest, NextApiResponse } from "next";
+
+vi.mock("@/lib/yahooFinance", () => ({
+    default: {
+        search: vi.fn(),
+    },
+}));
 
 interface MockRes {
     statusCode: number;
@@ -18,9 +25,6 @@ interface MockRes {
 /**
  * Minimal `NextApiResponse`-like stub for route unit tests.
  * @returns Mutable status/body recorder with chainable `status`/`json`.
- * @example
- * const res = mockRes();
- * await handler({} as NextApiRequest, res as unknown as NextApiResponse);
  */
 function mockRes(): MockRes {
     const res: MockRes = {
@@ -48,6 +52,7 @@ describe("searchFinnhubNews", () => {
 
     beforeEach(() => {
         vi.stubGlobal("fetch", vi.fn());
+        vi.clearAllMocks();
     });
 
     afterEach(() => {
@@ -68,19 +73,42 @@ describe("searchFinnhubNews", () => {
         expect(res.body).toEqual({ error: "Method POST Not Allowed" });
     });
 
-    it("returns 500 when the API key is not configured", async () => {
+    it("falls back to Yahoo Finance when FINNHUB_API_KEY is not configured", async () => {
         delete process.env.FINNHUB_API_KEY;
+        vi.mocked(yahooFinance.search).mockResolvedValueOnce({
+            news: [
+                {
+                    uuid: "yf-1",
+                    title: "Markets rally on rate cut hopes",
+                    publisher: "Bloomberg",
+                    link: "https://finance.yahoo.com/news/test",
+                    providerPublishTime: new Date("2026-11-09T00:00:00Z"),
+                    thumbnail: { resolutions: [{ url: "https://img.test/thumb.jpg" }] },
+                },
+            ],
+        } as never);
+
         const req = {} as NextApiRequest;
         const res = mockRes();
         await handler(req, res as unknown as NextApiResponse);
-        expect(res.statusCode).toBe(500);
-        expect(res.body).toEqual({ error: "API key not configured" });
+
+        expect(res.statusCode).toBe(200);
+        expect(res.headers["Cache-Control"]).toBe("public, s-maxage=300, stale-while-revalidate=600");
+        const body = res.body as Array<{ id: string; headline: string; source: string; image: string }>;
+        expect(body).toHaveLength(1);
+        expect(body[0]).toMatchObject({
+            id: "yf-1",
+            headline: "Markets rally on rate cut hopes",
+            source: "Bloomberg",
+            image: "https://img.test/thumb.jpg",
+        });
+        expect(fetch).not.toHaveBeenCalled();
     });
 
-    it("proxies Finnhub news and returns the array", async () => {
+    it("proxies Finnhub news directly when Finnhub succeeds", async () => {
         process.env.FINNHUB_API_KEY = "test-key";
-        const articles = [{ id: 1, headline: "Markets up" }];
-        vi.mocked(fetch).mockResolvedValue({
+        const articles = [{ id: 1, headline: "Markets up", source: "Finnhub" }];
+        vi.mocked(fetch).mockResolvedValueOnce({
             ok: true,
             json: async () => articles,
         } as Response);
@@ -88,69 +116,107 @@ describe("searchFinnhubNews", () => {
         const req = {} as NextApiRequest;
         const res = mockRes();
         await handler(req, res as unknown as NextApiResponse);
+
         expect(res.statusCode).toBe(200);
         expect(res.headers["Cache-Control"]).toBe("public, s-maxage=300, stale-while-revalidate=600");
         expect(res.body).toEqual(articles);
         expect(fetch).toHaveBeenCalledWith(
             "https://finnhub.io/api/v1/news?category=general&token=test-key",
-            {
+            expect.objectContaining({
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
-            }
+            })
         );
+        expect(yahooFinance.search).not.toHaveBeenCalled();
     });
 
-    it("returns 500 when fetch throws network error", async () => {
+    it("falls back to Yahoo Finance when Finnhub returns HTTP 429 rate limit", async () => {
         process.env.FINNHUB_API_KEY = "test-key";
-        vi.mocked(fetch).mockRejectedValue(new Error("Network failed"));
-
-        const req = {} as NextApiRequest;
-        const res = mockRes();
-        await handler(req, res as unknown as NextApiResponse);
-        expect(res.statusCode).toBe(500);
-        expect(res.body).toEqual({ error: "Failed to fetch data" });
-    });
-
-    it("returns 502 on a non-array upstream response", async () => {
-        process.env.FINNHUB_API_KEY = "test-key";
-        vi.mocked(fetch).mockResolvedValue({
-            ok: true,
-            json: async () => ({ not: "an array" }),
-        } as Response);
-
-        const req = {} as NextApiRequest;
-        const res = mockRes();
-        await handler(req, res as unknown as NextApiResponse);
-        expect(res.statusCode).toBe(502);
-        expect(res.body).toEqual({ error: "Unexpected response from Finnhub" });
-    });
-
-    it("returns 502 when the upstream body is malformed JSON", async () => {
-        process.env.FINNHUB_API_KEY = "test-key";
-        vi.mocked(fetch).mockResolvedValue({
-            ok: true,
-            json: async () => { throw new SyntaxError("Unexpected token"); },
-        } as unknown as Response);
-
-        const req = {} as NextApiRequest;
-        const res = mockRes();
-        await handler(req, res as unknown as NextApiResponse);
-        expect(res.statusCode).toBe(502);
-        expect(res.body).toEqual({ error: "Unexpected response from Finnhub" });
-    });
-
-    it("returns 500 when the upstream request fails", async () => {
-        process.env.FINNHUB_API_KEY = "test-key";
-        vi.mocked(fetch).mockResolvedValue({
+        vi.mocked(fetch).mockResolvedValueOnce({
             ok: false,
             status: 429,
-            text: async () => "rate limited",
         } as Response);
+        vi.mocked(yahooFinance.search).mockResolvedValueOnce({
+            news: [
+                {
+                    uuid: "yf-fallback",
+                    title: "Fallback headline",
+                    publisher: "Reuters",
+                    link: "https://finance.yahoo.com/news/fallback",
+                },
+            ],
+        } as never);
 
         const req = {} as NextApiRequest;
         const res = mockRes();
         await handler(req, res as unknown as NextApiResponse);
+
+        expect(res.statusCode).toBe(200);
+        const body = res.body as Array<{ id: string; headline: string; source: string }>;
+        expect(body).toHaveLength(1);
+        expect(body[0].headline).toBe("Fallback headline");
+        expect(body[0].source).toBe("Reuters");
+    });
+
+    it("falls back to Yahoo Finance when Finnhub returns empty array or invalid payload", async () => {
+        process.env.FINNHUB_API_KEY = "test-key";
+        vi.mocked(fetch).mockResolvedValueOnce({
+            ok: true,
+            json: async () => [],
+        } as Response);
+        vi.mocked(yahooFinance.search).mockResolvedValueOnce({
+            news: [
+                {
+                    uuid: "yf-fallback-2",
+                    title: "Fallback on empty Finnhub",
+                    publisher: "CNBC",
+                    link: "https://finance.yahoo.com/news/cnbc",
+                },
+            ],
+        } as never);
+
+        const req = {} as NextApiRequest;
+        const res = mockRes();
+        await handler(req, res as unknown as NextApiResponse);
+
+        expect(res.statusCode).toBe(200);
+        const body = res.body as Array<{ headline: string }>;
+        expect(body[0].headline).toBe("Fallback on empty Finnhub");
+    });
+
+    it("falls back to Yahoo Finance when Finnhub fetch throws network error", async () => {
+        process.env.FINNHUB_API_KEY = "test-key";
+        vi.mocked(fetch).mockRejectedValueOnce(new Error("Network connection dropped"));
+        vi.mocked(yahooFinance.search).mockResolvedValueOnce({
+            news: [
+                {
+                    uuid: "yf-net-fallback",
+                    title: "Network error fallback",
+                    publisher: "WSJ",
+                    link: "https://wsj.com",
+                },
+            ],
+        } as never);
+
+        const req = {} as NextApiRequest;
+        const res = mockRes();
+        await handler(req, res as unknown as NextApiResponse);
+
+        expect(res.statusCode).toBe(200);
+        const body = res.body as Array<{ headline: string }>;
+        expect(body[0].headline).toBe("Network error fallback");
+    });
+
+    it("returns 500 when both Finnhub and Yahoo Finance fallback fail", async () => {
+        process.env.FINNHUB_API_KEY = "test-key";
+        vi.mocked(fetch).mockRejectedValueOnce(new Error("Finnhub down"));
+        vi.mocked(yahooFinance.search).mockRejectedValueOnce(new Error("Yahoo search failed"));
+
+        const req = {} as NextApiRequest;
+        const res = mockRes();
+        await handler(req, res as unknown as NextApiResponse);
+
         expect(res.statusCode).toBe(500);
-        expect(res.body).toEqual({ error: "Finnhub error: 429" });
+        expect(res.body).toEqual({ error: "Failed to fetch market news" });
     });
 });
