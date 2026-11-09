@@ -95,6 +95,8 @@
   padding: 3px;
   border-radius: var(--radius-sm, 6px);
   border: 1px solid var(--border);
+  flex-wrap: wrap;
+  max-width: 100%;
 }
 
 .timeframeBtn {

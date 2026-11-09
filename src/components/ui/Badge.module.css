@@ -28,15 +28,15 @@
 }
 
 .gain {
-  background-color: rgba(16, 185, 129, 0.12);
+  background-color: var(--gain-bg, rgba(16, 185, 129, 0.12));
   border: 1px solid rgba(16, 185, 129, 0.28);
-  color: #10b981;
+  color: var(--gain, #10b981);
 }
 
 .loss {
-  background-color: rgba(239, 68, 68, 0.12);
+  background-color: var(--loss-bg, rgba(239, 68, 68, 0.12));
   border: 1px solid rgba(239, 68, 68, 0.28);
-  color: #ef4444;
+  color: var(--loss, #ef4444);
 }
 
 .accent {

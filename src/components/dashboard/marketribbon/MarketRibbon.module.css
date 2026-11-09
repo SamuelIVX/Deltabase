@@ -17,6 +17,42 @@
   contain: paint;
   box-shadow: var(--card-shadow);
   transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.pauseButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-left: 10px;
+  margin-right: 6px;
+  border-radius: 6px;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  color: var(--textSoft);
+  flex-shrink: 0;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.15s ease;
+}
+
+.pauseButton:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.pauseButton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.trackContainer {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  width: 100%;
+  min-width: 0;
   mask-image: linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
   -webkit-mask-image: linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
 }
@@ -31,8 +67,13 @@
   animation: scrollBanner 45s linear infinite;
 }
 
-.track:hover {
+.track:hover,
+.track:focus-within {
   animation-play-state: paused;
+}
+
+.trackPaused {
+  animation-play-state: paused !important;
 }
 
 @keyframes scrollBanner {
@@ -45,11 +86,15 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ribbon {
+  .pauseButton {
+    display: none;
+  }
+
+  .trackContainer {
     overflow-x: auto;
-    padding: 8px 16px;
     mask-image: none;
     -webkit-mask-image: none;
+    padding: 0 16px;
   }
 
   .track {

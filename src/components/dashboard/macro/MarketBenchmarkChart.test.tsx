@@ -113,8 +113,8 @@ describe("MarketBenchmarkChart component", () => {
     });
 
     it("formats 1m and 3m ranges with month and day", () => {
-      expect(formatBenchmarkTick("2024-05-15T00:00:00Z", "1m")).toMatch(/May/);
-      expect(formatBenchmarkTick("2024-05-15T00:00:00Z", "3m")).toMatch(/May/);
+      expect(formatBenchmarkTick("2024-05-15T00:00:00Z", "1m")).toBe("May 15");
+      expect(formatBenchmarkTick("2024-05-15T00:00:00Z", "3m")).toBe("May 15");
     });
 
     it("formats multi-month/year ranges with month and year", () => {
