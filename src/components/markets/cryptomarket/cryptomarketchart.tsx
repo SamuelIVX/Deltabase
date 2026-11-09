@@ -30,6 +30,28 @@ const POPULAR_CRYPTOS = [
 ];
 
 /**
+ * Shared price-formatting helper adjusting decimal precision based on price magnitude.
+ * @param value - Price in USD to format.
+ * @returns Formatted localized price string.
+ */
+export function formatCryptoPrice(value: number | null | undefined): string {
+    if (value == null || !Number.isFinite(value)) return "N/A";
+    let maxDigits = 2;
+    if (value < 0.001) {
+        maxDigits = 6;
+    } else if (value < 1) {
+        maxDigits = 4;
+    } else if (value < 10) {
+        maxDigits = 3;
+    }
+
+    return value.toLocaleString("en-US", {
+        minimumFractionDigits: value >= 10 ? 2 : Math.min(2, maxDigits),
+        maximumFractionDigits: maxDigits,
+    });
+}
+
+/**
  * Shared crypto chart selection context (instrument + range).
  * Provided by the crypto market page; consumed by chart + metrics.
  */
@@ -49,7 +71,7 @@ const CryptoTooltip: React.FC<
                 <p className={styles.description}>Date</p>
                 <span className={styles.date}>{formatDate(date)}</span>
                 <p className={styles.description}>Price</p>
-                <p className={styles.volume}>${typeof close === 'number' ? close.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : formatNumber(close)}</p>
+                <p className={styles.volume}>${formatCryptoPrice(close)}</p>
                 <p className={styles.description}>Volume</p>
                 <p className={styles.volume}>{formatNumber(volume)}</p>
             </div>
@@ -64,7 +86,9 @@ const CryptoTooltip: React.FC<
  */
 const CryptoMarketChart = () => {
     const { selectedCrypto, setSelectedCrypto } = useContext(CryptoMarketContext);
-    const debouncedRaw = useDebounce(selectedCrypto, 600);
+    const immediateNormalized = normalizeCryptoSymbol(selectedCrypto);
+
+    const debouncedRaw = useDebounce(selectedCrypto, 500);
     const normalizedInstrument = normalizeCryptoSymbol(debouncedRaw);
 
     const { result, isLoading, error } = useCryptoLatestTick({
@@ -108,8 +132,8 @@ const CryptoMarketChart = () => {
                     <span className={styles.pillLabel}>Popular:</span>
                     {POPULAR_CRYPTOS.map((coin) => {
                         const isActive =
-                            normalizedInstrument === coin.pair ||
-                            selectedCrypto?.toUpperCase() === coin.label;
+                            immediateNormalized === coin.pair ||
+                            selectedCrypto?.trim().toUpperCase() === coin.label;
                         return (
                             <button
                                 key={coin.pair}
@@ -135,7 +159,7 @@ const CryptoMarketChart = () => {
                 <div className={styles.stockInfo}>
                     <div className={styles.priceSection}>
                         <span className={styles.price}>
-                            ${result.PRICE != null ? result.PRICE.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'N/A'}
+                            ${formatCryptoPrice(result.PRICE)}
                         </span>
                         {result.CURRENT_DAY_CHANGE_PERCENTAGE !== undefined && (
                             <span
@@ -187,7 +211,7 @@ const CryptoMarketChart = () => {
                                     (dataMin) => (dataMin * 0.995),
                                     (dataMax) => dataMax * 1.005,
                                 ]}
-                                tickFormatter={(value) => value.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                                tickFormatter={(value: number) => formatCryptoPrice(value)}
                                 tick={{ fill: "var(--textSoft)", fontSize: 11 }}
                                 stroke="var(--border)"
                             />

@@ -36,6 +36,13 @@ describe("RangeBar component", () => {
         expect(screen.getByText("Current: $250")).toBeInTheDocument();
     });
 
+    it("renders sub-dollar asset prices with appropriate decimal precision", () => {
+        render(<RangeBar label="52-Week Range" low={0.08} high={0.25} current={0.125} />);
+        expect(screen.getByText("$0.08")).toBeInTheDocument();
+        expect(screen.getByText("$0.25")).toBeInTheDocument();
+        expect(screen.getByText("Current: $0.125")).toBeInTheDocument();
+    });
+
     it("renders decorative track with aria-hidden and omits meter role when current is omitted", () => {
         const { container } = render(<RangeBar label="Year Range" low={100} high={200} />);
         expect(screen.queryByRole("meter")).not.toBeInTheDocument();

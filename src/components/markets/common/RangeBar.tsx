@@ -2,6 +2,7 @@
 /**
  * Visual price range bar (e.g. 52-Week Range or Year Range).
  * Accessible HTML meter with low/high bounds and optional current-price marker.
+ * Dynamically adjusts decimal precision for sub-dollar and low-priced assets.
  */
 import React from "react";
 import styles from "../marketsmetrics.module.css";
@@ -13,12 +14,29 @@ export interface RangeBarProps {
     current?: number | null | undefined;
 }
 
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-});
+/**
+ * Formats a price value with fractional precision determined by the reference magnitude.
+ * @param value - Amount to format.
+ * @param reference - High bound or range magnitude used to select decimal precision.
+ * @returns Formatted USD currency string.
+ */
+function formatRangeCurrency(value: number, reference: number): string {
+    let maxDigits = 2;
+    if (reference < 0.01) {
+        maxDigits = 6;
+    } else if (reference < 1) {
+        maxDigits = 4;
+    } else if (reference < 10) {
+        maxDigits = 3;
+    }
+
+    return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: maxDigits,
+    }).format(value);
+}
 
 /**
  * Accessible visual range slider meter.
@@ -38,18 +56,24 @@ const RangeBar: React.FC<RangeBarProps> = ({ label, low, high, current }) => {
         ? Math.min(100, Math.max(0, ((clampedPrice - low) / (high - low)) * 100))
         : undefined;
 
+    const referenceMagnitude = Math.abs(high);
+
     return (
         <div className={styles.rangeSection}>
             <div className={styles.rangeHeader}>
                 <span className={styles.rangeLabel}>{label}</span>
                 <div className={styles.rangeValues}>
-                    <span className={styles.rangeBound}>{currencyFormatter.format(low)}</span>
+                    <span className={styles.rangeBound}>
+                        {formatRangeCurrency(low, referenceMagnitude)}
+                    </span>
                     {hasCurrent && (
                         <span className={styles.rangeCurrent}>
-                            Current: {currencyFormatter.format(current as number)}
+                            Current: {formatRangeCurrency(current as number, referenceMagnitude)}
                         </span>
                     )}
-                    <span className={styles.rangeBound}>{currencyFormatter.format(high)}</span>
+                    <span className={styles.rangeBound}>
+                        {formatRangeCurrency(high, referenceMagnitude)}
+                    </span>
                 </div>
             </div>
             {hasCurrent ? (

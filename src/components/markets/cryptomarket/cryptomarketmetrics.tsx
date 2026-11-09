@@ -12,6 +12,7 @@ import { StatItemProps } from '@/types/statItem';
 import formatCurrency from '@/utils/formatCurrency';
 import formatNumber from '@/utils/formatNumber';
 import RangeBar from '../common/RangeBar';
+import { normalizeCryptoSymbol } from '@/utils/normalizeCryptoSymbol';
 
 const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
     <div className={styles.statItem}>
@@ -27,9 +28,10 @@ const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
 const CryptoMarketMetrics = () => {
     const { selectedCrypto } = useContext(CryptoMarketContext);
     const debouncedCrypto = useDebounce(selectedCrypto, 500);
+    const normalizedCrypto = normalizeCryptoSymbol(debouncedCrypto);
     const { result, isLoading, error } = useCryptoLatestTick({
         market: 'kraken',
-        instrument: debouncedCrypto,
+        instrument: normalizedCrypto,
     }) as { result: TickResult | null; isLoading: boolean; error?: string };
 
     return (
