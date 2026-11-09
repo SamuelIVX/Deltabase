@@ -56,7 +56,7 @@
 
 html {
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
@@ -65,7 +65,7 @@ body {
   color: var(--text);
   min-height: 100vh;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   transition: background-color 0.2s ease, color 0.2s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

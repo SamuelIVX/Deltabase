@@ -7,7 +7,8 @@ import type { MarketIndexItem } from "@/pages/api/marketIndices";
 const fetchMarketIndices = async (): Promise<MarketIndexItem[]> => {
   const res = await fetch("/api/marketIndices");
   if (!res.ok) {
-    throw new Error(`Error fetching market indices: ${res.statusText}`);
+    const detail = res.statusText || `HTTP ${res.status}`;
+    throw new Error(`Error fetching market indices: ${detail}`);
   }
   return await res.json();
 };

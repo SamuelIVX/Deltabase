@@ -63,7 +63,8 @@ describe("useMarketIndices", () => {
   it("handles fetch errors and returns empty indices with error message", async () => {
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: false,
-      statusText: "Internal Server Error",
+      status: 500,
+      statusText: "",
     });
 
     const { result } = renderHook(() => useMarketIndices(), {
@@ -73,6 +74,6 @@ describe("useMarketIndices", () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.indices).toEqual([]);
-    expect(result.current.error).toContain("Internal Server Error");
+    expect(result.current.error).toContain("HTTP 500");
   });
 });
