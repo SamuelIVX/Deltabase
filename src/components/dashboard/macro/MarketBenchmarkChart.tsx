@@ -31,7 +31,47 @@ const TIMEFRAMES = [
   { label: "5Y", value: "5y" },
 ];
 
-const BenchmarkTooltip: React.FC<
+/**
+ * Formats XAxis date ticks according to selected range.
+ * @param val - Date string or timestamp.
+ * @param selectedRange - Current range timeframe (e.g. "1d", "5d", "1y").
+ * @returns Formatted tick string.
+ */
+export function formatBenchmarkTick(val: string, selectedRange: string): string {
+  if (!val) return "";
+  if (selectedRange === "1d") return val;
+  const d = new Date(val);
+  if (isNaN(d.getTime())) return val;
+  if (selectedRange === "5d") {
+    return d.toLocaleDateString("en-US", { weekday: "short", day: "numeric", timeZone: "UTC" });
+  }
+  return d.toLocaleDateString("en-US", { month: "short", year: "2-digit", timeZone: "UTC" });
+}
+
+/**
+ * Calculates domain [min, max] for the YAxis based on series points.
+ * @param series - Symbol data points.
+ * @returns Y-axis domain tuple.
+ */
+export function calculateBenchmarkYDomain(series: SymbolDataPoint[]): [number | string, number | string] {
+  const minPrice = series.length > 0
+    ? Math.min(...series.map((d: SymbolDataPoint) => d.close ?? Infinity).filter(Number.isFinite))
+    : 0;
+  const maxPrice = series.length > 0
+    ? Math.max(...series.map((d: SymbolDataPoint) => d.close ?? -Infinity).filter(Number.isFinite))
+    : 0;
+
+  return minPrice > 0 && maxPrice > 0
+    ? [Math.floor(minPrice * 0.98), Math.ceil(maxPrice * 1.02)]
+    : ["auto", "auto"];
+}
+
+/**
+ * Glassmorphic hover tooltip for benchmark chart data points.
+ * @param props - Tooltip payload and active state from Recharts.
+ * @returns Rendered tooltip element or null when inactive.
+ */
+export const BenchmarkTooltip: React.FC<
   TooltipProps<number, string> & { payload?: { payload: SymbolDataPoint }[] }
 > = ({ active, payload }) => {
   if (!active || !payload || payload.length === 0) return null;
@@ -65,17 +105,7 @@ export default function MarketBenchmarkChart(): React.JSX.Element {
   );
 
   const series = Array.isArray(historicalData) ? historicalData : [];
-  const minPrice = series.length > 0
-    ? Math.min(...series.map((d: SymbolDataPoint) => d.close ?? Infinity).filter(Number.isFinite))
-    : 0;
-  const maxPrice = series.length > 0
-    ? Math.max(...series.map((d: SymbolDataPoint) => d.close ?? -Infinity).filter(Number.isFinite))
-    : 0;
-
-  const yDomain: [number | string, number | string] =
-    minPrice > 0 && maxPrice > 0
-      ? [Math.floor(minPrice * 0.98), Math.ceil(maxPrice * 1.02)]
-      : ["auto", "auto"];
+  const yDomain = calculateBenchmarkYDomain(series);
 
   return (
     <div className={styles.container} role="region" aria-label="S&P 500 Benchmark Performance Chart">
@@ -102,54 +132,44 @@ export default function MarketBenchmarkChart(): React.JSX.Element {
         </div>
       </div>
 
-      {isLoading && series.length === 0 && (
-        <div className={styles.loadingOverlay} role="status">
-          <MoonLoader color="var(--accent, #3b82f6)" size={48} />
-          <span>Loading S&P 500 benchmark data...</span>
-        </div>
-      )}
-
       {error && series.length === 0 ? (
         <div className={styles.errorState}>
           <p>Unable to load S&P 500 historical benchmark data.</p>
         </div>
       ) : (
         <div className={styles.chartWrapper}>
+          {isLoading && series.length === 0 && (
+            <div className={styles.loadingOverlay} role="status">
+              <MoonLoader color="var(--accent, #3b82f6)" size={48} />
+              <span>Loading S&P 500 benchmark data...</span>
+            </div>
+          )}
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={series} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
               <defs>
                 <linearGradient id="sp500Gradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--accent, #3b82f6)" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="var(--accent, #3b82f6)" stopOpacity={0.0} />
+                  <stop offset="5%" stopColor="var(--accent, #38bdf8)" stopOpacity={0.35} />
+                  <stop offset="95%" stopColor="var(--accent, #38bdf8)" stopOpacity={0.0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.6} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light, #334155)" opacity={0.4} />
               <XAxis
                 dataKey={selectedRange === "1d" ? "time" : "date"}
-                stroke="var(--textMuted)"
-                fontSize={11}
-                tickFormatter={(val: string) => {
-                  if (!val) return "";
-                  if (selectedRange === "1d") return val;
-                  const d = new Date(val);
-                  if (isNaN(d.getTime())) return val;
-                  if (selectedRange === "5d") {
-                    return d.toLocaleDateString("en-US", { weekday: "short", day: "numeric" });
-                  }
-                  return d.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
-                }}
+                stroke="var(--border-light, #334155)"
+                tick={{ fill: "var(--textSoft, #94a3b8)", fontSize: 11 }}
+                tickFormatter={(val: string) => formatBenchmarkTick(val, selectedRange)}
               />
               <YAxis
                 domain={yDomain}
-                stroke="var(--textMuted)"
-                fontSize={11}
+                stroke="var(--border-light, #334155)"
+                tick={{ fill: "var(--textSoft, #94a3b8)", fontSize: 11 }}
                 tickFormatter={(val: number) => `$${Math.round(val).toLocaleString()}`}
               />
               <Tooltip content={<BenchmarkTooltip />} />
               <Area
                 type="monotone"
                 dataKey="close"
-                stroke="var(--accent, #3b82f6)"
+                stroke="var(--accent, #38bdf8)"
                 strokeWidth={2}
                 fillOpacity={1}
                 fill="url(#sp500Gradient)"

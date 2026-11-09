@@ -185,7 +185,8 @@
 @media (max-width: 1024px) {
   .container,
   .containerCollapsed {
-    position: static;
+    position: relative;
+    top: auto;
     min-height: auto;
   }
 }

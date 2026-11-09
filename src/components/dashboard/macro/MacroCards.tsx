@@ -6,7 +6,6 @@
 import React from "react";
 import styles from "./MacroCards.module.css";
 import useMarketIndices from "@/hooks/useMarketIndices";
-import formatCurrency from "@/utils/formatCurrency";
 import { MdTrendingUp, MdTrendingDown } from "react-icons/md";
 
 const MACRO_SYMBOLS = ["^GSPC", "^IXIC", "^DJI", "BTC-USD"];
@@ -46,7 +45,15 @@ export default function MacroCards(): React.JSX.Element {
         const isNullChange = item.change == null;
         const isPositive = item.change != null && item.change >= 0;
         const changeSign = isPositive ? "+" : "";
-        const formattedPrice = item.price != null ? formatCurrency(item.price) : "N/A";
+        const formattedPrice =
+          item.price != null && item.price
+            ? new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "USD",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }).format(item.price)
+            : "N/A";
         const formattedChange =
           item.change != null
             ? `${changeSign}${item.change.toFixed(2)}`

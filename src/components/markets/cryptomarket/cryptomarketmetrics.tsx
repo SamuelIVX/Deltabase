@@ -118,9 +118,13 @@ const CryptoMarketMetrics = () => {
                         <StatItem
                             label="24h Change ($)"
                             value={
-                                result.CURRENT_DAY_CHANGE != null
-                                    ? `${result.CURRENT_DAY_CHANGE > 0 ? '+' : ''}${formatCurrency(result.CURRENT_DAY_CHANGE)}`
-                                    : 'N/A'
+                                (() => {
+                                    const changeVal = result.MOVING_24_HOUR_CHANGE ?? result.CURRENT_DAY_CHANGE;
+                                    if (changeVal == null) return 'N/A';
+                                    if (changeVal === 0) return '$0.00';
+                                    const prefix = changeVal > 0 ? '+' : '';
+                                    return `${prefix}${formatCurrency(changeVal)}`;
+                                })()
                             }
                         />
                         <StatItem

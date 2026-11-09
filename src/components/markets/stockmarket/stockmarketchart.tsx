@@ -199,8 +199,16 @@ const StockMarketChart = () => {
                                         bottom: 0,
                                     }}
                                 >
+                                    <defs>
+                                        <linearGradient id="stockGrad" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="var(--accent, #38bdf8)" stopOpacity={0.25} />
+                                            <stop offset="95%" stopColor="var(--accent, #38bdf8)" stopOpacity={0.0} />
+                                        </linearGradient>
+                                    </defs>
                                     <XAxis
                                         dataKey="date"
+                                        tick={{ fill: "var(--textSoft)", fontSize: 11 }}
+                                        stroke="var(--border-light, #334155)"
                                     />
                                     <YAxis
                                         domain={[
@@ -208,13 +216,17 @@ const StockMarketChart = () => {
                                             (dataMax) => dataMax * 1.005,
                                         ]}
                                         tickFormatter={(value) => value.toFixed(2)}
+                                        tick={{ fill: "var(--textSoft)", fontSize: 11 }}
+                                        stroke="var(--border-light, #334155)"
                                     />
                                     <Tooltip content={<StockTooltip />} />
                                     <Area
                                         type="monotone"
                                         dataKey="close"
-                                        stroke="rgba(51, 242, 121, 0.76)"
-                                        fill="rgba(61, 180, 63, 0.15)" />
+                                        stroke="var(--accent, #38bdf8)"
+                                        strokeWidth={2}
+                                        fillOpacity={1}
+                                        fill="url(#stockGrad)" />
                                 </AreaChart>
                             </ResponsiveContainer>
                         </div>

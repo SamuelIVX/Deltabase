@@ -80,6 +80,8 @@ describe("StockMarketMetrics component", () => {
                 dividendYield: 0.005,
                 dividendRate: 0.96,
                 dividendDate: "2024-02-15",
+                fiftyDayAverage: 182.5,
+                twoHundredDayAverage: 175.2,
             },
             isLoading: false,
             error: null,
@@ -95,7 +97,8 @@ describe("StockMarketMetrics component", () => {
         expect(screen.getByText("$150 - $195")).toBeInTheDocument();
         expect(screen.getByText("$0.96")).toBeInTheDocument();
         expect(screen.getByText("Equity")).toBeInTheDocument();
-        expect(screen.getByText("1.24")).toBeInTheDocument();
+        expect(screen.getByText("$182.5")).toBeInTheDocument();
+        expect(screen.getByText("$175.2")).toBeInTheDocument();
     });
 
     it("renders ETF badge and Expense Ratio when quote is an ETF", () => {

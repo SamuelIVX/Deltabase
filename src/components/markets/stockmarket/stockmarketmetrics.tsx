@@ -127,10 +127,6 @@ const StockMarketMetrics = () => {
                             value={formatNumber(quote.trailingPE)}
                         />
                         <StatItem
-                            label="Beta"
-                            value={quote.beta != null ? formatNumber(quote.beta) : 'N/A'}
-                        />
-                        <StatItem
                             label="50-Day Avg"
                             value={quote.fiftyDayAverage != null ? formatCurrency(quote.fiftyDayAverage) : 'N/A'}
                         />

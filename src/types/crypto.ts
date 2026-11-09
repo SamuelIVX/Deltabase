@@ -22,6 +22,7 @@ export interface TickResult {
     CURRENT_HOUR_CHANGE_PERCENTAGE: number;
     MOVING_24_HOUR_CHANGE_PERCENTAGE: number;
     CURRENT_DAY_CHANGE: number;
+    MOVING_24_HOUR_CHANGE?: number;
     [key: string]: unknown;
 }
 

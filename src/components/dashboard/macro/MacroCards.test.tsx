@@ -70,7 +70,7 @@ describe("MacroCards component", () => {
 
     expect(screen.getByText("S&P 500")).toBeInTheDocument();
     expect(screen.getByText("^GSPC")).toBeInTheDocument();
-    expect(screen.getByText("$5.86K")).toBeInTheDocument();
+    expect(screen.getByText("$5,864.67")).toBeInTheDocument();
     expect(screen.getByText("+24.30 (+0.42%)")).toBeInTheDocument();
 
     expect(screen.getByText("NASDAQ")).toBeInTheDocument();

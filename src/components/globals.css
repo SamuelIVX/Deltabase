@@ -13,6 +13,7 @@
   --border-light: #334155;
   --text: #f8fafc;
   --textSoft: #94a3b8;
+  --textMuted: #94a3b8;
   --primary: #0284c7;
   --primary-hover: #0369a1;
   --accent: #38bdf8;
@@ -37,6 +38,7 @@
   --border-light: #cbd5e1;
   --text: #0f172a;
   --textSoft: #64748b;
+  --textMuted: #64748b;
   --primary: #0284c7;
   --primary-hover: #0369a1;
   --accent: #0284c7;
