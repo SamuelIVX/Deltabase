@@ -3,7 +3,7 @@
  * Proxies `yahoo-finance2.chart` with a `years`-based lookback (no API key).
  */
 import { NextApiRequest, NextApiResponse } from "next";
-import yahooFinance from "yahoo-finance2";
+import yahooFinance from "@/lib/yahooFinance";
 
 type YahooChartQuote = {
     date?: Date;

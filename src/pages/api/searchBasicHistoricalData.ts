@@ -3,7 +3,7 @@
  * Proxies `yahoo-finance2.chart` with mapped intervals for `1d`…`5y` (no API key).
  */
 import { NextApiRequest, NextApiResponse } from "next";
-import yahooFinance from "yahoo-finance2";
+import yahooFinance from "@/lib/yahooFinance";
 
 const validRanges = ['1d', '5d', '1m', '3m', '6m', '1y', '5y'];
 
