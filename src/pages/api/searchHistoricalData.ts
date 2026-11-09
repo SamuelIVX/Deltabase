@@ -40,8 +40,21 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const today = new Date();
-    const startDate = new Date(today.getFullYear() - parsedYears, today.getMonth(), today.getDate()).toISOString().split('T')[0];
-    const endDate = today.toISOString().split('T')[0];
+    const targetYear = today.getFullYear() - parsedYears;
+    const targetMonth = today.getMonth();
+    let targetDate = today.getDate();
+
+    // Clamp Feb 29 to Feb 28 on non-leap years
+    if (targetMonth === 1 && targetDate === 29) {
+        const isLeap = (targetYear % 4 === 0 && targetYear % 100 !== 0) || targetYear % 400 === 0;
+        if (!isLeap) targetDate = 28;
+    }
+
+    const formatYMD = (d: Date) =>
+        `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+    const startDate = formatYMD(new Date(targetYear, targetMonth, targetDate));
+    const endDate = formatYMD(today);
 
     const queryOptions: {
         period1: string;

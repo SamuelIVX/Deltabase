@@ -189,8 +189,9 @@ export default function TaxAdjustedReturns() {
                     <div className={styles.section}>
                         {/* Symbol Input */}
                         <div className={styles.field}>
-                            <label className={styles.label}>Symbol</label>
+                            <label className={styles.label} htmlFor="calc-symbol">Symbol</label>
                             <input
+                                id="calc-symbol"
                                 className={styles.input}
                                 value={symbol}
                                 onChange={(e) => setSymbol(e.target.value.toUpperCase())}
@@ -203,8 +204,9 @@ export default function TaxAdjustedReturns() {
                         {/* Quantity / Tax / Fee inputs */}
                         <div className={styles.grid}>
                             <div className={styles.field}>
-                                <label className={styles.label}>Quantity</label>
+                                <label className={styles.label} htmlFor="calc-quantity">Quantity</label>
                                 <input
+                                    id="calc-quantity"
                                     type="number"
                                     min="0"
                                     step="any"
@@ -215,8 +217,9 @@ export default function TaxAdjustedReturns() {
                             </div>
 
                             <div className={styles.field}>
-                                <label className={styles.label}>Tax Rate (%)</label>
+                                <label className={styles.label} htmlFor="calc-tax-rate">Tax Rate (%)</label>
                                 <input
+                                    id="calc-tax-rate"
                                     type="number"
                                     min="0"
                                     step="any"
@@ -227,8 +230,9 @@ export default function TaxAdjustedReturns() {
                             </div>
 
                             <div className={styles.field}>
-                                <label className={styles.label}>Fee Rate (%)</label>
+                                <label className={styles.label} htmlFor="calc-fee-rate">Fee Rate (%)</label>
                                 <input
+                                    id="calc-fee-rate"
                                     type="number"
                                     min="0"
                                     step="any"
@@ -238,6 +242,10 @@ export default function TaxAdjustedReturns() {
                                 />
                             </div>
                         </div>
+
+                        {symbol && validQuantity <= 0 && (
+                            <p className={styles.hint}>Please enter a quantity greater than 0 to calculate returns.</p>
+                        )}
                     </div>
                 )}
 

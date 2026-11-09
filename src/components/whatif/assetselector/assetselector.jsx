@@ -106,6 +106,24 @@ const AssetSelector = () => {
         }
     };
 
+    const handleInputKeyDown1 = (e) => {
+        if (e.key === 'ArrowDown' && results1.length > 0) {
+            e.preventDefault();
+            setFocusedIndex1(0);
+            const firstOption = e.currentTarget.closest(`.${styles.container}`)?.querySelector('[role="option"]');
+            if (firstOption instanceof HTMLElement) firstOption.focus();
+        }
+    };
+
+    const handleInputKeyDown2 = (e) => {
+        if (e.key === 'ArrowDown' && results2.length > 0) {
+            e.preventDefault();
+            setFocusedIndex2(0);
+            const firstOption = e.currentTarget.closest(`.${styles.container}`)?.querySelector('[role="option"]');
+            if (firstOption instanceof HTMLElement) firstOption.focus();
+        }
+    };
+
     return (
         <div className={styles.wrapper}>
             <div className={styles.container}>
@@ -117,6 +135,7 @@ const AssetSelector = () => {
                         placeholder="Enter a stock symbol..."
                         aria-label="Search symbol for Asset 1"
                         value={searchTerm1}
+                        onKeyDown={handleInputKeyDown1}
                         onChange={(e) => {
                             const value = e.target.value;
                             setSearchTerm1(value);
@@ -168,6 +187,7 @@ const AssetSelector = () => {
                         placeholder="Enter a stock symbol..."
                         aria-label="Search symbol for Asset 2"
                         value={searchTerm2}
+                        onKeyDown={handleInputKeyDown2}
                         onChange={(e) => {
                             const value = e.target.value;
                             setSearchTerm2(value);
