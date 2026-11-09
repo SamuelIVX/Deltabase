@@ -71,8 +71,11 @@ const StockMarketChart = () => {
     const {
         historicalData,
         isLoading: isHistoricalLoading,
+        isFetching: isHistoricalFetching,
+        isPlaceholderData,
         error: historicalError,
     } = useYahooBasicHistoricalData(debouncedStock, selectedRange);
+    const isChartStale = Boolean(isPlaceholderData || isHistoricalFetching);
 
     return (
         <div className={styles.container}>
@@ -148,36 +151,45 @@ const StockMarketChart = () => {
 
             <div className={styles.chartArea}>
                 {historicalData && historicalData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart
-                            width={500}
-                            height={300}
-                            data={historicalData || []}
-                            margin={{
-                                top: 10,
-                                right: 10,
-                                left: 10,
-                                bottom: 0,
-                            }}
-                        >
-                            <XAxis
-                                dataKey="date"
-                            />
-                            <YAxis
-                                domain={[
-                                    (dataMin) => (dataMin * 0.995),
-                                    (dataMax) => dataMax * 1.005,
-                                ]}
-                                tickFormatter={(value) => value.toFixed(2)}
-                            />
-                            <Tooltip content={<StockTooltip />} />
-                            <Area
-                                type="monotone"
-                                dataKey="close"
-                                stroke="rgba(51, 242, 121, 0.76)"
-                                fill="rgba(61, 180, 63, 0.15)" />
-                        </AreaChart>
-                    </ResponsiveContainer>
+                    <>
+                        <div style={{ width: '100%', height: '100%', opacity: isChartStale ? 0.45 : 1, transition: 'opacity 0.2s ease' }}>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart
+                                    width={500}
+                                    height={300}
+                                    data={historicalData || []}
+                                    margin={{
+                                        top: 10,
+                                        right: 10,
+                                        left: 10,
+                                        bottom: 0,
+                                    }}
+                                >
+                                    <XAxis
+                                        dataKey="date"
+                                    />
+                                    <YAxis
+                                        domain={[
+                                            (dataMin) => (dataMin * 0.995),
+                                            (dataMax) => dataMax * 1.005,
+                                        ]}
+                                        tickFormatter={(value) => value.toFixed(2)}
+                                    />
+                                    <Tooltip content={<StockTooltip />} />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="close"
+                                        stroke="rgba(51, 242, 121, 0.76)"
+                                        fill="rgba(61, 180, 63, 0.15)" />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                        {isChartStale && (
+                            <div className={styles.chartLoading}>
+                                <MoonLoader color="var(--primary)" size={48} />
+                            </div>
+                        )}
+                    </>
                 ) : isHistoricalLoading ? (
                     <div className={styles.chartLoading}>
                         <MoonLoader color="var(--primary)" size={48} />
@@ -199,6 +211,7 @@ const StockMarketChart = () => {
                 {['1d', '5d', '1m', '6m', '1y', '5y'].map((range) => (
                     <button
                         key={range}
+                        type="button"
                         className={`${styles.dateButton} ${selectedRange === range ? styles.selected : ''}`}
                         onClick={() => handleRangeChange(range)}
                     >

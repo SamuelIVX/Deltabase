@@ -34,6 +34,7 @@ describe('useCryptoHistoricalData', () => {
 
         expect(result.current.results).toEqual([]);
         expect(result.current.isLoading).toBe(false);
+        expect(result.current.isPlaceholderData).toBe(false);
         expect(result.current.error).toBeNull();
     });
 

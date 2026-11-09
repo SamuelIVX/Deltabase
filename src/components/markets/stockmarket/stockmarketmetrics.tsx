@@ -73,11 +73,11 @@ const StockMarketMetrics = () => {
                     <div className={styles.statsGrid}>
                         <StatItem
                             label="Previous Close"
-                            value={quote.regularMarketPreviousClose != null ? formatCurrency(quote.regularMarketPreviousClose) : 'N/A'}
+                            value={formatCurrency(quote.regularMarketPreviousClose)}
                         />
                         <StatItem
                             label="Open"
-                            value={quote.regularMarketOpen != null ? formatCurrency(quote.regularMarketOpen) : 'N/A'}
+                            value={formatCurrency(quote.regularMarketOpen)}
                         />
                         <StatItem
                             label="Day Range"
@@ -89,11 +89,11 @@ const StockMarketMetrics = () => {
                         />
                         <StatItem
                             label="Volume"
-                            value={quote.regularMarketVolume != null ? formatNumber(quote.regularMarketVolume) : 'N/A'}
+                            value={formatNumber(quote.regularMarketVolume)}
                         />
                         <StatItem
                             label="Avg Volume (3M)"
-                            value={quote.averageDailyVolume3Month != null ? formatNumber(quote.averageDailyVolume3Month) : 'N/A'}
+                            value={formatNumber(quote.averageDailyVolume3Month)}
                         />
                         <StatItem
                             label="Market Cap"
@@ -133,7 +133,7 @@ const StockMarketMetrics = () => {
                         {!isETF ? (
                             <StatItem
                                 label="EPS (TTM)"
-                                value={formatNumber(quote.priceEpsCurrentYear)}
+                                value={formatNumber(quote.epsTrailingTwelveMonths ?? quote.priceEpsCurrentYear)}
                             />
                         ) : (
                             <StatItem

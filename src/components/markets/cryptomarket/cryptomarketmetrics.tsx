@@ -52,6 +52,13 @@ const CryptoMarketMetrics = () => {
 
     const change24h = result?.MOVING_24_HOUR_CHANGE_PERCENTAGE ?? result?.CURRENT_DAY_CHANGE_PERCENTAGE;
 
+    const quoteCurrency = (result?.QUOTE as string | undefined) ||
+        (normalizedCrypto.includes('-') ? normalizedCrypto.split('-')[1] : 'USD');
+    const formattedVolume = formatNumber(result?.CURRENT_DAY_QUOTE_VOLUME);
+    const volumeDisplay = quoteCurrency === 'USD'
+        ? `$${formattedVolume}`
+        : `${formattedVolume} ${quoteCurrency}`;
+
     return (
         <div className={styles.container}>
             <div className={styles.headerRow}>
@@ -90,7 +97,7 @@ const CryptoMarketMetrics = () => {
                         />
                         <StatItem
                             label="Today's Trading Volume"
-                            value={`$${formatNumber(result.CURRENT_DAY_QUOTE_VOLUME)}`}
+                            value={volumeDisplay}
                         />
                         <StatItem
                             label="1-Hour Change"

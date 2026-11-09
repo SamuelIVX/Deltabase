@@ -39,6 +39,7 @@ describe("useYahooBasicHistoricalData hook", () => {
         expect(result.current.historicalData).toEqual([]);
         expect(result.current.isLoading).toBe(false);
         expect(result.current.isFetching).toBe(false);
+        expect(result.current.isPlaceholderData).toBe(false);
         expect(result.current.error).toBeNull();
         expect(fetchSpy).not.toHaveBeenCalled();
     });

@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className={styles.container} role="contentinfo">
+    <footer className={styles.container}>
       <div className={styles.topRow}>
         <div className={styles.brandGroup}>
           <span className={styles.brandTitle}>DeltaBase</span>

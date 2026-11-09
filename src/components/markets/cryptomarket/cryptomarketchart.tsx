@@ -102,12 +102,15 @@ const CryptoMarketChart = () => {
     const {
         results,
         isLoading: isHistoricalLoading,
+        isFetching: isHistoricalFetching,
+        isPlaceholderData,
         error: historicalError,
     } = useCryptoHistoricalData({
         market: "kraken",
         instrument: normalizedInstrument,
         range: selectedRange
     });
+    const isChartStale = Boolean(isPlaceholderData || isHistoricalFetching);
 
     const handleRangeChange = (range: string) => {
         setSelectedRange(range);
@@ -187,48 +190,57 @@ const CryptoMarketChart = () => {
 
             <div className={styles.chartArea}>
                 {results?.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart
-                            width={500}
-                            height={300}
-                            data={results}
-                            margin={{
-                                top: 10,
-                                right: 10,
-                                left: 10,
-                                bottom: 0,
-                            }}
-                        >
-                            <defs>
-                                <linearGradient id="cryptoGrad" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="var(--accent, #3b82f6)" stopOpacity={0.25} />
-                                    <stop offset="95%" stopColor="var(--accent, #3b82f6)" stopOpacity={0.0} />
-                                </linearGradient>
-                            </defs>
-                            <XAxis
-                                dataKey="date"
-                                tick={{ fill: "var(--textSoft)", fontSize: 11 }}
-                                stroke="var(--border)"
-                            />
-                            <YAxis
-                                domain={[
-                                    (dataMin) => (dataMin * 0.995),
-                                    (dataMax) => dataMax * 1.005,
-                                ]}
-                                tickFormatter={(value: number) => formatCryptoPrice(value)}
-                                tick={{ fill: "var(--textSoft)", fontSize: 11 }}
-                                stroke="var(--border)"
-                            />
-                            <Tooltip content={<CryptoTooltip />} />
-                            <Area
-                                type="monotone"
-                                dataKey="close"
-                                stroke="var(--accent, #3b82f6)"
-                                strokeWidth={2}
-                                fill="url(#cryptoGrad)"
-                            />
-                        </AreaChart>
-                    </ResponsiveContainer>
+                    <>
+                        <div style={{ width: '100%', height: '100%', opacity: isChartStale ? 0.45 : 1, transition: 'opacity 0.2s ease' }}>
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart
+                                    width={500}
+                                    height={300}
+                                    data={results}
+                                    margin={{
+                                        top: 10,
+                                        right: 10,
+                                        left: 10,
+                                        bottom: 0,
+                                    }}
+                                >
+                                    <defs>
+                                        <linearGradient id="cryptoGrad" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="var(--accent, #3b82f6)" stopOpacity={0.25} />
+                                            <stop offset="95%" stopColor="var(--accent, #3b82f6)" stopOpacity={0.0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <XAxis
+                                        dataKey="date"
+                                        tick={{ fill: "var(--textSoft)", fontSize: 11 }}
+                                        stroke="var(--border)"
+                                    />
+                                    <YAxis
+                                        domain={[
+                                            (dataMin) => (dataMin * 0.995),
+                                            (dataMax) => dataMax * 1.005,
+                                        ]}
+                                        tickFormatter={(value: number) => formatCryptoPrice(value)}
+                                        tick={{ fill: "var(--textSoft)", fontSize: 11 }}
+                                        stroke="var(--border)"
+                                    />
+                                    <Tooltip content={<CryptoTooltip />} />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="close"
+                                        stroke="var(--accent, #3b82f6)"
+                                        strokeWidth={2}
+                                        fill="url(#cryptoGrad)"
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                        {isChartStale && (
+                            <div className={styles.chartLoading}>
+                                <MoonLoader color="var(--primary)" size={48} />
+                            </div>
+                        )}
+                    </>
                 ) : isHistoricalLoading ? (
                     <div className={styles.chartLoading}>
                         <MoonLoader color="var(--primary)" size={48} />
@@ -250,6 +262,7 @@ const CryptoMarketChart = () => {
                 {['1d', '5d', '1mo', '3mo', '6mo', '1y', '5y'].map((range) => (
                     <button
                         key={range}
+                        type="button"
                         className={`${styles.dateButton} ${selectedRange === range ? styles.selected : ''}`}
                         onClick={() => handleRangeChange(range)}
                     >

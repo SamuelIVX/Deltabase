@@ -26,7 +26,7 @@ const fetchYahooStockHistoricalData = async (symbol: string, range: string) => {
  */
 function useYahooStockHistoricalData(symbol: string, range: string) {
     const enabled = Boolean(symbol);
-    const { data, isLoading, isFetching, error } = useQuery({
+    const { data, isLoading, isFetching, isPlaceholderData, error } = useQuery({
         queryKey: ['yahooStockHistoricalData', symbol, range],
         queryFn: () => fetchYahooStockHistoricalData(symbol, range),
         enabled,
@@ -38,6 +38,7 @@ function useYahooStockHistoricalData(symbol: string, range: string) {
         historicalData: (enabled && data ? data : EMPTY_DATA) as typeof data,
         isLoading: enabled ? (isLoading && !data) : false,
         isFetching: enabled ? isFetching : false,
+        isPlaceholderData: enabled ? isPlaceholderData : false,
         error: enabled && error ? (error as Error).message : null,
     };
 }

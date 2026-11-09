@@ -57,7 +57,7 @@ export default function useCryptoHistoricalData({
     signal,
 }: Params & { signal?: AbortSignal }) {
     const enabled = Boolean(market && instrument);
-    const { data, isLoading, isFetching, error } = useQuery({
+    const { data, isLoading, isFetching, isPlaceholderData, error } = useQuery({
         queryKey: ['cryptoHistoricalData', market, instrument, range],
         queryFn: ({ signal: contextSignal }) => {
             const combinedSignal = signal && typeof AbortSignal.any === 'function'
@@ -74,6 +74,7 @@ export default function useCryptoHistoricalData({
         results: enabled && data ? data : EMPTY_RESULTS,
         isLoading: enabled ? (isLoading && !data) : false,
         isFetching: enabled ? isFetching : false,
+        isPlaceholderData: enabled ? isPlaceholderData : false,
         error: enabled && error ? (error as Error).message : null,
     };
 }
