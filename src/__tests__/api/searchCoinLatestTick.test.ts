@@ -77,4 +77,19 @@ describe("searchCoinLatestTick", () => {
             "Authorization": "Bearer coindesk-secret-key",
         });
     });
+
+    it("rejects inherited prototype properties such as constructor", async () => {
+        process.env.COINDESK_API_KEY = "coindesk-secret-key";
+        vi.mocked(fetch).mockResolvedValue({
+            ok: true,
+            json: async () => ({ Data: {} }),
+        } as Response);
+
+        const req = { query: { instrument: "constructor", market: "kraken" } } as unknown as NextApiRequest;
+        const res = mockRes();
+        await handler(req, res as unknown as NextApiResponse);
+
+        expect(res.statusCode).toBe(400);
+        expect(res.body).toEqual({ error: "No tick data found" });
+    });
 });

@@ -55,6 +55,9 @@ const AssetSelector = () => {
     const [focusedIndex1, setFocusedIndex1] = useState(0);
     const [focusedIndex2, setFocusedIndex2] = useState(0);
 
+    const safeFocusedIndex1 = focusedIndex1 < results1.length ? focusedIndex1 : 0;
+    const safeFocusedIndex2 = focusedIndex2 < results2.length ? focusedIndex2 : 0;
+
     const handleSelectAsset1 = (stock) => {
         setSelectedAsset1(stock);
         setSearchTerm1(stock.symbol);
@@ -116,7 +119,8 @@ const AssetSelector = () => {
                         value={searchTerm1}
                         onChange={(e) => {
                             const value = e.target.value;
-                            setSearchTerm1(value)
+                            setSearchTerm1(value);
+                            setFocusedIndex1(0);
                             // Clear selection as soon as the input diverges from the selected symbol
                             if (selectedAsset1 && value !== selectedAsset1.symbol) {
                                 setSelectedAsset1(null);
@@ -136,8 +140,8 @@ const AssetSelector = () => {
                                 key={`${stock.symbol || stock.name}-${index}`}
                                 className={styles.output}
                                 role="option"
-                                aria-selected={focusedIndex1 === index}
-                                tabIndex={focusedIndex1 === index ? 0 : -1}
+                                aria-selected={selectedAsset1?.symbol === stock.symbol}
+                                tabIndex={safeFocusedIndex1 === index ? 0 : -1}
                                 onClick={() => handleSelectAsset1(stock)}
                                 onKeyDown={(e) => handleKeyDown1(e, index, stock)}
                             >
@@ -166,7 +170,8 @@ const AssetSelector = () => {
                         value={searchTerm2}
                         onChange={(e) => {
                             const value = e.target.value;
-                            setSearchTerm2(value)
+                            setSearchTerm2(value);
+                            setFocusedIndex2(0);
                             // Clear selection as soon as the input diverges from the selected symbol
                             if (selectedAsset2 && value !== selectedAsset2.symbol) {
                                 setSelectedAsset2(null);
@@ -186,8 +191,8 @@ const AssetSelector = () => {
                                 key={`${stock.symbol || stock.name}-${index}`}
                                 className={styles.output}
                                 role="option"
-                                aria-selected={focusedIndex2 === index}
-                                tabIndex={focusedIndex2 === index ? 0 : -1}
+                                aria-selected={selectedAsset2?.symbol === stock.symbol}
+                                tabIndex={safeFocusedIndex2 === index ? 0 : -1}
                                 onClick={() => handleSelectAsset2(stock)}
                                 onKeyDown={(e) => handleKeyDown2(e, index, stock)}
                             >

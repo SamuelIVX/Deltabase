@@ -58,8 +58,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const data = await response.json();
 
-        // Extract the tick for the requested instrument
-        const tick = data.Data[instrument as string];
+        // Extract the tick for the requested instrument safely checking own property
+        const instrumentKey = instrument as string;
+        const tick =
+            data &&
+            data.Data &&
+            typeof data.Data === 'object' &&
+            Object.prototype.hasOwnProperty.call(data.Data, instrumentKey)
+                ? data.Data[instrumentKey]
+                : undefined;
 
         if (!tick) {
             return res.status(400).json({ error: "No tick data found" });

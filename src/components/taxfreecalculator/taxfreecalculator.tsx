@@ -81,9 +81,9 @@ const Results: React.FC<ResultProps> = ({ grossProfit, feeCost, taxAmount, netPr
 export default function TaxAdjustedReturns() {
     const [marketType, setMarketType] = useState<'crypto' | 'stock' | ''>('');
     const [symbol, setSymbol] = useState('');
-    const [quantity, setQuantity] = useState(1);
-    const [taxRate, setTaxRate] = useState(15);
-    const [feeRate, setFeeRate] = useState(0.5);
+    const [quantity, setQuantity] = useState('1');
+    const [taxRate, setTaxRate] = useState('15');
+    const [feeRate, setFeeRate] = useState('0.5');
 
     // fetch data from correct API only when the matching market is active
     const debouncedSymbol = useDebounce(symbol, 500);
@@ -99,22 +99,30 @@ export default function TaxAdjustedReturns() {
         instrument: marketType === 'crypto' ? debouncedSymbol : ''
     });
 
+    const numQuantity = parseFloat(quantity);
+    const numTaxRate = parseFloat(taxRate);
+    const numFeeRate = parseFloat(feeRate);
+
+    const validQuantity = Number.isFinite(numQuantity) && numQuantity > 0 ? numQuantity : 0;
+    const validTaxRate = Number.isFinite(numTaxRate) && numTaxRate >= 0 ? numTaxRate : 0;
+    const validFeeRate = Number.isFinite(numFeeRate) && numFeeRate >= 0 ? numFeeRate : 0;
+
     /**
      * Computes tax/fee-adjusted returns from a Yahoo quote open vs last price.
      * @param quote - Yahoo quote with `regularMarketOpen` and `regularMarketPrice`.
      * @returns Breakdown totals, or null if quote prices are missing.
      */
     const calculateStockReturns = (quote: YahooQuote) => {
-        if (!quote?.regularMarketPrice || !quote?.regularMarketOpen || quantity <= 0) {
+        if (!quote?.regularMarketPrice || !quote?.regularMarketOpen || validQuantity <= 0) {
             return null;
         }
 
-        const grossProfit = (quote?.regularMarketPrice - quote?.regularMarketOpen) * quantity;
-        const feeCost = ((quote?.regularMarketOpen + quote?.regularMarketPrice) * quantity * feeRate) / 100;
+        const grossProfit = (quote.regularMarketPrice - quote.regularMarketOpen) * validQuantity;
+        const feeCost = ((quote.regularMarketOpen + quote.regularMarketPrice) * validQuantity * validFeeRate) / 100;
         const taxableProfit = grossProfit - feeCost;
-        const taxAmount = taxableProfit > 0 ? (taxableProfit * taxRate) / 100 : 0;
+        const taxAmount = taxableProfit > 0 ? (taxableProfit * validTaxRate) / 100 : 0;
         const netProfit = taxableProfit - taxAmount;
-        const netReturn = quote?.regularMarketOpen > 0 ? (netProfit / (quote?.regularMarketOpen * quantity)) * 100 : 0;
+        const netReturn = quote.regularMarketOpen > 0 ? (netProfit / (quote.regularMarketOpen * validQuantity)) * 100 : 0;
 
         return {
             grossProfit,
@@ -132,16 +140,16 @@ export default function TaxAdjustedReturns() {
      * @returns Breakdown totals, or null if tick prices are missing.
      */
     const calculateCryptoReturns = (result: CryptoTickResult) => {
-        if (!result?.PRICE || !result?.CURRENT_DAY_OPEN || quantity <= 0) {
+        if (!result?.PRICE || !result?.CURRENT_DAY_OPEN || validQuantity <= 0) {
             return null;
         }
 
-        const grossProfit = (result?.PRICE - result?.CURRENT_DAY_OPEN) * quantity;
-        const feeCost = ((result?.CURRENT_DAY_OPEN + result?.PRICE) * quantity * feeRate) / 100;
+        const grossProfit = (result.PRICE - result.CURRENT_DAY_OPEN) * validQuantity;
+        const feeCost = ((result.CURRENT_DAY_OPEN + result.PRICE) * validQuantity * validFeeRate) / 100;
         const taxableProfit = grossProfit - feeCost;
-        const taxAmount = taxableProfit > 0 ? (taxableProfit * taxRate) / 100 : 0;
+        const taxAmount = taxableProfit > 0 ? (taxableProfit * validTaxRate) / 100 : 0;
         const netProfit = taxableProfit - taxAmount;
-        const netReturn = result?.CURRENT_DAY_OPEN > 0 ? (netProfit / (result?.CURRENT_DAY_OPEN * quantity)) * 100 : 0;
+        const netReturn = result.CURRENT_DAY_OPEN > 0 ? (netProfit / (result.CURRENT_DAY_OPEN * validQuantity)) * 100 : 0;
         return {
             grossProfit,
             feeCost,
@@ -202,10 +210,7 @@ export default function TaxAdjustedReturns() {
                                     step="any"
                                     className={styles.input}
                                     value={quantity}
-                                    onChange={(e) => {
-                                        const parsed = parseFloat(e.target.value);
-                                        setQuantity(Number.isFinite(parsed) ? Math.max(0, parsed) : 0);
-                                    }}
+                                    onChange={(e) => setQuantity(e.target.value)}
                                 />
                             </div>
 
@@ -217,10 +222,7 @@ export default function TaxAdjustedReturns() {
                                     step="any"
                                     className={styles.input}
                                     value={taxRate}
-                                    onChange={(e) => {
-                                        const parsed = parseFloat(e.target.value);
-                                        setTaxRate(Number.isFinite(parsed) ? Math.max(0, parsed) : 0);
-                                    }}
+                                    onChange={(e) => setTaxRate(e.target.value)}
                                 />
                             </div>
 
@@ -232,10 +234,7 @@ export default function TaxAdjustedReturns() {
                                     step="any"
                                     className={styles.input}
                                     value={feeRate}
-                                    onChange={(e) => {
-                                        const parsed = parseFloat(e.target.value);
-                                        setFeeRate(Number.isFinite(parsed) ? Math.max(0, parsed) : 0);
-                                    }}
+                                    onChange={(e) => setFeeRate(e.target.value)}
                                 />
                             </div>
                         </div>
