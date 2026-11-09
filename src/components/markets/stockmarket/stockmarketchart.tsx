@@ -157,7 +157,7 @@ const StockMarketChart = () => {
                                 <AreaChart
                                     width={500}
                                     height={300}
-                                    data={historicalData || []}
+                                    data={historicalData}
                                     margin={{
                                         top: 10,
                                         right: 10,
