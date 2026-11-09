@@ -1,0 +1,23 @@
+/**
+ * Styles for the icon-only ThemeToggle button.
+ */
+.toggleButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: var(--bg-surface-elevated);
+  color: var(--text);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 0;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.toggleButton:hover {
+  background-color: var(--border-light);
+  color: var(--text);
+  border-color: var(--textSoft);
+}

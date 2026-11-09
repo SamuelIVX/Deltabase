@@ -3,7 +3,6 @@
  */
 import MenuLink from "./menuLink/menuLink";
 import Image from "next/image";
-import Link from "next/link";
 import styles from "./sidebar.module.css";
 
 import {
@@ -11,79 +10,83 @@ import {
   MdOutlineHelpOutline,
   MdTrendingUp,
   MdCalculate,
-  MdLogout,
   MdCurrencyBitcoin,
 } from "react-icons/md";
 
 const menuItems = [
   {
-    title: "User Panels",
+    title: "Analytics & Tools",
     list: [
       {
         title: "Dashboard",
         path: "/dashboard",
-        icon: <MdDashboard />,
+        icon: <MdDashboard size={18} />,
       },
       {
-        title: "What-If",
+        title: "What-If Simulator",
         path: "/dashboard/whatif",
-        icon: <MdOutlineHelpOutline />,
+        icon: <MdOutlineHelpOutline size={18} />,
       },
       {
         title: "Stock Market",
         path: "/dashboard/stockmarket",
-        icon: <MdTrendingUp />,
+        icon: <MdTrendingUp size={18} />,
       },
       {
         title: "Crypto Market",
         path: "/dashboard/cryptomarket",
-        icon: <MdCurrencyBitcoin />,
+        icon: <MdCurrencyBitcoin size={18} />,
       },
       {
         title: "Tax & Fee Calculator",
         path: "/dashboard/taxfeecalculator",
-        icon: <MdCalculate />,
+        icon: <MdCalculate size={18} />,
       },
     ],
   }
 ];
 
 /**
- * Sidebar listing dashboard navigation sections.
+ * Sidebar listing dashboard navigation sections and branding.
  * @returns {JSX.Element}
  */
 const Sidebar = () => {
   return (
-    <div className={styles.container}>
-      <div className={styles.user}>
-        <Image
-          className={styles.userImage}
-          src="/DeltaBase.jpg"
-          alt="DeltaBase logo"
-          width="50"
-          height="50"
-        />
-        <div className={styles.userDetail}>
-          <span className={styles.userName}>DeltaBase</span>
-          <span className={styles.userTitle}>See the data, not the noise.</span>
+    <aside className={styles.container} aria-label="Sidebar navigation">
+      <div>
+        <div className={styles.user}>
+          <Image
+            className={styles.userImage}
+            src="/DeltaBase.jpg"
+            alt="DeltaBase logo"
+            width={44}
+            height={44}
+            priority
+          />
+          <div className={styles.userDetail}>
+            <span className={styles.userName}>DeltaBase</span>
+            <span className={styles.userTitle}>See the data, not the noise.</span>
+          </div>
         </div>
-      </div>
-      <ul className={styles.list}>
-        {menuItems.map((cat) => (
-          <li key={cat.title}>
-            <span className={styles.cat}>{cat.title}</span>
-            {cat.list.map((item) => (
-              <MenuLink item={item} key={item.title} />
+        <nav aria-label="Primary navigation">
+          <ul className={styles.list}>
+            {menuItems.map((cat) => (
+              <li key={cat.title}>
+                <span className={styles.cat}>{cat.title}</span>
+                {cat.list.map((item) => (
+                  <MenuLink item={item} key={item.title} />
+                ))}
+              </li>
             ))}
-          </li>
-        ))}
-      </ul>
-      <Link href="/" className={styles.logout} aria-label="Logout">
-        <MdLogout />
-        Logout
-      </Link>
-    </div>
+          </ul>
+        </nav>
+      </div>
+      <div className={styles.footerBadge}>
+        <span className={styles.statusDot} aria-hidden="true" />
+        <span className={styles.footerText}>DeltaBase Analytics • v1.0</span>
+      </div>
+    </aside>
   );
 };
-export default Sidebar;
 
+export default Sidebar;

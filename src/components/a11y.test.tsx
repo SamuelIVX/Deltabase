@@ -9,6 +9,10 @@ import TaxAdjustedReturns from "@/components/taxfreecalculator/taxfreecalculator
 import InvestmentForm from "@/components/whatif/investmentform/investmentform";
 import AssetSelector from "@/components/whatif/assetselector/assetselector";
 import ComparisonSummary from "@/components/whatif/comparisonsummary/comparisonsummary";
+import ThemeToggle from "@/components/theme/ThemeToggle";
+import MarketRibbon from "@/components/dashboard/marketribbon/MarketRibbon";
+import Navbar from "@/components/dashboard/navbar/navbar";
+import Sidebar from "@/components/dashboard/sidebar/sidebar";
 import { AssetContext } from "@/components/whatif/assetselector/assetselector";
 
 vi.mock("@/hooks/useDebounce", () => ({
@@ -25,6 +29,23 @@ vi.mock("@/hooks/useCryptoLatestTick", () => ({
 
 vi.mock("@/hooks/useYahooStockSymbols", () => ({
     default: vi.fn(() => ({ results: [], isLoading: false, error: null })),
+}));
+
+vi.mock("@/hooks/useMarketIndices", () => ({
+    useMarketIndices: () => ({
+        indices: [
+            {
+                symbol: "^GSPC",
+                name: "S&P 500",
+                price: 5864.67,
+                change: 14.2,
+                changePercent: 0.24,
+                currency: "USD",
+            },
+        ],
+        isLoading: false,
+        error: null,
+    }),
 }));
 
 const contextValue = {
@@ -115,6 +136,26 @@ describe("a11y", () => {
                 <ComparisonSummary />
             </AssetContext.Provider>
         );
+        expect(await seriousViolations(container)).toEqual([]);
+    });
+
+    it("theme toggle button has no critical or serious violations", async () => {
+        const { container } = render(<ThemeToggle />);
+        expect(await seriousViolations(container)).toEqual([]);
+    });
+
+    it("navbar header has no critical or serious violations", async () => {
+        const { container } = render(<Navbar />);
+        expect(await seriousViolations(container)).toEqual([]);
+    });
+
+    it("sidebar navigation has no critical or serious violations", async () => {
+        const { container } = render(<Sidebar />);
+        expect(await seriousViolations(container)).toEqual([]);
+    });
+
+    it("market ribbon has no critical or serious violations", async () => {
+        const { container } = render(<MarketRibbon />);
         expect(await seriousViolations(container)).toEqual([]);
     });
 });

@@ -1,11 +1,51 @@
 /**
- * Global base styles and CSS variable tokens for the DeltaBase UI.
+ * Global base styles, CSS design tokens, and theme definitions for DeltaBase.
+ * Implements dual-theme (Dark / Light) system with tabular financial numerals.
  */
-:root {
-  --bg: #151c2c;
-  --bgSoft: #182237;
-  --text: white;
-  --textSoft: #b7bac1;
+
+:root,
+[data-theme="dark"] {
+  --bg: #090d16;
+  --bgSoft: #0f172a;
+  --bg-surface-elevated: #1e293b;
+  --border: #1e293b;
+  --border-light: #334155;
+  --text: #f8fafc;
+  --textSoft: #94a3b8;
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --gain: #10b981;
+  --gain-bg: rgba(16, 185, 129, 0.12);
+  --loss: #f43f5e;
+  --loss-bg: rgba(244, 63, 94, 0.12);
+  --asset-1: #10b981;
+  --asset-2: #818cf8;
+  --benchmark: #94a3b8;
+  --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+  --navbar-blur: rgba(15, 23, 42, 0.85);
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --bg: #f8fafc;
+  --bgSoft: #ffffff;
+  --bg-surface-elevated: #f1f5f9;
+  --border: #e2e8f0;
+  --border-light: #cbd5e1;
+  --text: #0f172a;
+  --textSoft: #64748b;
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --gain: #059669;
+  --gain-bg: rgba(5, 150, 105, 0.1);
+  --loss: #e11d48;
+  --loss-bg: rgba(225, 29, 72, 0.1);
+  --asset-1: #059669;
+  --asset-2: #6366f1;
+  --benchmark: #64748b;
+  --card-shadow: 0 2px 12px -2px rgba(15, 23, 42, 0.08);
+  --navbar-blur: rgba(255, 255, 255, 0.85);
+  color-scheme: light;
 }
 
 * {
@@ -14,12 +54,64 @@
   box-sizing: border-box;
 }
 
+html {
+  max-width: 100%;
+  overflow-x: clip;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
 body {
   background-color: var(--bg);
   color: var(--text);
+  min-height: 100vh;
+  max-width: 100%;
+  overflow-x: clip;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input, select, textarea {
+  font-family: inherit;
+}
+
+/* Tabular figures for financial and metric data displays */
+.tabular-nums,
+[data-numeric] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Accessible focus ring */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Clean customized scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--textSoft);
 }

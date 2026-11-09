@@ -1,32 +1,11 @@
-"use client"
 /**
- * Landing / login entry page for DeltaBase (links into the dashboard).
+ * Root index route — redirects immediately to the main dashboard.
  */
-import styles from "@/components/page/page.module.css";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 
 /**
- * Landing/login entry — demo form with no real auth; submit routes to `/dashboard`.
- * @returns The landing/login view.
+ * Root landing handler — redirects incoming traffic to `/dashboard`.
  */
-const LoginPage = () => {
-
-  const router = useRouter();
-  const handleSumbit = async(event: React.FormEvent<HTMLFormElement>) =>{
-    event.preventDefault();
-    router.push("/dashboard");
-  }
-
-  return (
-    <div className={styles.container}>
-      <form className={styles.form} onSubmit={ handleSumbit }>
-        <h1>Login</h1>
-        <input type="text" placeholder="username" name="username" />
-        <input type="password" placeholder="password" name="password" />
-        <button type="submit">Login</button>
-      </form>
-    </div>
-  );
-};
-
-export default LoginPage;
+export default function HomePage(): never {
+  redirect("/dashboard");
+}
