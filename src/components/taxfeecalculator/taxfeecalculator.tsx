@@ -10,6 +10,7 @@ import useDebounce from '@/hooks/useDebounce';
 import styles from './taxfeecalculator.module.css';
 import { calculateTaxReturns } from '@/utils/calculateTaxReturns';
 import TaxBreakdownChart from './TaxBreakdownChart';
+import { Separator } from '@/components/ui/Separator';
 import {
     SHORT_TERM_TAX_BRACKETS,
     LONG_TERM_TAX_BRACKETS,
@@ -175,7 +176,12 @@ export default function TaxAdjustedReturns() {
         <div className={styles.wrapper}>
             <div className={styles.container}>
                 <div className={styles.headerRow}>
-                    <h2 className={styles.title}>Tax-Adjusted Returns</h2>
+                    <div className={styles.headerTitleGroup}>
+                        <h2 className={styles.title}>Tax-Adjusted Returns</h2>
+                        <p className={styles.subtitle}>
+                            Calculate your true net investment yield after accounting for short-term vs long-term capital gains tax brackets and trading commission fees.
+                        </p>
+                    </div>
 
                     {/* Market type selector */}
                     <div className={styles.buttonContainer} role="group" aria-label="Market selection">
@@ -434,6 +440,8 @@ export default function TaxAdjustedReturns() {
                     </div>
                 )}
                     </div>
+
+                    <Separator orientation="vertical" className={styles.columnDivider} />
 
                     {/* Results column */}
                     <div className={styles.resultsColumn}>

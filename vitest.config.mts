@@ -15,6 +15,9 @@ export default defineConfig({
         env: {
             TZ: "UTC",
         },
+        coverage: {
+            reporter: ["text", "json-summary"],
+        },
     },
     resolve: {
         alias: {

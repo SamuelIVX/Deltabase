@@ -31,6 +31,7 @@ describe("Sidebar component", () => {
     expect(screen.getByRole("link", { name: /Stock Market/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Crypto Market/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Tax & Fee Calculator/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Switch to (light|dark) theme/i })).toBeInTheDocument();
   });
 
   it("toggles to expanded mode when expand button is clicked and back to collapsed", () => {
@@ -45,6 +46,8 @@ describe("Sidebar component", () => {
 
     expect(screen.getByText("DeltaBase")).toBeInTheDocument();
     expect(screen.getByText("See the data, not the noise.")).toBeInTheDocument();
+    expect(screen.getByText("Appearance")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Switch to (light|dark) theme/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Collapse sidebar" })).toBeInTheDocument();
 
     const collapseBtn = screen.getByRole("button", { name: "Collapse sidebar" });

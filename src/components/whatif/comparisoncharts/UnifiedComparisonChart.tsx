@@ -306,7 +306,7 @@ const UnifiedComparisonChart = () => {
                 <ResponsiveContainer width="100%" height={420}>
                     <AreaChart
                         data={chartData}
-                        margin={{ top: 20, right: 10, left: 10, bottom: 0 }}
+                        margin={{ top: 20, right: 15, left: 10, bottom: 24 }}
                     >
                         <defs>
                             <linearGradient id="asset1Grad" x1="0" y1="0" x2="0" y2="1">
@@ -327,6 +327,7 @@ const UnifiedComparisonChart = () => {
                             tick={{ fill: 'var(--textSoft)', fontSize: 11 }}
                             axisLine={{ stroke: 'var(--border)' }}
                             tickLine={false}
+                            dy={6}
                         />
 
                         <YAxis

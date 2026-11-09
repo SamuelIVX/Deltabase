@@ -31,9 +31,3 @@
   color: var(--textSoft);
   font-size: 12px;
 }
-
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}

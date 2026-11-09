@@ -43,6 +43,12 @@ describe("MarketBenchmarkChart component", () => {
     fireEvent.click(btn5D);
 
     expect(useYahooBasicHistoricalData).toHaveBeenCalledWith("^GSPC", "5d");
+
+    const btn3M = screen.getByRole("button", { name: "3M" });
+    expect(btn3M).toHaveAttribute("aria-pressed", "false");
+    fireEvent.click(btn3M);
+
+    expect(useYahooBasicHistoricalData).toHaveBeenCalledWith("^GSPC", "3m");
   });
 
   it("allows switching benchmark index", () => {
@@ -104,6 +110,11 @@ describe("MarketBenchmarkChart component", () => {
     it("formats 5d ticks with weekday and day of month", () => {
       const formatted = formatBenchmarkTick("2024-05-15T00:00:00Z", "5d");
       expect(formatted).toMatch(/Wed/);
+    });
+
+    it("formats 1m and 3m ranges with month and day", () => {
+      expect(formatBenchmarkTick("2024-05-15T00:00:00Z", "1m")).toBe("May 15");
+      expect(formatBenchmarkTick("2024-05-15T00:00:00Z", "3m")).toBe("May 15");
     });
 
     it("formats multi-month/year ranges with month and year", () => {

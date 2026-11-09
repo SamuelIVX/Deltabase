@@ -66,8 +66,15 @@ describe("GET /api/marketIndices", () => {
       { symbol: "^GSPC", regularMarketPrice: 5800.5, regularMarketChange: 12.3, regularMarketChangePercent: 0.21, currency: "USD" },
       { symbol: "^IXIC", regularMarketPrice: 18500.2, regularMarketChange: -45.1, regularMarketChangePercent: -0.24, currency: "USD" },
       { symbol: "^DJI", regularMarketPrice: 42000.0, regularMarketChange: 80.0, regularMarketChangePercent: 0.19, currency: "USD" },
+      { symbol: "^RUT", regularMarketPrice: 2200.0, regularMarketChange: 10.0, regularMarketChangePercent: 0.45, currency: "USD" },
       { symbol: "BTC-USD", regularMarketPrice: 76000.0, regularMarketChange: 1500.0, regularMarketChangePercent: 2.01, currency: "USD" },
       { symbol: "ETH-USD", regularMarketPrice: 2800.0, regularMarketChange: -30.0, regularMarketChangePercent: -1.06, currency: "USD" },
+      { symbol: "SOL-USD", regularMarketPrice: 180.0, regularMarketChange: 5.0, regularMarketChangePercent: 2.85, currency: "USD" },
+      { symbol: "VXUS", regularMarketPrice: 65.0, regularMarketChange: 0.3, regularMarketChangePercent: 0.46, currency: "USD" },
+      { symbol: "AAPL", regularMarketPrice: 225.0, regularMarketChange: 1.5, regularMarketChangePercent: 0.67, currency: "USD" },
+      { symbol: "MSFT", regularMarketPrice: 420.0, regularMarketChange: 3.0, regularMarketChangePercent: 0.72, currency: "USD" },
+      { symbol: "NVDA", regularMarketPrice: 130.0, regularMarketChange: -2.0, regularMarketChangePercent: -1.52, currency: "USD" },
+      { symbol: "AMZN", regularMarketPrice: 185.0, regularMarketChange: 2.1, regularMarketChangePercent: 1.15, currency: "USD" },
     ];
     vi.mocked(yahooFinance.quote).mockResolvedValueOnce(mockQuotes as never);
 
@@ -76,7 +83,7 @@ describe("GET /api/marketIndices", () => {
 
     expect(res.getStatus()).toBe(200);
     const body = res.getBody() as Array<{ symbol: string; name: string; price: number; changePercent: number }>;
-    expect(body).toHaveLength(5);
+    expect(body).toHaveLength(12);
     expect(body[0]).toEqual({
       symbol: "^GSPC",
       name: "S&P 500",
@@ -85,7 +92,8 @@ describe("GET /api/marketIndices", () => {
       changePercent: 0.21,
       currency: "USD",
     });
-    expect(body[3].name).toBe("Bitcoin");
+    expect(body[4].name).toBe("Bitcoin");
+    expect(body[7].symbol).toBe("VXUS");
     expect(res.getHeaders()["Cache-Control"]).toBe("public, s-maxage=30, stale-while-revalidate=60");
   });
 

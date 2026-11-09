@@ -26,12 +26,26 @@
     gap: 12px;
 }
 
+.headerTitleGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
 .title {
     color: var(--text);
     font-size: 22px;
     font-weight: 700;
     margin: 0;
     letter-spacing: -0.01em;
+}
+
+.subtitle {
+    font-size: 13px;
+    color: var(--textSoft);
+    margin: 0;
+    max-width: 640px;
+    line-height: 1.4;
 }
 
 .buttonContainer {
@@ -223,16 +237,25 @@
 
 .calculatorGrid {
     display: grid;
-    grid-template-columns: minmax(360px, 1.15fr) minmax(340px, 1fr);
+    grid-template-columns: minmax(360px, 1.15fr) auto minmax(340px, 1fr);
     gap: 24px;
-    align-items: start;
+    align-items: stretch;
     margin-top: 20px;
+}
+
+.columnDivider {
+    align-self: stretch;
+    min-height: 100%;
 }
 
 @media (max-width: 960px) {
     .calculatorGrid {
         grid-template-columns: 1fr;
         gap: 20px;
+    }
+
+    .columnDivider {
+        display: none;
     }
 }
 

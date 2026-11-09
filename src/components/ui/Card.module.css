@@ -1,0 +1,51 @@
+/**
+ * Styles for reusable Card primitive matching institutional surface design tokens.
+ */
+.card {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md, 12px);
+  color: var(--text);
+  box-shadow: var(--card-shadow, 0 1px 3px rgba(0, 0, 0, 0.05));
+  transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1),
+              box-shadow 0.15s cubic-bezier(0.2, 0, 0, 1),
+              border-color 0.15s ease;
+}
+
+.interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: var(--border-light, #334155);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 20px 12px 20px;
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.description {
+  margin: 0;
+  font-size: 13px;
+  color: var(--textSoft);
+}
+
+.content {
+  padding: 0 20px 18px 20px;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px 18px 20px;
+  border-top: 1px solid var(--border);
+}

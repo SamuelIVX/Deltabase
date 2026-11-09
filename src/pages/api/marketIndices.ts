@@ -1,5 +1,6 @@
 /**
- * Next.js Pages API: Top market indices snapshot (S&P 500, NASDAQ, Dow, BTC, ETH).
+ * Next.js Pages API: Top market indices snapshot across 12 major benchmarks
+ * (S&P 500, NASDAQ, Dow, Russell 2000, Bitcoin, Ethereum, Solana, Total Intl Stock, and mega-caps).
  * Returns live/cached quote summaries for the global market ribbon.
  */
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -18,8 +19,15 @@ const INDEX_CONFIG: Array<{ symbol: string; name: string }> = [
   { symbol: "^GSPC", name: "S&P 500" },
   { symbol: "^IXIC", name: "NASDAQ" },
   { symbol: "^DJI", name: "Dow Jones" },
+  { symbol: "^RUT", name: "Russell 2000" },
   { symbol: "BTC-USD", name: "Bitcoin" },
   { symbol: "ETH-USD", name: "Ethereum" },
+  { symbol: "SOL-USD", name: "Solana" },
+  { symbol: "VXUS", name: "Total Intl Stock" },
+  { symbol: "AAPL", name: "Apple" },
+  { symbol: "MSFT", name: "Microsoft" },
+  { symbol: "NVDA", name: "NVIDIA" },
+  { symbol: "AMZN", name: "Amazon" },
 ];
 
 /**

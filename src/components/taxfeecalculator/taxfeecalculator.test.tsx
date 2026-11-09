@@ -24,6 +24,7 @@ describe("TaxAdjustedReturns", () => {
     it("renders the title and market-type toggles", () => {
         render(<TaxAdjustedReturns />);
         expect(screen.getByRole("heading", { name: "Tax-Adjusted Returns" })).toBeInTheDocument();
+        expect(screen.getByText(/Calculate your true net investment yield/i)).toBeInTheDocument();
         expect(screen.getByRole("button", { name: "Stock" })).toBeInTheDocument();
         expect(screen.getByRole("button", { name: "Crypto" })).toBeInTheDocument();
     });

@@ -1,0 +1,46 @@
+/**
+ * Styles for reusable Badge indicator primitive.
+ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.default {
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.outline {
+  background-color: transparent;
+  border: 1px solid var(--border);
+  color: var(--textSoft);
+}
+
+.gain {
+  background-color: var(--gain-bg, rgba(16, 185, 129, 0.12));
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  color: var(--gain, #10b981);
+}
+
+.loss {
+  background-color: var(--loss-bg, rgba(239, 68, 68, 0.12));
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  color: var(--loss, #ef4444);
+}
+
+.accent {
+  background-color: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(37, 99, 235, 0.28);
+  color: var(--accent, #2563eb);
+}
