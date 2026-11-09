@@ -1,0 +1,320 @@
+/**
+ * Styles for the tax/fee calculator form and results.
+ * Institutional trading theme supporting dark and light modes.
+ */
+.wrapper {
+    margin-top: 24px;
+    padding: 24px;
+    background: var(--bgSoft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.headerRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.title {
+    color: var(--text);
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.buttonContainer {
+    display: inline-flex;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    padding: 3px;
+    border-radius: var(--radius-sm);
+    margin: 0 auto;
+}
+
+.toggleButton {
+    padding: 8px 24px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background-color: transparent;
+    color: var(--textSoft);
+}
+
+.toggleButton:hover {
+    color: var(--text);
+}
+
+.toggleButtonActive {
+    background-color: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 1px 4px rgba(2, 132, 199, 0.35);
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.label {
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--textSoft);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.input {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 14px;
+    font-family: var(--fontMono);
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.input:focus,
+.input:focus-visible {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
+.symbolRow {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.symbolInputGroup {
+    flex: 1;
+    min-width: 220px;
+}
+
+.fetchLiveBtn {
+    padding: 8px 16px;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    height: 38px;
+    white-space: nowrap;
+}
+
+.fetchLiveBtn:hover:not(:disabled) {
+    background-color: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+}
+
+.fetchLiveBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.chipsRow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.chipsLabel {
+    font-size: 11px;
+    color: var(--textMuted, var(--textSoft));
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.chip {
+    padding: 3px 8px;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--textSoft);
+    font-size: 11px;
+    font-family: var(--fontMono);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.chip:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.chipActive {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #ffffff;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.presetBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.presetButtons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.presetBtn {
+    padding: 5px 10px;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--textSoft);
+    font-size: 11px;
+    font-family: var(--fontMono);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.presetBtn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.presetBtnActive {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #ffffff;
+}
+
+.results {
+    background-color: var(--bg-surface-elevated, var(--card));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-top: 8px;
+}
+
+.resultsTitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 16px 0;
+}
+
+.resultRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+}
+
+.resultLabel {
+    color: var(--textSoft);
+    font-size: 14px;
+}
+
+.resultValue {
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: var(--fontMono);
+}
+
+.resultValueLarge {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.positive {
+    color: var(--gain, #10b981);
+}
+
+.negative {
+    color: var(--loss, #ef4444);
+}
+
+.divider {
+    height: 1px;
+    background-color: var(--border);
+    margin: 12px 0;
+}
+
+.resultRowHighlight {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    margin: 4px 0;
+    border-radius: var(--radius-sm);
+}
+
+.returnBadge {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    margin-top: 12px;
+}
+
+.returnLabel {
+    color: var(--textSoft);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.returnValue {
+    font-size: 20px;
+    font-weight: 700;
+    font-family: var(--fontMono);
+}
+
+.hint {
+    font-size: 12px;
+    color: var(--textSoft);
+    margin-top: 8px;
+}
+
+.errorHint {
+    font-size: 12px;
+    color: var(--loss, #ef4444);
+    margin-top: 6px;
+}

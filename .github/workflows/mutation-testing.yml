@@ -40,7 +40,7 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             FILES=$(git diff --name-only --diff-filter=ACMR "origin/${{ github.base_ref }}...HEAD" -- '*.ts' '*.tsx' \
-              | grep -vE '\.(test|spec)\.tsx?$|/__tests__/|\.d\.ts$|(^|/)app/.*(layout|page|loading|error|not-found|template|route)\.tsx$|(^|/)middleware\.ts$|(^|/)src/components/(markets|dashboard|whatif|taxfreecalculator)/' \
+              | grep -vE '\.(test|spec)\.tsx?$|/__tests__/|\.d\.ts$|(^|/)app/.*(layout|page|loading|error|not-found|template|route)\.tsx$|(^|/)middleware\.ts$|(^|/)src/components/(markets|dashboard|whatif|taxfeecalculator)/' \
               || true)
             if [ -z "$FILES" ]; then
               echo "No mutable source files changed in this PR; skipping."

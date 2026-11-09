@@ -1,0 +1,158 @@
+/**
+ * Visual breakdown chart styles for tax- and fee-adjusted returns.
+ * Responsive, dark/light theme compatible, institutional aesthetic.
+ */
+.container {
+    margin-top: 24px;
+    background-color: var(--bg-surface-elevated, var(--bgSoft));
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.totalProceeds {
+    font-size: 13px;
+    color: var(--textSoft);
+    font-family: var(--fontMono);
+}
+
+.totalProceedsValue {
+    font-weight: 700;
+    color: var(--text);
+}
+
+.barTrack {
+    display: flex;
+    height: 18px;
+    width: 100%;
+    border-radius: 9999px;
+    overflow: hidden;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+}
+
+.barSegment {
+    height: 100%;
+    transition: width 0.3s ease;
+    position: relative;
+}
+
+.basisSegment {
+    background-color: #64748b;
+}
+
+.feeSegment {
+    background-color: #f59e0b;
+}
+
+.taxSegment {
+    background-color: #8b5cf6;
+}
+
+.profitSegment {
+    background-color: var(--gain, #10b981);
+}
+
+.lossSegment {
+    background-color: var(--loss, #ef4444);
+}
+
+.legendGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+}
+
+.legendCard {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.legendLabelRow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.cardLabel {
+    font-size: 11px;
+    color: var(--textSoft);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.cardValue {
+    font-size: 15px;
+    font-weight: 700;
+    font-family: var(--fontMono);
+    color: var(--text);
+}
+
+.gainText {
+    color: var(--gain, #10b981);
+}
+
+.lossText {
+    color: var(--loss, #ef4444);
+}
+
+.feeText {
+    color: #f59e0b;
+}
+
+.taxText {
+    color: #8b5cf6;
+}
+
+.efficiencyBanner {
+    margin-top: 16px;
+    padding: 10px 14px;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--textSoft);
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.efficiencyValue {
+    font-family: var(--fontMono);
+    font-weight: 700;
+    color: var(--text);
+}

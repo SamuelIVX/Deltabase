@@ -5,7 +5,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render } from "@testing-library/react";
 import axe from "axe-core";
 import useYahooStockSymbols from "@/hooks/useYahooStockSymbols";
-import TaxAdjustedReturns from "@/components/taxfreecalculator/taxfreecalculator";
+import TaxAdjustedReturns from "@/components/taxfeecalculator/taxfeecalculator";
 import InvestmentForm from "@/components/whatif/investmentform/investmentform";
 import AssetSelector from "@/components/whatif/assetselector/assetselector";
 import ComparisonSummary from "@/components/whatif/comparisonsummary/comparisonsummary";
