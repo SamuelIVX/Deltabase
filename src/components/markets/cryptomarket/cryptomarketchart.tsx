@@ -82,7 +82,8 @@ const CryptoMarketChart = () => {
                     <input
                         className={styles.input}
                         type='text'
-                        placeholder="Enter a stock symbol..."
+                        placeholder="Enter a crypto pair (e.g. BTC-USD)..."
+                        aria-label="Enter a crypto pair"
                         value={selectedCrypto || ''}
                         onChange={(e) => {
                             setSelectedCrypto(e.target.value.toUpperCase())

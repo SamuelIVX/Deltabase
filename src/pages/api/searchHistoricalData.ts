@@ -23,18 +23,24 @@ type YahooChartResult = {
  * // GET /api/searchHistoricalData?symbol=AAPL&years=5 → 200 [{ date, adjclose, ... }]
  */
 async function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.method && req.method !== 'GET') {
+        if (typeof res.setHeader === 'function') res.setHeader('Allow', ['GET']);
+        return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+    }
+
     const { symbol, years } = req.query;
 
-    if (typeof symbol !== 'string') {
+    if (typeof symbol !== 'string' || !symbol.trim()) {
         return res.status(400).json({ error: "Invalid symbol parameter" });
     }
 
-    if (typeof years !== 'string' || isNaN(Number(years))) {
-        return res.status(400).json({ error: "Invalid years parameter" });
+    const parsedYears = Number(years);
+    if (typeof years !== 'string' || !Number.isInteger(parsedYears) || parsedYears < 1 || parsedYears > 30) {
+        return res.status(400).json({ error: "Invalid years parameter: must be an integer between 1 and 30" });
     }
 
     const today = new Date();
-    const startDate = new Date(today.getFullYear() - Number(years), today.getMonth(), today.getDate()).toISOString().split('T')[0];
+    const startDate = new Date(today.getFullYear() - parsedYears, today.getMonth(), today.getDate()).toISOString().split('T')[0];
     const endDate = today.toISOString().split('T')[0];
 
     const queryOptions: {
@@ -48,19 +54,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     };
 
     try {
-        const results = await yahooFinance.chart(symbol, queryOptions) as YahooChartResult;
+        const results = await yahooFinance.chart(symbol.trim(), queryOptions) as YahooChartResult;
+
+        if (typeof res.setHeader === 'function') {
+            res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=7200');
+        }
 
         // Return all monthly data points
         res.status(200).json(results.quotes ?? []);
 
     } catch (err: unknown) {
-        console.error(err);
-
-        if (err instanceof Error) {
-            res.status(500).json({ error: err.message });
-        } else {
-            res.status(500).json({ error: "Failed to fetch data" });
-        }
+        console.error('Yahoo Finance historical error:', err);
+        res.status(500).json({ error: "Failed to fetch historical data" });
     }
 }
 

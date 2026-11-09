@@ -13,21 +13,24 @@ import yahooFinance from 'yahoo-finance2';
  * // GET /api/searchSymbol?searchTerm=apple → 200 { quotes: [...] }
  */
 async function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.method && req.method !== 'GET') {
+        if (typeof res.setHeader === 'function') res.setHeader('Allow', ['GET']);
+        return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+    }
+
     const { searchTerm } = req.query;
     if (!searchTerm || typeof searchTerm !== 'string') {
         return res.status(400).json({ error: 'Missing or invalid searchTerm parameter.' });
     }
     try {
         const results = await yahooFinance.search(searchTerm);
+        if (typeof res.setHeader === 'function') {
+            res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
+        }
         res.status(200).json(results);
     } catch (err: unknown) {
-        console.error(err);
-
-        if (err instanceof Error) {
-            res.status(500).json({ error: err.message });
-        } else {
-            res.status(500).json({ error: "Failed to fetch data" });
-        }
+        console.error('Yahoo Finance search error:', err);
+        res.status(500).json({ error: "Failed to search symbols" });
     }
 }
 

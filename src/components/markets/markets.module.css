@@ -33,7 +33,7 @@
     background-color: transparent;
     border: none;
     color: var(--text);
-    cursor: pointer;
+    cursor: text;
 }
 
 .priceSection {
@@ -60,8 +60,8 @@
     background-color: rgba(255, 255, 255, 0.02);
     border-radius: 8px;
     transition: background-color 0.2s, transform 0.1s;
-    color: gray;
-    border: none;
+    color: #d1d5db;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     cursor: pointer;
 }
 

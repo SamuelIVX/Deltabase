@@ -4,7 +4,7 @@
 //
 // Requires devDeps: @stryker-mutator/core, @stryker-mutator/vitest-runner
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
-export default {
+const config = {
   testRunner: 'vitest',
   coverageAnalysis: 'perTest',
   reporters: ['progress', 'clear-text', 'html'],
@@ -27,3 +27,5 @@ export default {
   // Don't treat changes to test files themselves as code needing mutation.
   since: { ignoreChangesInFilePatterns: ['**/*.{test,spec}.{ts,tsx}', '**/__tests__/**'] },
 };
+
+export default config;

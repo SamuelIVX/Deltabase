@@ -6,6 +6,8 @@ import { render } from "@testing-library/react";
 import axe from "axe-core";
 import TaxAdjustedReturns from "@/components/taxfreecalculator/taxfreecalculator";
 import InvestmentForm from "@/components/whatif/investmentform/investmentform";
+import AssetSelector from "@/components/whatif/assetselector/assetselector";
+import ComparisonSummary from "@/components/whatif/comparisonsummary/comparisonsummary";
 import { AssetContext } from "@/components/whatif/assetselector/assetselector";
 
 vi.mock("@/hooks/useDebounce", () => ({
@@ -18,6 +20,10 @@ vi.mock("@/hooks/useYahooStockQuote", () => ({
 
 vi.mock("@/hooks/useCryptoLatestTick", () => ({
     default: () => ({ result: null, isLoading: false, error: null }),
+}));
+
+vi.mock("@/hooks/useYahooStockSymbols", () => ({
+    default: () => ({ results: [], isLoading: false, error: null }),
 }));
 
 const contextValue = {
@@ -44,11 +50,7 @@ const contextValue = {
 };
 
 async function seriousViolations(container: HTMLElement) {
-    const results = await axe.run(container, {
-        rules: {
-            "color-contrast": { enabled: false },
-        },
-    });
+    const results = await axe.run(container);
     return results.violations.filter(
         (v) => v.impact === "critical" || v.impact === "serious"
     );
@@ -64,6 +66,35 @@ describe("a11y", () => {
         const { container } = render(
             <AssetContext.Provider value={contextValue}>
                 <InvestmentForm />
+            </AssetContext.Provider>
+        );
+        expect(await seriousViolations(container)).toEqual([]);
+    });
+
+    it("what-if asset selector has no critical or serious violations", async () => {
+        const { container } = render(
+            <AssetContext.Provider value={contextValue}>
+                <AssetSelector />
+            </AssetContext.Provider>
+        );
+        expect(await seriousViolations(container)).toEqual([]);
+    });
+
+    it("what-if comparison summary has no critical or serious violations", async () => {
+        const fullContext = {
+            ...contextValue,
+            selectedAsset1: { symbol: "AAPL", shortname: "Apple Inc." },
+            selectedAsset2: { symbol: "MSFT", shortname: "Microsoft" },
+            initialInvestment1: "1000",
+            monthlyInvestment1: "100",
+            initialInvestment2: "1000",
+            monthlyInvestment2: "100",
+            asset1Data: [{ name: "2024-01-01", portfolioValue: "1500.00" }],
+            asset2Data: [{ name: "2024-01-01", portfolioValue: "1800.00" }],
+        };
+        const { container } = render(
+            <AssetContext.Provider value={fullContext as never}>
+                <ComparisonSummary />
             </AssetContext.Provider>
         );
         expect(await seriousViolations(container)).toEqual([]);

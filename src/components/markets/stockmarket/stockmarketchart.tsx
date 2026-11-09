@@ -80,6 +80,7 @@ const StockMarketChart = () => {
                         className={styles.input}
                         type='text'
                         placeholder="Enter a stock symbol..."
+                        aria-label="Enter a stock symbol"
                         value={selectedStock || ''}
                         onChange={(e) => {
                             setSelectedStock(e.target.value)

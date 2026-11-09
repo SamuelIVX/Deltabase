@@ -53,11 +53,19 @@ const StockMarketMetrics = () => {
                     />
                     <StatItem
                         label="Day Range"
-                        value={`$${quote.regularMarketDayRange.low} - $${quote.regularMarketDayRange.high}`}
+                        value={
+                            quote.regularMarketDayRange?.low != null && quote.regularMarketDayRange?.high != null
+                                ? `$${quote.regularMarketDayRange.low} - $${quote.regularMarketDayRange.high}`
+                                : 'N/A'
+                        }
                     />
                     <StatItem
                         label="52-Week Range"
-                        value={`$${quote.fiftyTwoWeekRange.low} - $${quote.fiftyTwoWeekRange.high}`}
+                        value={
+                            quote.fiftyTwoWeekRange?.low != null && quote.fiftyTwoWeekRange?.high != null
+                                ? `$${quote.fiftyTwoWeekRange.low} - $${quote.fiftyTwoWeekRange.high}`
+                                : 'N/A'
+                        }
                     />
                     <StatItem
                         label="Forward P/E"
@@ -77,7 +85,7 @@ const StockMarketMetrics = () => {
                     />
                     <StatItem
                         label="Dividend Rate"
-                        value={formatPercent(quote.dividendRate)}
+                        value={quote.dividendRate != null ? formatCurrency(quote.dividendRate) : 'N/A'}
                     />
                     <StatItem
                         label="Dividend Date"

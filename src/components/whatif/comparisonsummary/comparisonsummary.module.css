@@ -46,3 +46,27 @@
     font-size: 12px;
     color: rgba(211, 211, 211, 0.934);
 }
+
+.symbolHighlight {
+    color: #e5e7eb;
+}
+
+.amountHighlight {
+    color: #93c5fd;
+}
+
+.finalHighlight {
+    color: #facc15;
+}
+
+.costNegative {
+    color: #ef4444;
+}
+
+.costPositive {
+    color: #10b981;
+}
+
+.winnerHighlight {
+    color: #10b981;
+}

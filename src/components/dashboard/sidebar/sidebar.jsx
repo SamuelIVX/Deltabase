@@ -3,15 +3,16 @@
  */
 import MenuLink from "./menuLink/menuLink";
 import Image from "next/image";
+import Link from "next/link";
 import styles from "./sidebar.module.css";
 
 import {
   MdDashboard,
   MdOutlineHelpOutline,
+  MdTrendingUp,
   MdCalculate,
   MdLogout,
-  MdOutlineCurrencyExchange,
-  MdPayments
+  MdCurrencyBitcoin,
 } from "react-icons/md";
 
 const menuItems = [
@@ -31,34 +32,34 @@ const menuItems = [
       {
         title: "Stock Market",
         path: "/dashboard/stockmarket",
-        icon: <MdCalculate />,
+        icon: <MdTrendingUp />,
       },
       {
         title: "Crypto Market",
         path: "/dashboard/cryptomarket",
-        icon: <MdPayments />,
+        icon: <MdCurrencyBitcoin />,
       },
       {
         title: "Tax & Fee Calculator",
         path: "/dashboard/taxfeecalculator",
-        icon: <MdOutlineCurrencyExchange />,
+        icon: <MdCalculate />,
       },
     ],
   }
 ];
 
 /**
- * Async server sidebar listing dashboard navigation sections.
- * @returns {Promise<JSX.Element>}
+ * Sidebar listing dashboard navigation sections.
+ * @returns {JSX.Element}
  */
-const Sidebar = async () => {
+const Sidebar = () => {
   return (
     <div className={styles.container}>
       <div className={styles.user}>
         <Image
           className={styles.userImage}
           src="/DeltaBase.jpg"
-          alt=""
+          alt="DeltaBase logo"
           width="50"
           height="50"
         />
@@ -77,10 +78,10 @@ const Sidebar = async () => {
           </li>
         ))}
       </ul>
-      <button className={styles.logout}>
+      <Link href="/" className={styles.logout} aria-label="Logout">
         <MdLogout />
         Logout
-      </button>
+      </Link>
     </div>
   );
 };

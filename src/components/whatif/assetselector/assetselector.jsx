@@ -14,25 +14,25 @@ import useDebounce from '@/hooks/useDebounce';
  */
 export const AssetContext = createContext({
     selectedAsset1: null,
-    setSelectedAsset1: (value) => { },
+    setSelectedAsset1: () => { },
     selectedAsset2: null,
-    setSelectedAsset2: (value) => { },
+    setSelectedAsset2: () => { },
     value1: [1],
-    setValue1: (value) => { },
+    setValue1: () => { },
     initialInvestment1: "",
-    setInitialInvestment1: (value) => { },
+    setInitialInvestment1: () => { },
     monthlyInvestment1: "",
-    setMonthlyInvestment1: (value) => { },
+    setMonthlyInvestment1: () => { },
     value2: [1],
-    setValue2: (value) => { },
+    setValue2: () => { },
     initialInvestment2: "",
-    setInitialInvestment2: (value) => { },
+    setInitialInvestment2: () => { },
     monthlyInvestment2: "",
-    setMonthlyInvestment2: (value) => { },
+    setMonthlyInvestment2: () => { },
     asset1Data: [],
-    setAsset1Data: (value) => { },
+    setAsset1Data: () => { },
     asset2Data: [],
-    setAsset2Data: (value) => { },
+    setAsset2Data: () => { },
 });
 
 /**
@@ -52,6 +52,8 @@ const AssetSelector = () => {
     const { results: results1, isLoading: isLoading1, error: error1 } = useYahooStockSymbols(debouncedSearchTerm1);
     const { results: results2, isLoading: isLoading2, error: error2 } = useYahooStockSymbols(debouncedSearchTerm2);
 
+    const [focusedIndex1, setFocusedIndex1] = useState(0);
+    const [focusedIndex2, setFocusedIndex2] = useState(0);
 
     const handleSelectAsset1 = (stock) => {
         setSelectedAsset1(stock);
@@ -63,6 +65,44 @@ const AssetSelector = () => {
         setSearchTerm2(stock.symbol);
     }
 
+    const handleKeyDown1 = (e, index, stock) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleSelectAsset1(stock);
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            const next = Math.min(results1.length - 1, index + 1);
+            setFocusedIndex1(next);
+            const nextEl = e.currentTarget.parentElement?.children[next];
+            if (nextEl instanceof HTMLElement) nextEl.focus();
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            const prev = Math.max(0, index - 1);
+            setFocusedIndex1(prev);
+            const prevEl = e.currentTarget.parentElement?.children[prev];
+            if (prevEl instanceof HTMLElement) prevEl.focus();
+        }
+    };
+
+    const handleKeyDown2 = (e, index, stock) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleSelectAsset2(stock);
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            const next = Math.min(results2.length - 1, index + 1);
+            setFocusedIndex2(next);
+            const nextEl = e.currentTarget.parentElement?.children[next];
+            if (nextEl instanceof HTMLElement) nextEl.focus();
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            const prev = Math.max(0, index - 1);
+            setFocusedIndex2(prev);
+            const prevEl = e.currentTarget.parentElement?.children[prev];
+            if (prevEl instanceof HTMLElement) prevEl.focus();
+        }
+    };
+
     return (
         <div className={styles.wrapper}>
             <div className={styles.container}>
@@ -72,6 +112,7 @@ const AssetSelector = () => {
                         className={styles.input}
                         type='text'
                         placeholder="Enter a stock symbol..."
+                        aria-label="Search symbol for Asset 1"
                         value={searchTerm1}
                         onChange={(e) => {
                             const value = e.target.value;
@@ -84,19 +125,27 @@ const AssetSelector = () => {
                     />
                 </div>
 
-                {isLoading1 && <p>Loading results...</p>}
-                {error1 && <p>An error occured: {error1}</p>}
+                {isLoading1 && <p className={styles.statusText}>Loading results...</p>}
+                {error1 && <p className={styles.statusText}>An error occurred: {error1}</p>}
 
                 {/* Asset 1 results */}
-                {!selectedAsset1 && results1.length > 0 && results1.map((stock, index) => (
-                    <div
-                        key={`${stock.symbol || stock.name}-${index}`}
-                        className={styles.output}
-                        onClick={() => handleSelectAsset1(stock)}
-                    >
-                        {stock.symbol ? `${stock.symbol} - ${stock.shortname || stock.longname}` : stock.name}
+                {!selectedAsset1 && results1.length > 0 && (
+                    <div className={styles.dropdown} role="listbox" aria-label="Asset 1 results">
+                        {results1.map((stock, index) => (
+                            <div
+                                key={`${stock.symbol || stock.name}-${index}`}
+                                className={styles.output}
+                                role="option"
+                                aria-selected={focusedIndex1 === index}
+                                tabIndex={focusedIndex1 === index ? 0 : -1}
+                                onClick={() => handleSelectAsset1(stock)}
+                                onKeyDown={(e) => handleKeyDown1(e, index, stock)}
+                            >
+                                {stock.symbol ? `${stock.symbol} - ${stock.shortname || stock.longname}` : stock.name}
+                            </div>
+                        ))}
                     </div>
-                ))}
+                )}
 
                 {selectedAsset1 && (
                     <div className={styles.selected}>
@@ -113,6 +162,7 @@ const AssetSelector = () => {
                         className={styles.input}
                         type='text'
                         placeholder="Enter a stock symbol..."
+                        aria-label="Search symbol for Asset 2"
                         value={searchTerm2}
                         onChange={(e) => {
                             const value = e.target.value;
@@ -125,19 +175,27 @@ const AssetSelector = () => {
                     />
                 </div>
 
-                {isLoading2 && <p>Loading...</p>}
-                {error2 && <p>An error occured: {error2}</p>}
+                {isLoading2 && <p className={styles.statusText}>Loading results...</p>}
+                {error2 && <p className={styles.statusText}>An error occurred: {error2}</p>}
 
                 {/* Asset 2 results */}
-                {!selectedAsset2 && results2.length > 0 && results2.map((stock, index) => (
-                    <div
-                        key={`${stock.symbol || stock.name}-${index}`}
-                        className={styles.output}
-                        onClick={() => handleSelectAsset2(stock)}
-                    >
-                        {stock.symbol ? `${stock.symbol} - ${stock.shortname || stock.longname}` : stock.name}
+                {!selectedAsset2 && results2.length > 0 && (
+                    <div className={styles.dropdown} role="listbox" aria-label="Asset 2 results">
+                        {results2.map((stock, index) => (
+                            <div
+                                key={`${stock.symbol || stock.name}-${index}`}
+                                className={styles.output}
+                                role="option"
+                                aria-selected={focusedIndex2 === index}
+                                tabIndex={focusedIndex2 === index ? 0 : -1}
+                                onClick={() => handleSelectAsset2(stock)}
+                                onKeyDown={(e) => handleKeyDown2(e, index, stock)}
+                            >
+                                {stock.symbol ? `${stock.symbol} - ${stock.shortname || stock.longname}` : stock.name}
+                            </div>
+                        ))}
                     </div>
-                ))}
+                )}
 
                 {selectedAsset2 && (
                     <div className={styles.selected}>

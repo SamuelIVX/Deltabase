@@ -2,7 +2,7 @@
  * Vitest config for Deltabase — jsdom, path alias `@` → `./src`, UTC timezone.
  */
 import { defineConfig } from "vitest/config";
-import path from "path";
+import { fileURLToPath } from "node:url";
 
 export default defineConfig({
     test: {
@@ -17,7 +17,7 @@ export default defineConfig({
     },
     resolve: {
         alias: {
-            "@": path.resolve(__dirname, "./src"),
+            "@": fileURLToPath(new URL("./src", import.meta.url)),
         },
     },
     css: {

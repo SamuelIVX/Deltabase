@@ -15,6 +15,11 @@ import type { NextApiRequest, NextApiResponse } from "next";
  * // GET /api/searchFinnhubNews → 200 [{ headline, url, ... }]
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.method && req.method !== "GET") {
+        if (typeof res.setHeader === "function") res.setHeader("Allow", ["GET"]);
+        return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
+    }
+
     const apiKey = process.env.FINNHUB_API_KEY;
 
     if (!apiKey) {

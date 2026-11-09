@@ -85,10 +85,10 @@ export default function TaxAdjustedReturns() {
     const [taxRate, setTaxRate] = useState(15);
     const [feeRate, setFeeRate] = useState(0.5);
 
-    // fetch data from correct API
+    // fetch data from correct API only when the matching market is active
     const debouncedSymbol = useDebounce(symbol, 500);
 
-    const { quote } = useYahooStockQuote(debouncedSymbol) as {
+    const { quote } = useYahooStockQuote(marketType === 'stock' ? debouncedSymbol : '') as {
         quote: YahooQuote | null;
         isLoading: boolean;
         error: string | null;
@@ -96,7 +96,7 @@ export default function TaxAdjustedReturns() {
 
     const { result } = useCryptoLatestTick({
         market: 'kraken',
-        instrument: debouncedSymbol
+        instrument: marketType === 'crypto' ? debouncedSymbol : ''
     });
 
     /**
@@ -105,7 +105,7 @@ export default function TaxAdjustedReturns() {
      * @returns Breakdown totals, or null if quote prices are missing.
      */
     const calculateStockReturns = (quote: YahooQuote) => {
-        if (!quote?.regularMarketPrice || !quote?.regularMarketOpen) {
+        if (!quote?.regularMarketPrice || !quote?.regularMarketOpen || quantity <= 0) {
             return null;
         }
 
@@ -132,7 +132,7 @@ export default function TaxAdjustedReturns() {
      * @returns Breakdown totals, or null if tick prices are missing.
      */
     const calculateCryptoReturns = (result: CryptoTickResult) => {
-        if (!result?.PRICE || !result?.CURRENT_DAY_OPEN) {
+        if (!result?.PRICE || !result?.CURRENT_DAY_OPEN || quantity <= 0) {
             return null;
         }
 
@@ -142,9 +142,6 @@ export default function TaxAdjustedReturns() {
         const taxAmount = taxableProfit > 0 ? (taxableProfit * taxRate) / 100 : 0;
         const netProfit = taxableProfit - taxAmount;
         const netReturn = result?.CURRENT_DAY_OPEN > 0 ? (netProfit / (result?.CURRENT_DAY_OPEN * quantity)) * 100 : 0;
-        console.log('CURRENT_DAY_OPEN:', result?.CURRENT_DAY_OPEN);
-        console.log('PRICE:', result?.PRICE);
-        console.log('Difference:', result?.PRICE - result?.CURRENT_DAY_OPEN);
         return {
             grossProfit,
             feeCost,
@@ -201,9 +198,14 @@ export default function TaxAdjustedReturns() {
                                 <label className={styles.label}>Quantity</label>
                                 <input
                                     type="number"
+                                    min="0"
+                                    step="any"
                                     className={styles.input}
                                     value={quantity}
-                                    onChange={(e) => setQuantity(parseFloat(e.target.value))}
+                                    onChange={(e) => {
+                                        const parsed = parseFloat(e.target.value);
+                                        setQuantity(Number.isFinite(parsed) ? Math.max(0, parsed) : 0);
+                                    }}
                                 />
                             </div>
 
@@ -211,9 +213,14 @@ export default function TaxAdjustedReturns() {
                                 <label className={styles.label}>Tax Rate (%)</label>
                                 <input
                                     type="number"
+                                    min="0"
+                                    step="any"
                                     className={styles.input}
                                     value={taxRate}
-                                    onChange={(e) => setTaxRate(parseFloat(e.target.value))}
+                                    onChange={(e) => {
+                                        const parsed = parseFloat(e.target.value);
+                                        setTaxRate(Number.isFinite(parsed) ? Math.max(0, parsed) : 0);
+                                    }}
                                 />
                             </div>
 
@@ -221,9 +228,14 @@ export default function TaxAdjustedReturns() {
                                 <label className={styles.label}>Fee Rate (%)</label>
                                 <input
                                     type="number"
+                                    min="0"
+                                    step="any"
                                     className={styles.input}
                                     value={feeRate}
-                                    onChange={(e) => setFeeRate(parseFloat(e.target.value))}
+                                    onChange={(e) => {
+                                        const parsed = parseFloat(e.target.value);
+                                        setFeeRate(Number.isFinite(parsed) ? Math.max(0, parsed) : 0);
+                                    }}
                                 />
                             </div>
                         </div>

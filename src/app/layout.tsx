@@ -1,34 +1,31 @@
-'use client';
 /**
  * Root App Router layout — Inter font, global CSS, and React Query provider.
  */
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import QueryProvider from "@/components/providers/QueryProvider";
 import "@/components/globals.css";
 
-
 const inter = Inter({ subsets: ["latin"] });
-const queryClient = new QueryClient();
+
+export const metadata: Metadata = {
+  title: "DeltaBase - See the data, not the noise",
+  description: "Dollar-cost-averaging simulator, historical market charts, and tax-adjusted return calculator.",
+};
 
 /**
- * Wraps all routes with QueryClientProvider and the root HTML shell.
- * @param children - Nested App Router page content.
+ * Server layout rendering the root HTML document with React Query provider.
+ * @param props.children - Nested App Router page content.
  * @returns The root HTML document structure.
- * @example
- * // Applied automatically by the App Router to every page
  */
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-
   return (
     <html lang="en">
-      <head>
-        <title>Deltabase</title>
-      </head>
       <body className={inter.className}>
-        <QueryClientProvider client={queryClient}>
+        <QueryProvider>
           {children}
-        </QueryClientProvider>
+        </QueryProvider>
       </body>
-    </html >
+    </html>
   );
 }

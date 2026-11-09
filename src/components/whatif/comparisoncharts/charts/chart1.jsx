@@ -46,8 +46,6 @@ const Chart1 = () => {
   const { selectedAsset1, value1, initialInvestment1, monthlyInvestment1, setAsset1Data } = React.useContext(AssetContext);
   const { results, isLoading, error } = useYahooHistoricalData(selectedAsset1?.symbol, value1[0]);
 
-  const currentMonth = new Date().getMonth();
-
   const dcaResults = useSimulateDCA(results, initialInvestment1, monthlyInvestment1);
   const chartData = dcaResults.monthlyPortfolio;
 
@@ -56,11 +54,6 @@ const Chart1 = () => {
       setAsset1Data(chartData);
     }
   }, [chartData, setAsset1Data]);
-
-  // Filter to only show ticks for the current month
-  const customTicks = chartData
-    .filter(item => new Date(item.name).getMonth() === currentMonth)
-    .map(item => item.name);
 
   return (
     <div className={styles.chartWrapper} style={{ position: 'relative', width: '100%', height: '400px' }}>
@@ -88,7 +81,7 @@ const Chart1 = () => {
             >
               <XAxis
                 dataKey="name"
-                ticks={customTicks}
+                minTickGap={40}
                 tickFormatter={(value) => {
                   return value;
                 }}
