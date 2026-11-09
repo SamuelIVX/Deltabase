@@ -9,10 +9,11 @@ import { CryptoMarketContext } from "@/components/markets/cryptomarket/cryptomar
 
 /**
  * Crypto market view composing chart + metrics components.
+ * Defaults to BTC-USD for an immediate live institutional overview.
  * @returns {JSX.Element}
  */
 const CryptoMarket = () => {
-    const [selectedCrypto, setSelectedCrypto] = useState(null);
+    const [selectedCrypto, setSelectedCrypto] = useState("BTC-USD");
 
     return (
         <div>
@@ -20,7 +21,6 @@ const CryptoMarket = () => {
                 <CryptoMarketChart />
                 <CryptoMarketMetrics />
             </CryptoMarketContext.Provider>
-
         </div>
     );
 };

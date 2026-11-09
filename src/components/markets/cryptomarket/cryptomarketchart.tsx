@@ -13,18 +13,28 @@ import useDebounce from '@/hooks/useDebounce';
 import { SymbolDataPoint } from '@/types/dataPoints';
 import formatNumber from '@/utils/formatNumber';
 import formatDate from '@/utils/formatDate';
+import { normalizeCryptoSymbol } from '@/utils/normalizeCryptoSymbol';
 
 interface CryptoMarketContextType {
     selectedCrypto: string;
     setSelectedCrypto: (value: string) => void;
 }
 
+const POPULAR_CRYPTOS = [
+    { label: "BTC", pair: "BTC-USD" },
+    { label: "ETH", pair: "ETH-USD" },
+    { label: "SOL", pair: "SOL-USD" },
+    { label: "DOGE", pair: "DOGE-USD" },
+    { label: "XRP", pair: "XRP-USD" },
+    { label: "ADA", pair: "ADA-USD" },
+];
+
 /**
  * Shared crypto chart selection context (instrument + range).
  * Provided by the crypto market page; consumed by chart + metrics.
  */
 export const CryptoMarketContext = createContext<CryptoMarketContextType>({
-    selectedCrypto: "",
+    selectedCrypto: "BTC-USD",
     setSelectedCrypto: () => { },
 });
 
@@ -35,11 +45,11 @@ const CryptoTooltip: React.FC<
         const { date, close, volume } = payload[0].payload;
 
         return (
-            <div className={styles.customTooltip} style={{ background: "rgba(36, 131, 71, 0.76)" }}>
-                <p className={styles.description}>Current Date</p>
+            <div className={styles.customTooltip}>
+                <p className={styles.description}>Date</p>
                 <span className={styles.date}>{formatDate(date)}</span>
                 <p className={styles.description}>Price</p>
-                <p className={styles.volume}>${formatNumber(close)}</p>
+                <p className={styles.volume}>${typeof close === 'number' ? close.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : formatNumber(close)}</p>
                 <p className={styles.description}>Volume</p>
                 <p className={styles.volume}>{formatNumber(volume)}</p>
             </div>
@@ -47,25 +57,27 @@ const CryptoTooltip: React.FC<
     };
 
 /**
- * Interactive crypto price chart with range controls (CoinDesk history via hooks).
+ * Interactive crypto price chart with range controls and instant quick-select chips.
  * @returns The chart panel including instrument input and range toggles.
  * @example
  * <CryptoMarketChart />
  */
 const CryptoMarketChart = () => {
     const { selectedCrypto, setSelectedCrypto } = useContext(CryptoMarketContext);
-    const debouncedCrypto = useDebounce(selectedCrypto, 700);
+    const debouncedRaw = useDebounce(selectedCrypto, 600);
+    const normalizedInstrument = normalizeCryptoSymbol(debouncedRaw);
+
     const { result, isLoading, error } = useCryptoLatestTick({
         market: 'kraken',
-        instrument: debouncedCrypto
+        instrument: normalizedInstrument
     });
 
     // Fetch historical data
-    const [selectedRange, setSelectedRange] = useState('1d');
+    const [selectedRange, setSelectedRange] = useState('1mo');
 
     const { results } = useCryptoHistoricalData({
         market: "kraken",
-        instrument: debouncedCrypto,
+        instrument: normalizedInstrument,
         range: selectedRange
     });
 
@@ -76,38 +88,61 @@ const CryptoMarketChart = () => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <span className={styles.title}>Currently Showing: </span>
+                <div className={styles.searchRow}>
+                    <span className={styles.title}>Instrument:</span>
+                    <span className={styles.search}>
+                        <input
+                            className={styles.input}
+                            type='text'
+                            placeholder="Enter a crypto pair (e.g. BTC-USD)..."
+                            aria-label="Enter a crypto pair"
+                            value={selectedCrypto || ''}
+                            onChange={(e) => {
+                                setSelectedCrypto(e.target.value.toUpperCase())
+                            }}
+                        />
+                    </span>
+                </div>
 
-                <span className={styles.search}>
-                    <input
-                        className={styles.input}
-                        type='text'
-                        placeholder="Enter a crypto pair (e.g. BTC-USD)..."
-                        aria-label="Enter a crypto pair"
-                        value={selectedCrypto || ''}
-                        onChange={(e) => {
-                            setSelectedCrypto(e.target.value.toUpperCase())
-                        }}
-                    />
-                </span>
+                <div className={styles.quickPills} role="group" aria-label="Popular crypto pairs">
+                    <span className={styles.pillLabel}>Popular:</span>
+                    {POPULAR_CRYPTOS.map((coin) => {
+                        const isActive =
+                            normalizedInstrument === coin.pair ||
+                            selectedCrypto?.toUpperCase() === coin.label;
+                        return (
+                            <button
+                                key={coin.pair}
+                                type="button"
+                                className={`${styles.pill} ${isActive ? styles.pillActive : ''}`}
+                                onClick={() => setSelectedCrypto(coin.pair)}
+                            >
+                                {coin.label}
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
 
             {error && <p className={styles.message}>Error: {error}</p>}
             {isLoading && (
                 <div className={styles.loadingOverlay}>
-                    <MoonLoader color="#47ef60ff" size={100} />
+                    <MoonLoader color="var(--accent, #3b82f6)" size={64} />
                 </div>
             )}
 
             {result && !isLoading && (
                 <div className={styles.stockInfo}>
                     <div className={styles.priceSection}>
-                        <span className={styles.price}>${result.PRICE?.toFixed(2)} </span>
+                        <span className={styles.price}>
+                            ${result.PRICE != null ? result.PRICE.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : 'N/A'}
+                        </span>
                         {result.CURRENT_DAY_CHANGE_PERCENTAGE !== undefined && (
                             <span
                                 style={{
                                     color:
-                                        result.CURRENT_DAY_CHANGE_PERCENTAGE >= 0 ? "#10b981" : "#ef4444",
+                                        result.CURRENT_DAY_CHANGE_PERCENTAGE >= 0 ? "var(--gain, #10b981)" : "var(--loss, #ef4444)",
+                                    fontWeight: 600,
                                 }}
                             >
                                 {result.CURRENT_DAY_CHANGE_PERCENTAGE >= 0 ? "+" : ""}
@@ -115,14 +150,12 @@ const CryptoMarketChart = () => {
                                 {" "}
                                 ({result.CURRENT_DAY_CHANGE >= 0 ? "+" : ""}
                                 ${Math.abs(result.CURRENT_DAY_CHANGE).toFixed(2)})
-                                <span> Today</span>
+                                <span style={{ color: "var(--textSoft)", fontWeight: 400 }}> Today</span>
                             </span>
                         )}
                     </div>
                 </div>
             )}
-
-
 
             {results?.length > 0 && (
                 <>
@@ -138,26 +171,36 @@ const CryptoMarketChart = () => {
                                 bottom: 0,
                             }}
                         >
+                            <defs>
+                                <linearGradient id="cryptoGrad" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="var(--accent, #3b82f6)" stopOpacity={0.25} />
+                                    <stop offset="95%" stopColor="var(--accent, #3b82f6)" stopOpacity={0.0} />
+                                </linearGradient>
+                            </defs>
                             <XAxis
                                 dataKey="date"
+                                tick={{ fill: "var(--textSoft)", fontSize: 11 }}
+                                stroke="var(--border)"
                             />
                             <YAxis
                                 domain={[
                                     (dataMin) => (dataMin * 0.995),
                                     (dataMax) => dataMax * 1.005,
                                 ]}
-                                tickFormatter={(value) => value.toFixed(2)}
+                                tickFormatter={(value) => value.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                                tick={{ fill: "var(--textSoft)", fontSize: 11 }}
+                                stroke="var(--border)"
                             />
                             <Tooltip content={<CryptoTooltip />} />
                             <Area
                                 type="monotone"
                                 dataKey="close"
-                                stroke="rgba(51, 242, 121, 0.76)"
-                                fill="rgba(61, 180, 63, 0.15)" />
+                                stroke="var(--accent, #3b82f6)"
+                                strokeWidth={2}
+                                fill="url(#cryptoGrad)"
+                            />
                         </AreaChart>
                     </ResponsiveContainer>
-
-                    <hr style={{ border: '1px solid rgba(3, 73, 148, 0.15)' }} />
 
                     <div className={styles.dateRangeButtons}>
                         {['1d', '5d', '1mo', '3mo', '6mo', '1y', '5y'].map((range) => (
@@ -170,11 +213,9 @@ const CryptoMarketChart = () => {
                             </button>
                         ))}
                     </div>
-
                 </>
             )}
-
-        </div >
+        </div>
     );
 };
 

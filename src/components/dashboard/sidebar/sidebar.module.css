@@ -1,5 +1,5 @@
 /**
- * Styles for the dashboard sidebar supporting responsive themes and status badges.
+ * Styles for the dashboard sidebar supporting responsive themes, status badges, and collapsed mode.
  */
 .container {
   position: sticky;
@@ -8,72 +8,164 @@
   flex-direction: column;
   justify-content: space-between;
   min-height: calc(100vh - 48px);
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.containerCollapsed {
+  position: sticky;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  min-height: calc(100vh - 48px);
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.headerRowCollapsed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  width: 100%;
 }
 
 .user {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+}
+
+.userCollapsed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: inherit;
 }
 
 .userImage {
-  border-radius: 10px;
+  border-radius: 8px;
   object-fit: cover;
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 .userDetail {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .userName {
   font-weight: 700;
-  font-size: 16px;
+  font-size: 15px;
   letter-spacing: -0.02em;
   color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .userTitle {
   font-size: 11px;
   color: var(--textSoft);
   line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toggleButton {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 6px);
+  color: var(--textSoft);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.toggleButton:hover {
+  background-color: var(--card);
+  color: var(--text);
+  border-color: var(--borderHover, var(--border));
+}
+
+.toggleButton:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 .list {
   list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.cat {
-  color: var(--textSoft);
-  font-weight: 600;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  display: block;
-  margin: 16px 4px 8px;
+.listCollapsed {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
 }
 
 .footerBadge {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background-color: var(--bg-surface-elevated);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm, 6px);
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  margin-top: 24px;
+}
+
+.footerBadgeCollapsed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--card);
   border: 1px solid var(--border);
   margin-top: 24px;
 }
 
 .statusDot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background-color: var(--gain);
+  background-color: var(--gain, #10b981);
   display: inline-block;
+  flex-shrink: 0;
 }
 
 .footerText {
@@ -81,10 +173,12 @@
   font-weight: 500;
   color: var(--textSoft);
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 @media (max-width: 1024px) {
-  .container {
+  .container,
+  .containerCollapsed {
     position: static;
     min-height: auto;
   }

@@ -1,32 +1,54 @@
 /**
  * Shared styles for stock/crypto market chart layouts.
+ * Institutional trading aesthetic supporting dark and light theme tokens.
  */
 .container {
-    height: 500px;
+    height: 520px;
     background-color: var(--bgSoft);
-    padding: 20px;
-    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 24px;
+    border-radius: var(--radius-md);
     margin-top: 20px;
     display: flex;
     flex-direction: column;
     position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .header {
-    margin-bottom: 15px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.searchRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .title {
-    font-weight: 200;
+    font-weight: 500;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     color: var(--textSoft);
-    margin-bottom: 24px;
-    margin-right: 5px;
 }
 
 .search {
-    background: #2e374a;
-    padding: 6px;
-    border-radius: 10px;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+    display: inline-flex;
+    align-items: center;
+    transition: border-color 0.15s ease;
+}
+
+.search:focus-within {
+    border-color: var(--accent);
 }
 
 .input {
@@ -34,62 +56,135 @@
     border: none;
     color: var(--text);
     cursor: text;
+    font-size: 13px;
+    outline: none;
+    min-width: 260px;
+}
+
+.quickPills {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.pillLabel {
+    font-size: 11px;
+    color: var(--textMuted);
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.pill {
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--fontMono);
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    color: var(--textSoft);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.pill:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.pillActive {
+    background-color: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 700;
+}
+
+.stockInfo {
+    margin-bottom: 12px;
 }
 
 .priceSection {
-    margin-bottom: 5px;
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.marketTime {
-    font-size: 12px;
-    color: var(--textSoft);
-    margin-bottom: 10px;
-}
-
-.dateRangeButtons {
-    margin: 10px;
+    margin-bottom: 6px;
+    font-size: 16px;
+    font-family: var(--fontMono);
     display: flex;
+    align-items: baseline;
     gap: 10px;
 }
 
+.price {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.marketTime {
+    font-size: 11px;
+    color: var(--textSoft);
+    font-family: var(--fontMono);
+}
+
+.dateRangeButtons {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
 .dateButton {
-    gap: 6px;
-    padding: 12px;
-    background-color: rgba(255, 255, 255, 0.02);
-    border-radius: 8px;
-    transition: background-color 0.2s, transform 0.1s;
-    color: #d1d5db;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 6px 12px;
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--textSoft);
+    font-family: var(--fontMono);
+    font-size: 11px;
+    font-weight: 600;
     cursor: pointer;
+    transition: all 0.15s ease;
 }
 
 .dateButton:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-}
-
-.dateButton:active {
-    transform: translateY(2px);
-    background-color: rgba(255, 255, 255, 0.08);
-    color: white;
+    border-color: var(--borderHover, var(--border));
+    color: var(--text);
 }
 
 .dateButton.selected {
-    transform: translateY(2px);
-    /* keeps it pressed in */
-    background-color: rgba(255, 255, 255, 0.08);
-    color: white;
+    background-color: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 700;
 }
 
 .customTooltip {
-    padding: 10px;
+    background-color: var(--bgSoft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .description {
-    margin: 8px 0 2px 0;
+    margin: 6px 0 2px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    color: var(--textSoft);
+}
+
+.date {
+    font-family: var(--fontMono);
+    font-size: 11px;
+    color: var(--text);
+}
+
+.volume {
+    font-family: var(--fontMono);
     font-size: 12px;
-    color: rgba(211, 211, 211, 0.934);
+    font-weight: 600;
+    color: var(--text);
 }
 
 .loadingOverlay {
@@ -101,5 +196,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-md);
     z-index: 10;
+}
+
+.message {
+    color: var(--danger, #ef4444);
+    font-size: 13px;
+    padding: 8px 12px;
+    background-color: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: var(--radius-sm);
+    margin: 8px 0;
 }

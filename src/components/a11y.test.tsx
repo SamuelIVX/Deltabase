@@ -13,6 +13,7 @@ import ThemeToggle from "@/components/theme/ThemeToggle";
 import MarketRibbon from "@/components/dashboard/marketribbon/MarketRibbon";
 import Navbar from "@/components/dashboard/navbar/navbar";
 import Sidebar from "@/components/dashboard/sidebar/sidebar";
+import { SidebarProvider } from "@/components/dashboard/sidebar/SidebarContext";
 import Rightbar from "@/components/dashboard/rightbar/rightbar";
 import { AssetContext } from "@/components/whatif/assetselector/assetselector";
 
@@ -167,7 +168,11 @@ describe("a11y", () => {
     });
 
     it("sidebar navigation has no critical or serious violations", async () => {
-        const { container } = render(<Sidebar />);
+        const { container } = render(
+            <SidebarProvider>
+                <Sidebar />
+            </SidebarProvider>
+        );
         expect(await seriousViolations(container)).toEqual([]);
     });
 
