@@ -133,6 +133,15 @@ const AssetSelector = () => {
             setFocusedIndex1(0);
             const firstOption = e.currentTarget.closest(`.${styles.container}`)?.querySelector('[role="option"]');
             if (firstOption instanceof HTMLElement) firstOption.focus();
+        } else if (e.key === 'Enter' && results1.length > 0) {
+            e.preventDefault();
+            const first = results1[0];
+            handleSelectAsset1({
+                symbol: first.symbol,
+                name: first.shortname || first.longname || first.symbol,
+                shortname: first.shortname,
+                longname: first.longname,
+            });
         }
     };
 
@@ -142,6 +151,15 @@ const AssetSelector = () => {
             setFocusedIndex2(0);
             const firstOption = e.currentTarget.closest(`.${styles.container}`)?.querySelector('[role="option"]');
             if (firstOption instanceof HTMLElement) firstOption.focus();
+        } else if (e.key === 'Enter' && results2.length > 0) {
+            e.preventDefault();
+            const first = results2[0];
+            handleSelectAsset2({
+                symbol: first.symbol,
+                name: first.shortname || first.longname || first.symbol,
+                shortname: first.shortname,
+                longname: first.longname,
+            });
         }
     };
 

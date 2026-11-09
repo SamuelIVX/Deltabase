@@ -141,7 +141,15 @@ const InvestmentForm = () => {
                 <button
                     type="button"
                     className={`${styles.linkToggle} ${isLinked ? styles.linkToggleActive : ''}`}
-                    onClick={() => setIsLinked(!isLinked)}
+                    onClick={() => {
+                        const nextLinked = !isLinked;
+                        setIsLinked(nextLinked);
+                        if (nextLinked) {
+                            setInitialInvestment2(initialInvestment1);
+                            setMonthlyInvestment2(monthlyInvestment1);
+                            setValue2(value1);
+                        }
+                    }}
                     aria-pressed={isLinked}
                 >
                     <span className={styles.linkIcon} aria-hidden="true">

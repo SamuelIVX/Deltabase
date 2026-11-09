@@ -134,4 +134,24 @@ describe("InvestmentForm component", () => {
         fireEvent.click(oneYBtns[1]);
         expect(mockContext.setValue2).toHaveBeenCalledWith([1]);
     });
+
+    it("synchronizes Asset 2 values from Asset 1 upon re-linking", () => {
+        render(
+            <AssetContext.Provider value={mockContext}>
+                <InvestmentForm />
+            </AssetContext.Provider>
+        );
+
+        const linkToggle = screen.getByRole("button", { name: /Equal Strategy/i });
+        // Unlink
+        fireEvent.click(linkToggle);
+        expect(linkToggle).toHaveAttribute("aria-pressed", "false");
+
+        // Re-link
+        fireEvent.click(linkToggle);
+        expect(linkToggle).toHaveAttribute("aria-pressed", "true");
+        expect(mockContext.setInitialInvestment2).toHaveBeenCalledWith(mockContext.initialInvestment1);
+        expect(mockContext.setMonthlyInvestment2).toHaveBeenCalledWith(mockContext.monthlyInvestment1);
+        expect(mockContext.setValue2).toHaveBeenCalledWith(mockContext.value1);
+    });
 });

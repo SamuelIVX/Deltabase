@@ -26,7 +26,8 @@ const ComparisonSummary = () => {
         monthlyInvestment1,
         initialInvestment2,
         monthlyInvestment2,
-        value1
+        value1,
+        value2
     } = useContext(AssetContext);
 
     if (
@@ -56,13 +57,14 @@ const ComparisonSummary = () => {
     const returnPct1 = invested1 > 0 ? (profit1 / invested1) * 100 : 0;
     const returnPct2 = invested2 > 0 ? (profit2 / invested2) * 100 : 0;
 
-    const years = (value1 && value1[0]) || Math.max(1, Math.round(asset1Data.length / 12));
+    const years1 = (value1 && value1[0]) || Math.max(1, Math.round(asset1Data.length / 12));
+    const years2 = (value2 && value2[0]) || Math.max(1, Math.round(asset2Data.length / 12));
 
     const cagr1 = invested1 > 0 && asset1Final > 0
-        ? (Math.pow(asset1Final / invested1, 1 / years) - 1) * 100
+        ? (Math.pow(asset1Final / invested1, 1 / years1) - 1) * 100
         : 0;
     const cagr2 = invested2 > 0 && asset2Final > 0
-        ? (Math.pow(asset2Final / invested2, 1 / years) - 1) * 100
+        ? (Math.pow(asset2Final / invested2, 1 / years2) - 1) * 100
         : 0;
 
     // Difference (opportunity cost from perspective of Asset 1 vs Asset 2)
@@ -104,17 +106,22 @@ const ComparisonSummary = () => {
 
                 {/* Head-to-Head Comparison Table */}
                 <div className={styles.tableWrapper}>
-                    <table className={styles.table}>
+                    <table className={styles.table} aria-label="Investment Performance Scorecard">
+                        <caption className="sr-only">Head-to-head investment performance comparison scorecard</caption>
                         <thead>
                             <tr>
                                 <th scope="col" className={styles.thMetric}>Performance Metric</th>
                                 <th scope="col" className={styles.thAsset}>
-                                    <span className={styles.dotAsset1} aria-hidden="true" />
-                                    <span>{sym1}</span>
+                                    <span className={styles.thAssetContent}>
+                                        <span className={styles.dotAsset1} aria-hidden="true" />
+                                        <span>{sym1}</span>
+                                    </span>
                                 </th>
                                 <th scope="col" className={styles.thAsset}>
-                                    <span className={styles.dotAsset2} aria-hidden="true" />
-                                    <span>{sym2}</span>
+                                    <span className={styles.thAssetContent}>
+                                        <span className={styles.dotAsset2} aria-hidden="true" />
+                                        <span>{sym2}</span>
+                                    </span>
                                 </th>
                                 <th scope="col" className={styles.thDelta}>Delta / Spread</th>
                             </tr>

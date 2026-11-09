@@ -41,6 +41,15 @@ const mockContext = {
 describe("AssetSelector component", () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        vi.mocked(useYahooStockSymbols).mockReset();
+        vi.mocked(useYahooStockSymbols).mockReturnValue({
+            results: [
+                { symbol: "AAPL", shortname: "Apple Inc." },
+                { symbol: "MSFT", shortname: "Microsoft Corp." },
+            ] as never,
+            isLoading: false,
+            error: null,
+        });
     });
 
     it("renders popular comparison presets and applies a preset on click", () => {
@@ -109,14 +118,31 @@ describe("AssetSelector component", () => {
             expect.objectContaining({ symbol: "AAPL" })
         );
 
-        // Keyboard arrow navigation on option
+        // Keyboard selection via Enter on option
+        const amznOption = within(listbox1).getByText("AMZN");
+        fireEvent.keyDown(amznOption, { key: "Enter" });
+        expect(mockContext.setSelectedAsset1).toHaveBeenCalledWith(
+            expect.objectContaining({ symbol: "AMZN" })
+        );
+
+        // Keyboard selection via Space on option
+        fireEvent.keyDown(appleOption, { key: " " });
+        expect(mockContext.setSelectedAsset1).toHaveBeenCalledWith(
+            expect.objectContaining({ symbol: "AAPL" })
+        );
+
+        // Arrow navigation keys execute without throwing
         fireEvent.keyDown(appleOption, { key: "ArrowDown" });
         fireEvent.keyDown(appleOption, { key: "ArrowUp" });
-        fireEvent.keyDown(appleOption, { key: "Enter" });
-        fireEvent.keyDown(appleOption, { key: " " });
+
+        // Input Enter selects top result (AAPL)
+        const input1 = screen.getByLabelText("Search symbol for Asset 1");
+        fireEvent.keyDown(input1, { key: "Enter" });
+        expect(mockContext.setSelectedAsset1).toHaveBeenCalledWith(
+            expect.objectContaining({ symbol: "AAPL" })
+        );
 
         // Input ArrowDown navigates to listbox
-        const input1 = screen.getByLabelText("Search symbol for Asset 1");
         fireEvent.keyDown(input1, { key: "ArrowDown" });
     });
 
@@ -145,14 +171,31 @@ describe("AssetSelector component", () => {
             expect.objectContaining({ symbol: "NVDA" })
         );
 
-        // Keyboard navigation on Asset 2
+        // Keyboard selection via Enter on Asset 2 option
+        const tslaOption = within(listbox2).getByText("TSLA");
+        fireEvent.keyDown(tslaOption, { key: "Enter" });
+        expect(mockContext.setSelectedAsset2).toHaveBeenCalledWith(
+            expect.objectContaining({ symbol: "TSLA" })
+        );
+
+        // Keyboard selection via Space on Asset 2 option
+        fireEvent.keyDown(nvdaOption, { key: " " });
+        expect(mockContext.setSelectedAsset2).toHaveBeenCalledWith(
+            expect.objectContaining({ symbol: "NVDA" })
+        );
+
+        // Arrow navigation
         fireEvent.keyDown(nvdaOption, { key: "ArrowDown" });
         fireEvent.keyDown(nvdaOption, { key: "ArrowUp" });
-        fireEvent.keyDown(nvdaOption, { key: "Enter" });
-        fireEvent.keyDown(nvdaOption, { key: " " });
+
+        // Input Enter on Asset 2 selects top result (NVDA)
+        const input2 = screen.getByLabelText("Search symbol for Asset 2");
+        fireEvent.keyDown(input2, { key: "Enter" });
+        expect(mockContext.setSelectedAsset2).toHaveBeenCalledWith(
+            expect.objectContaining({ symbol: "NVDA" })
+        );
 
         // Input ArrowDown on input 2
-        const input2 = screen.getByLabelText("Search symbol for Asset 2");
         fireEvent.keyDown(input2, { key: "ArrowDown" });
     });
 

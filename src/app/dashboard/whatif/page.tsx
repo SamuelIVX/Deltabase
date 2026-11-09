@@ -10,7 +10,7 @@ import AssetSelector from "@/components/whatif/assetselector/assetselector";
 import InvestmentForm from "@/components/whatif/investmentform/investmentform";
 import ComparisonCharts from "@/components/whatif/comparisoncharts/comparisoncharts";
 import ComparisonSummary from "@/components/whatif/comparisonsummary/comparisonsummary";
-import type { AssetItem } from "@/types/whatif";
+import type { AssetItem, MonthlyPortfolioPoint } from "@/types/whatif";
 
 /**
  * What-If flagship page — holds investment/asset state in AssetContext and
@@ -26,12 +26,7 @@ const WhatIf = () => {
     const [value1, setValue1] = useState<number[]>([5]);
     const [initialInvestment1, setInitialInvestment1] = useState<string>("1000");
     const [monthlyInvestment1, setMonthlyInvestment1] = useState<string>("250");
-    const [asset1Data, setAsset1Data] = useState<Array<{
-        name: string;
-        portfolioValue: string;
-        invested: string;
-        adjclose: number;
-    }>>([]);
+    const [asset1Data, setAsset1Data] = useState<MonthlyPortfolioPoint[]>([]);
 
     const [selectedAsset2, setSelectedAsset2] = useState<AssetItem | null>({
         symbol: "QQQ",
@@ -40,12 +35,7 @@ const WhatIf = () => {
     const [value2, setValue2] = useState<number[]>([5]);
     const [initialInvestment2, setInitialInvestment2] = useState<string>("1000");
     const [monthlyInvestment2, setMonthlyInvestment2] = useState<string>("250");
-    const [asset2Data, setAsset2Data] = useState<Array<{
-        name: string;
-        portfolioValue: string;
-        invested: string;
-        adjclose: number;
-    }>>([]);
+    const [asset2Data, setAsset2Data] = useState<MonthlyPortfolioPoint[]>([]);
 
     return (
         <AssetContext.Provider

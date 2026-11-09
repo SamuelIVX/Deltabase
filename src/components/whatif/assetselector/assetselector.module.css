@@ -224,10 +224,14 @@
     max-width: 60%;
 }
 
-.output:hover,
-.output:focus-visible {
+.output:hover {
     background-color: rgba(2, 132, 199, 0.12);
-    outline: none;
+}
+
+.output:focus-visible {
+    background-color: rgba(2, 132, 199, 0.16);
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
 }
 
 .selected {

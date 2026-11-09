@@ -172,5 +172,36 @@ describe("UnifiedComparisonChart component", () => {
         );
 
         expect(screen.getByText(/SPY leads by \$3,000\.00/i)).toBeInTheDocument();
+
+        // Rerender with independent invested1 and invested2
+        const payloadIndependentInvested = [
+            {
+                name: "SPY",
+                value: 12000,
+                payload: {
+                    name: "2024-03-01",
+                    displayDate: "2024-03",
+                    portfolioValue1: 12000,
+                    portfolioValue2: 6000,
+                    invested1: 10000,
+                    invested2: 4000,
+                },
+            },
+        ];
+
+        rerender(
+            <CustomWhatIfTooltip
+                active={true}
+                payload={payloadIndependentInvested}
+                label="March 2024"
+                asset1Symbol="SPY"
+                asset2Symbol="QQQ"
+            />
+        );
+
+        // SPY: (12000 - 10000) / 10000 = +20.0%
+        expect(screen.getByText("+20.0%")).toBeInTheDocument();
+        // QQQ: (6000 - 4000) / 4000 = +50.0%
+        expect(screen.getByText("+50.0%")).toBeInTheDocument();
     });
 });

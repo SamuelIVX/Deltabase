@@ -23,7 +23,7 @@ import useSimulateDCA from '@/hooks/useSimulateDCA';
 import type { UnifiedDCAPoint } from '@/types/whatif';
 
 const formatCurrencyVal = (val: number | null | undefined): string => {
-    if (val == null || !Number.isFinite(val)) return '$0.00';
+    if (val == null || !Number.isFinite(val)) return '0.00';
     return (Number(val) || 0).toLocaleString('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
@@ -60,13 +60,15 @@ export const CustomWhatIfTooltip = ({
 
     const val1 = pt.portfolioValue1;
     const val2 = pt.portfolioValue2;
-    const invested = pt.invested ?? pt.invested1 ?? pt.invested2;
+    const invested1 = pt.invested1 ?? pt.invested;
+    const invested2 = pt.invested2 ?? pt.invested;
+    const invested = pt.invested ?? (invested1 === invested2 ? invested1 : null);
 
-    const gain1 = val1 != null && invested != null ? val1 - invested : null;
-    const gain1Pct = gain1 != null && invested && invested > 0 ? (gain1 / invested) * 100 : null;
+    const gain1 = val1 != null && invested1 != null ? val1 - invested1 : null;
+    const gain1Pct = gain1 != null && invested1 && invested1 > 0 ? (gain1 / invested1) * 100 : null;
 
-    const gain2 = val2 != null && invested != null ? val2 - invested : null;
-    const gain2Pct = gain2 != null && invested && invested > 0 ? (gain2 / invested) * 100 : null;
+    const gain2 = val2 != null && invested2 != null ? val2 - invested2 : null;
+    const gain2Pct = gain2 != null && invested2 && invested2 > 0 ? (gain2 / invested2) * 100 : null;
 
     const diff = val1 != null && val2 != null ? val1 - val2 : null;
     const leader = diff != null ? (diff > 0 ? asset1Symbol : asset2Symbol) : null;
@@ -109,7 +111,7 @@ export const CustomWhatIfTooltip = ({
                 </div>
             )}
 
-            {invested != null && (
+            {invested != null ? (
                 <div className={styles.tooltipRowMuted}>
                     <div className={styles.tooltipLabel}>
                         <span className={styles.dotInvested} />
@@ -117,7 +119,17 @@ export const CustomWhatIfTooltip = ({
                     </div>
                     <span className={styles.tooltipMutedValue}>${formatCurrencyVal(invested)}</span>
                 </div>
-            )}
+            ) : invested1 != null && invested2 != null ? (
+                <div className={styles.tooltipRowMuted}>
+                    <div className={styles.tooltipLabel}>
+                        <span className={styles.dotInvested} />
+                        <span>Invested Principal</span>
+                    </div>
+                    <span className={styles.tooltipMutedValue}>
+                        ${formatCurrencyVal(invested1)} / ${formatCurrencyVal(invested2)}
+                    </span>
+                </div>
+            ) : null}
 
             {diff != null && Math.abs(diff) > 0.01 && (
                 <div className={styles.tooltipSpread}>
@@ -160,14 +172,18 @@ const UnifiedComparisonChart = () => {
     useEffect(() => {
         if (dca1.monthlyPortfolio && dca1.monthlyPortfolio.length > 0) {
             setAsset1Data(dca1.monthlyPortfolio);
+        } else if (!results1 || results1.length === 0) {
+            setAsset1Data([]);
         }
-    }, [dca1.monthlyPortfolio, setAsset1Data]);
+    }, [dca1.monthlyPortfolio, results1, setAsset1Data]);
 
     useEffect(() => {
         if (dca2.monthlyPortfolio && dca2.monthlyPortfolio.length > 0) {
             setAsset2Data(dca2.monthlyPortfolio);
+        } else if (!results2 || results2.length === 0) {
+            setAsset2Data([]);
         }
-    }, [dca2.monthlyPortfolio, setAsset2Data]);
+    }, [dca2.monthlyPortfolio, results2, setAsset2Data]);
 
     // Align both monthly portfolios into a single chronological series
     const chartData = useMemo(() => {

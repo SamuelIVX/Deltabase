@@ -1,3 +1,5 @@
+import type { MonthlyPortfolioPoint } from "@/types/whatif";
+
 /**
  * Pure dollar-cost-averaging simulator used by the What-If feature.
  * No I/O — operates on an already-fetched monthly price series.
@@ -15,12 +17,7 @@ export interface DCAResult {
     totalInvested: number;
     finalValue: number;
     gain: number;
-    monthlyPortfolio: {
-        name: string;
-        portfolioValue: string;
-        invested: string;
-        adjclose: number;
-    }[];
+    monthlyPortfolio: MonthlyPortfolioPoint[];
 }
 
 /**

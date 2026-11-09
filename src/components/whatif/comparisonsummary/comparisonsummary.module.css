@@ -166,7 +166,10 @@
     color: var(--text);
     font-weight: 700;
     font-size: 13px;
-    display: flex;
+}
+
+.thAssetContent {
+    display: inline-flex;
     align-items: center;
     gap: 6px;
 }
