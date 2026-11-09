@@ -4,6 +4,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render } from "@testing-library/react";
 import axe from "axe-core";
+import useYahooStockSymbols from "@/hooks/useYahooStockSymbols";
 import TaxAdjustedReturns from "@/components/taxfreecalculator/taxfreecalculator";
 import InvestmentForm from "@/components/whatif/investmentform/investmentform";
 import AssetSelector from "@/components/whatif/assetselector/assetselector";
@@ -23,7 +24,7 @@ vi.mock("@/hooks/useCryptoLatestTick", () => ({
 }));
 
 vi.mock("@/hooks/useYahooStockSymbols", () => ({
-    default: () => ({ results: [], isLoading: false, error: null }),
+    default: vi.fn(() => ({ results: [], isLoading: false, error: null })),
 }));
 
 const contextValue = {
@@ -72,6 +73,23 @@ describe("a11y", () => {
     });
 
     it("what-if asset selector has no critical or serious violations", async () => {
+        const { container } = render(
+            <AssetContext.Provider value={contextValue}>
+                <AssetSelector />
+            </AssetContext.Provider>
+        );
+        expect(await seriousViolations(container)).toEqual([]);
+    });
+
+    it("what-if asset selector with search results listbox has no critical or serious violations", async () => {
+        vi.mocked(useYahooStockSymbols).mockReturnValue({
+            results: [
+                { symbol: "AAPL", shortname: "Apple Inc." },
+                { symbol: "MSFT", shortname: "Microsoft Corporation" },
+            ] as never,
+            isLoading: false,
+            error: null,
+        });
         const { container } = render(
             <AssetContext.Provider value={contextValue}>
                 <AssetSelector />

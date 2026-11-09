@@ -57,8 +57,12 @@ export default function useCryptoHistoricalData({
     const enabled = Boolean(market && instrument);
     const { data, isLoading, error } = useQuery({
         queryKey: ['cryptoHistoricalData', market, instrument, range],
-        queryFn: ({ signal: contextSignal }) =>
-            fetchCryptoHistoricalData(market!, instrument!, range, signal ?? contextSignal),
+        queryFn: ({ signal: contextSignal }) => {
+            const combinedSignal = signal && typeof AbortSignal.any === 'function'
+                ? AbortSignal.any([signal, contextSignal])
+                : (signal ?? contextSignal);
+            return fetchCryptoHistoricalData(market!, instrument!, range, combinedSignal);
+        },
         enabled,
         staleTime: 1000 * 60 * 5,
     });

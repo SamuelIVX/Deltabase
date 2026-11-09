@@ -42,8 +42,8 @@ export function calculateTaxReturns({
         return null;
     }
 
-    const safeTaxRate = Number.isFinite(taxRate) && taxRate >= 0 ? taxRate : 0;
-    const safeFeeRate = Number.isFinite(feeRate) && feeRate >= 0 ? feeRate : 0;
+    const safeTaxRate = Number.isFinite(taxRate) && taxRate > 0 ? taxRate : 0;
+    const safeFeeRate = Number.isFinite(feeRate) && feeRate > 0 ? feeRate : 0;
 
     const grossProfit = (currentPrice - openPrice) * quantity;
     const feeCost = ((openPrice + currentPrice) * quantity * safeFeeRate) / 100;
@@ -51,7 +51,7 @@ export function calculateTaxReturns({
     const taxAmount = taxableProfit > 0 ? (taxableProfit * safeTaxRate) / 100 : 0;
     const netProfit = taxableProfit - taxAmount;
     const initialInvestment = openPrice * quantity;
-    const netReturn = initialInvestment > 0 ? (netProfit / initialInvestment) * 100 : 0;
+    const netReturn = (netProfit / initialInvestment) * 100;
 
     return {
         grossProfit,

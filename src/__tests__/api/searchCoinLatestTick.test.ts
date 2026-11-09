@@ -89,6 +89,11 @@ describe("searchCoinLatestTick", () => {
         expect(fetch).toHaveBeenCalledTimes(1);
         const [calledUrl, calledOptions] = vi.mocked(fetch).mock.calls[0];
         expect(calledUrl.toString()).not.toContain("api_key");
+        const parsedUrl = new URL(calledUrl.toString());
+        expect(parsedUrl.searchParams.get("market")).toBe("kraken");
+        expect(parsedUrl.searchParams.get("instruments")).toBe("BTC-USD");
+        expect(parsedUrl.searchParams.get("apply_mapping")).toBe("true");
+        expect(parsedUrl.searchParams.get("response_format")).toBe("JSON");
         expect(calledOptions?.headers).toEqual({
             "Content-Type": "application/json",
             "Authorization": "Bearer coindesk-secret-key",
@@ -109,6 +114,10 @@ describe("searchCoinLatestTick", () => {
 
         expect(res.statusCode).toBe(200);
         expect(res.body).toEqual(tickData);
+        const [calledUrl] = vi.mocked(fetch).mock.calls[0];
+        const parsedUrl = new URL(calledUrl.toString());
+        expect(parsedUrl.searchParams.get("market")).toBe("kraken");
+        expect(parsedUrl.searchParams.get("instruments")).toBe("BTC-USD");
     });
 
     it("rejects inherited prototype properties such as constructor", async () => {
@@ -159,6 +168,21 @@ describe("searchCoinLatestTick", () => {
         vi.mocked(fetch).mockResolvedValue({
             ok: true,
             json: async () => ({ other: 123 }),
+        } as Response);
+
+        const req = { method: "GET", query: { instrument: "BTC-USD" } } as unknown as NextApiRequest;
+        const res = mockRes();
+        await handler(req, res as unknown as NextApiResponse);
+
+        expect(res.statusCode).toBe(400);
+        expect(res.body).toEqual({ error: "No tick data found" });
+    });
+
+    it("returns 400 when Data property is not an object", async () => {
+        process.env.COINDESK_API_KEY = "coindesk-secret-key";
+        vi.mocked(fetch).mockResolvedValue({
+            ok: true,
+            json: async () => ({ Data: "not-an-object" }),
         } as Response);
 
         const req = { method: "GET", query: { instrument: "BTC-USD" } } as unknown as NextApiRequest;

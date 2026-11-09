@@ -98,4 +98,59 @@ describe('useCryptoHistoricalData', () => {
 
         await waitFor(() => expect(result.current.error).toBe('Invalid API response format'));
     });
+
+    it('captures HTTP error status when response fails with non-JSON body', async () => {
+        vi.mocked(fetch).mockResolvedValue({
+            ok: false,
+            status: 502,
+            json: async () => {
+                throw new Error('not json');
+            },
+        } as unknown as Response);
+
+        const { result } = renderHook(
+            () => useCryptoHistoricalData({ market: 'kraken', instrument: 'BTC-USD' }),
+            { wrapper: createWrapper() }
+        );
+
+        await waitFor(() => expect(result.current.error).toBe('HTTP error 502'));
+        expect(result.current.results).toEqual([]);
+    });
+
+    it('defaults range to 1mo and constructs query URL accordingly', async () => {
+        vi.mocked(fetch).mockResolvedValue({
+            ok: true,
+            json: async () => [],
+        } as Response);
+
+        const { result } = renderHook(
+            () => useCryptoHistoricalData({ market: 'coinbase', instrument: 'ETH-USD' }),
+            { wrapper: createWrapper() }
+        );
+
+        await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+        expect(fetch).toHaveBeenCalledWith(
+            '/api/searchCoinHistoricalData?market=coinbase&instrument=ETH-USD&range=1mo',
+            expect.objectContaining({ signal: expect.anything() })
+        );
+    });
+
+    it('passes custom abort signal combined with query signal', async () => {
+        vi.mocked(fetch).mockResolvedValue({
+            ok: true,
+            json: async () => [],
+        } as Response);
+
+        const controller = new AbortController();
+        const { result } = renderHook(
+            () => useCryptoHistoricalData({ market: 'kraken', instrument: 'BTC-USD', signal: controller.signal }),
+            { wrapper: createWrapper() }
+        );
+
+        await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+        const callSignal = vi.mocked(fetch).mock.calls[0][1]?.signal;
+        expect(callSignal).toBeDefined();
+    });
 });

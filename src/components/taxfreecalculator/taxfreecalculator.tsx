@@ -94,8 +94,8 @@ export default function TaxAdjustedReturns() {
     const numFeeRate = parseFloat(feeRate);
 
     const validQuantity = Number.isFinite(numQuantity) && numQuantity > 0 ? numQuantity : 0;
-    const validTaxRate = Number.isFinite(numTaxRate) && numTaxRate >= 0 ? numTaxRate : 0;
-    const validFeeRate = Number.isFinite(numFeeRate) && numFeeRate >= 0 ? numFeeRate : 0;
+    const validTaxRate = Number.isFinite(numTaxRate) && numTaxRate >= 0 ? Math.min(numTaxRate, 100) : 0;
+    const validFeeRate = Number.isFinite(numFeeRate) && numFeeRate >= 0 ? Math.min(numFeeRate, 100) : 0;
 
     const stockReturns = quote?.regularMarketOpen && quote?.regularMarketPrice && validQuantity > 0
         ? calculateTaxReturns({
@@ -176,6 +176,7 @@ export default function TaxAdjustedReturns() {
                                     id="calc-tax-rate"
                                     type="number"
                                     min="0"
+                                    max="100"
                                     step="any"
                                     className={styles.input}
                                     value={taxRate}
@@ -189,6 +190,7 @@ export default function TaxAdjustedReturns() {
                                     id="calc-fee-rate"
                                     type="number"
                                     min="0"
+                                    max="100"
                                     step="any"
                                     className={styles.input}
                                     value={feeRate}

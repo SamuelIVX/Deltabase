@@ -99,12 +99,72 @@ describe("searchCoinHistoricalData", () => {
 
         expect(fetch).toHaveBeenCalledTimes(1);
         const [calledUrl, calledOptions] = vi.mocked(fetch).mock.calls[0];
-        expect(calledUrl.toString()).toContain("https://data-api.coindesk.com/spot/v1/historical/hours");
+        const parsedUrl = new URL(calledUrl.toString());
+        expect(parsedUrl.pathname).toBe("/spot/v1/historical/hours");
+        expect(parsedUrl.searchParams.get("market")).toBe("kraken");
+        expect(parsedUrl.searchParams.get("instrument")).toBe("BTC-USD");
+        expect(parsedUrl.searchParams.get("limit")).toBe("2000");
+        expect(parsedUrl.searchParams.get("aggregate")).toBe("1");
+        expect(parsedUrl.searchParams.get("fill")).toBe("true");
+        expect(parsedUrl.searchParams.get("apply_mapping")).toBe("true");
+        expect(parsedUrl.searchParams.get("response_format")).toBe("JSON");
         expect(calledUrl.toString()).not.toContain("api_key");
         expect(calledOptions?.headers).toEqual({
             "Content-Type": "application/json",
             "Authorization": "Bearer coindesk-secret-key",
         });
+    });
+
+    it("routes 5d range to hours endpoint and filters by timestamp", async () => {
+        process.env.COINDESK_API_KEY = "coindesk-secret-key";
+        const nowSec = Math.floor(Date.now() / 1000);
+        const candleData = [
+            { TIMESTAMP: nowSec - 4 * 24 * 3600, OPEN: 1, HIGH: 2, LOW: 1, CLOSE: 2, VOLUME: 10 },
+            { TIMESTAMP: nowSec - 6 * 24 * 3600, OPEN: 1, HIGH: 2, LOW: 1, CLOSE: 2, VOLUME: 10 },
+        ];
+        vi.mocked(fetch).mockResolvedValue({
+            ok: true,
+            json: async () => ({ Data: candleData }),
+        } as Response);
+
+        const req = { method: "GET", query: { range: "5d" } } as unknown as NextApiRequest;
+        const res = mockRes();
+        await handler(req, res as unknown as NextApiResponse);
+
+        expect(res.statusCode).toBe(200);
+        const [calledUrl] = vi.mocked(fetch).mock.calls[0];
+        expect(calledUrl.toString()).toContain("https://data-api.coindesk.com/spot/v1/historical/hours");
+        const results = res.body as Array<unknown>;
+        expect(results.length).toBe(1);
+    });
+
+    it.each([
+        ["1mo", 30 * 24 * 3600],
+        ["3mo", 90 * 24 * 3600],
+        ["6mo", 180 * 24 * 3600],
+        ["5y", 5 * 365 * 24 * 3600],
+        ["unknown_range", 30 * 24 * 3600],
+    ])("routes %s to days endpoint and filters candles older than range seconds", async (range, seconds) => {
+        process.env.COINDESK_API_KEY = "coindesk-secret-key";
+        const nowSec = Math.floor(Date.now() / 1000);
+        const candleData = [
+            { TIMESTAMP: nowSec - (seconds - 100), OPEN: 10, HIGH: 20, LOW: 10, CLOSE: 20, VOLUME: 5 },
+            { TIMESTAMP: nowSec - (seconds + 100), OPEN: 10, HIGH: 20, LOW: 10, CLOSE: 20, VOLUME: 5 },
+        ];
+        vi.mocked(fetch).mockResolvedValue({
+            ok: true,
+            json: async () => ({ Data: candleData }),
+        } as Response);
+
+        const req = { method: "GET", query: { range } } as unknown as NextApiRequest;
+        const res = mockRes();
+        await handler(req, res as unknown as NextApiResponse);
+
+        expect(res.statusCode).toBe(200);
+        const [calledUrl] = vi.mocked(fetch).mock.calls[0];
+        expect(calledUrl.toString()).toContain("https://data-api.coindesk.com/spot/v1/historical/days");
+        const results = res.body as Array<unknown>;
+        expect(results.length).toBe(1);
     });
 
     it("uses default parameters and days endpoint for 1mo range", async () => {
