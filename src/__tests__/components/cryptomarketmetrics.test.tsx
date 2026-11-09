@@ -108,4 +108,25 @@ describe('CryptoMarketMetrics', () => {
 
         expect(screen.getByText('2.5M EUR')).toBeInTheDocument();
     });
+
+    it('formats 24h change with quote currency and preserves small nonzero changes', () => {
+        vi.mocked(useCryptoLatestTick).mockReturnValue({
+            result: {
+                MARKET: 'kraken',
+                QUOTE: 'EUR',
+                MOVING_24_HOUR_CHANGE: 0.0042,
+            },
+            isLoading: false,
+            error: undefined,
+        } as unknown as ReturnType<typeof useCryptoLatestTick>);
+
+        render(
+            <CryptoMarketContext.Provider value={{ selectedCrypto: 'DOGE-EUR', setSelectedCrypto: vi.fn() }}>
+                <CryptoMarketMetrics />
+            </CryptoMarketContext.Provider>
+        );
+
+        expect(screen.getByText('24h Change (EUR)')).toBeInTheDocument();
+        expect(screen.getByText('+€0.0042')).toBeInTheDocument();
+    });
 });

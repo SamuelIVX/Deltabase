@@ -24,15 +24,20 @@ function subscribe(callback: () => void) {
   };
 }
 
+let memoryCollapsed: boolean = true;
+
 function getSnapshot(): boolean {
   try {
     const val = localStorage.getItem(STORAGE_KEY);
     if (val === null) {
+      memoryCollapsed = true;
       return true;
     }
-    return val === "true";
+    const parsed = val === "true";
+    memoryCollapsed = parsed;
+    return parsed;
   } catch {
-    return true;
+    return memoryCollapsed;
   }
 }
 
@@ -59,21 +64,23 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({
   const toggleSidebar = useCallback(() => {
     const current = getSnapshot();
     const next = !current;
+    memoryCollapsed = next;
     try {
       localStorage.setItem(STORAGE_KEY, String(next));
-      window.dispatchEvent(new Event(SIDEBAR_EVENT_NAME));
     } catch {
-      // Safe fallback
+      // Storage unavailable fallback
     }
+    window.dispatchEvent(new Event(SIDEBAR_EVENT_NAME));
   }, []);
 
   const setIsCollapsed = useCallback((collapsed: boolean) => {
+    memoryCollapsed = collapsed;
     try {
       localStorage.setItem(STORAGE_KEY, String(collapsed));
-      window.dispatchEvent(new Event(SIDEBAR_EVENT_NAME));
     } catch {
-      // Safe fallback
+      // Storage unavailable fallback
     }
+    window.dispatchEvent(new Event(SIDEBAR_EVENT_NAME));
   }, []);
 
   return (

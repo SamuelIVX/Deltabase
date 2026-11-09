@@ -28,6 +28,7 @@ const POPULAR_STOCKS = [
     { label: "MSFT", symbol: "MSFT" },
     { label: "NVDA", symbol: "NVDA" },
     { label: "TSLA", symbol: "TSLA" },
+    { label: "VXUS", symbol: "VXUS" },
 ];
 
 /**
@@ -254,7 +255,7 @@ const StockMarketChart = () => {
             <hr style={{ border: '1px solid var(--border)' }} />
 
             <div className={styles.dateRangeButtons}>
-                {['1d', '5d', '1m', '6m', '1y', '5y'].map((range) => (
+                {['1d', '5d', '1m', '3m', '6m', '1y', '5y'].map((range) => (
                     <button
                         key={range}
                         type="button"

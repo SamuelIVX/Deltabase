@@ -102,4 +102,38 @@ describe("MacroCards component", () => {
     expect(screen.getByText("N/A")).toBeInTheDocument();
     expect(screen.getByText("N/A (N/A)")).toBeInTheDocument();
   });
+
+  it("formats zero price as $0.00 and respects item.currency", () => {
+    vi.mocked(useMarketIndices).mockReturnValue({
+      indices: [
+        {
+          symbol: "ZERO",
+          name: "Zero Asset",
+          price: 0,
+          change: 0,
+          changePercent: 0,
+          currency: "USD",
+        },
+        {
+          symbol: "EURINDEX",
+          name: "Euro Index",
+          price: 1250.5,
+          change: 5.2,
+          changePercent: 0.42,
+          currency: "EUR",
+        },
+      ],
+      isLoading: false,
+      error: null,
+    });
+
+    render(<MacroCards />);
+
+    expect(screen.getByText("Zero Asset")).toBeInTheDocument();
+    expect(screen.getByText("$0.00")).toBeInTheDocument();
+    expect(screen.getByText("+0.00 (+0.00%)")).toBeInTheDocument();
+
+    expect(screen.getByText("Euro Index")).toBeInTheDocument();
+    expect(screen.getByText("€1,250.50")).toBeInTheDocument();
+  });
 });

@@ -7,6 +7,7 @@ import MarketBenchmarkChart, {
   BenchmarkTooltip,
   formatBenchmarkTick,
   calculateBenchmarkYDomain,
+  computeBenchmarkTicks,
 } from "./MarketBenchmarkChart";
 import useYahooBasicHistoricalData from "@/hooks/useYahooBasicHistoricalData";
 
@@ -31,7 +32,7 @@ describe("MarketBenchmarkChart component", () => {
 
     render(<MarketBenchmarkChart />);
 
-    expect(screen.getByText("S&P 500 Benchmark Performance")).toBeInTheDocument();
+    expect(screen.getByText("S&P 500 Performance")).toBeInTheDocument();
     expect(screen.getByText("^GSPC")).toBeInTheDocument();
 
     const btn1Y = screen.getByRole("button", { name: "1Y" });
@@ -42,6 +43,25 @@ describe("MarketBenchmarkChart component", () => {
     fireEvent.click(btn5D);
 
     expect(useYahooBasicHistoricalData).toHaveBeenCalledWith("^GSPC", "5d");
+  });
+
+  it("allows switching benchmark index", () => {
+    vi.mocked(useYahooBasicHistoricalData).mockReturnValue({
+      historicalData: [],
+      isLoading: false,
+      isPlaceholderData: false,
+      isFetching: false,
+      error: null,
+    });
+
+    render(<MarketBenchmarkChart />);
+
+    const nasdaqBtn = screen.getByRole("button", { name: "NASDAQ" });
+    fireEvent.click(nasdaqBtn);
+
+    expect(nasdaqBtn).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByText("NASDAQ Performance")).toBeInTheDocument();
+    expect(screen.getByText("^IXIC")).toBeInTheDocument();
   });
 
   it("renders loading indicator when fetching without cached series", () => {
@@ -97,8 +117,14 @@ describe("MarketBenchmarkChart component", () => {
   });
 
   describe("calculateBenchmarkYDomain helper", () => {
-    it("returns ['auto', 'auto'] when series is empty", () => {
+    it("returns ['auto', 'auto'] when series is empty or has only non-finite values", () => {
       expect(calculateBenchmarkYDomain([])).toEqual(["auto", "auto"]);
+      expect(
+        calculateBenchmarkYDomain([
+          { date: "2024-01-01", time: "", close: undefined as unknown as number, volume: 0 },
+          { date: "2024-01-02", time: "", close: NaN, volume: 0 },
+        ])
+      ).toEqual(["auto", "auto"]);
     });
 
     it("returns padded min and max bounds for valid price data", () => {
@@ -109,6 +135,37 @@ describe("MarketBenchmarkChart component", () => {
       const [min, max] = calculateBenchmarkYDomain(series);
       expect(min).toBe(98);
       expect(max).toBe(204);
+    });
+  });
+
+  describe("computeBenchmarkTicks helper", () => {
+    it("returns empty array for empty series", () => {
+      expect(computeBenchmarkTicks([], "1y")).toEqual([]);
+    });
+
+    it("deduplicates 5d series to one tick per distinct date", () => {
+      const series = [
+        { date: "2024-05-01", time: "09:30", close: 100, volume: 10 },
+        { date: "2024-05-01", time: "10:00", close: 101, volume: 20 },
+        { date: "2024-05-02", time: "09:30", close: 102, volume: 15 },
+        { date: "2024-05-02", time: "10:00", close: 103, volume: 25 },
+        { date: "2024-05-03", time: "09:30", close: 104, volume: 12 },
+      ];
+      const ticks = computeBenchmarkTicks(series, "5d");
+      expect(ticks).toEqual(["2024-05-01", "2024-05-02", "2024-05-03"]);
+    });
+
+    it("samples at most 6 evenly-spaced unique ticks for multi-month series", () => {
+      const series = Array.from({ length: 20 }, (_, i) => ({
+        date: `2024-01-${String(i + 1).padStart(2, "0")}`,
+        time: "",
+        close: 100 + i,
+        volume: 1000,
+      }));
+      const ticks = computeBenchmarkTicks(series, "1m");
+      expect(ticks.length).toBeLessThanOrEqual(6);
+      expect(ticks[0]).toBe("2024-01-01");
+      expect(ticks[ticks.length - 1]).toBe("2024-01-20");
     });
   });
 

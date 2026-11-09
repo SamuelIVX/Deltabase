@@ -10,6 +10,8 @@
 }
 
 .menu {
+  position: relative;
+  z-index: 50;
   width: 260px;
   min-width: 260px;
   max-width: 260px;

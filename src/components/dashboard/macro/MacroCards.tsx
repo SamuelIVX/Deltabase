@@ -46,10 +46,10 @@ export default function MacroCards(): React.JSX.Element {
         const isPositive = item.change != null && item.change >= 0;
         const changeSign = isPositive ? "+" : "";
         const formattedPrice =
-          item.price != null && item.price
+          item.price != null
             ? new Intl.NumberFormat("en-US", {
                 style: "currency",
-                currency: "USD",
+                currency: item.currency || "USD",
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               }).format(item.price)

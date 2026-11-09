@@ -23,6 +23,45 @@
   flex-wrap: wrap;
 }
 
+.controlsRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.benchmarkGroup {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background-color: var(--card);
+  padding: 3px;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--border);
+}
+
+.benchmarkBtn {
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm, 4px);
+  color: var(--textSoft);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.benchmarkBtn:hover {
+  color: var(--text);
+}
+
+.benchmarkBtnActive {
+  background-color: var(--accent);
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
 .titleGroup {
   display: flex;
   align-items: center;

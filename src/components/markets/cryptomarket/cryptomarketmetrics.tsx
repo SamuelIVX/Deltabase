@@ -116,14 +116,28 @@ const CryptoMarketMetrics = () => {
                             }
                         />
                         <StatItem
-                            label="24h Change ($)"
+                            label={`24h Change (${quoteCurrency})`}
                             value={
                                 (() => {
                                     const changeVal = result.MOVING_24_HOUR_CHANGE ?? result.CURRENT_DAY_CHANGE;
                                     if (changeVal == null) return 'N/A';
-                                    if (changeVal === 0) return '$0.00';
                                     const prefix = changeVal > 0 ? '+' : '';
-                                    return `${prefix}${formatCurrency(changeVal)}`;
+                                    const formatAmount = (val: number, minDec: number, maxDec: number): string => {
+                                        try {
+                                            return new Intl.NumberFormat('en-US', {
+                                                style: 'currency',
+                                                currency: quoteCurrency,
+                                                minimumFractionDigits: minDec,
+                                                maximumFractionDigits: maxDec,
+                                            }).format(val);
+                                        } catch {
+                                            return `${val.toLocaleString('en-US', { minimumFractionDigits: minDec, maximumFractionDigits: maxDec })} ${quoteCurrency}`;
+                                        }
+                                    };
+                                    if (changeVal === 0) return formatAmount(0, 2, 2);
+                                    const abs = Math.abs(changeVal);
+                                    const digits = abs < 0.01 ? (abs < 0.0001 ? 6 : 4) : 2;
+                                    return `${prefix}${formatAmount(changeVal, digits, digits)}`;
                                 })()
                             }
                         />

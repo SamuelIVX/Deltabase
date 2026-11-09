@@ -1,6 +1,6 @@
 "use client";
 /**
- * Interactive benchmark area chart of the S&P 500 index (^GSPC) with timeframe controls.
+ * Interactive benchmark area chart supporting S&P 500, NASDAQ, Dow Jones, and Bitcoin with timeframe controls.
  * Replaces legacy hardcoded weekly line chart on the dashboard home.
  */
 import React, { useState } from "react";
@@ -22,6 +22,19 @@ import formatNumber from "@/utils/formatNumber";
 import formatCurrency from "@/utils/formatCurrency";
 import { SymbolDataPoint } from "@/types/dataPoints";
 
+export interface BenchmarkOption {
+  label: string;
+  symbol: string;
+  name: string;
+}
+
+export const BENCHMARK_OPTIONS: BenchmarkOption[] = [
+  { label: "S&P 500", symbol: "^GSPC", name: "S&P 500" },
+  { label: "NASDAQ", symbol: "^IXIC", name: "NASDAQ" },
+  { label: "Dow Jones", symbol: "^DJI", name: "Dow Jones" },
+  { label: "Bitcoin", symbol: "BTC-USD", name: "Bitcoin" },
+];
+
 const TIMEFRAMES = [
   { label: "1D", value: "1d" },
   { label: "5D", value: "5d" },
@@ -34,7 +47,7 @@ const TIMEFRAMES = [
 /**
  * Formats XAxis date ticks according to selected range.
  * @param val - Date string or timestamp.
- * @param selectedRange - Current range timeframe (e.g. "1d", "5d", "1y").
+ * @param selectedRange - Current range timeframe (e.g. "1d", "5d", "1m", "1y").
  * @returns Formatted tick string.
  */
 export function formatBenchmarkTick(val: string, selectedRange: string): string {
@@ -45,21 +58,68 @@ export function formatBenchmarkTick(val: string, selectedRange: string): string 
   if (selectedRange === "5d") {
     return d.toLocaleDateString("en-US", { weekday: "short", day: "numeric", timeZone: "UTC" });
   }
+  if (selectedRange === "1m") {
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+  }
   return d.toLocaleDateString("en-US", { month: "short", year: "2-digit", timeZone: "UTC" });
 }
 
 /**
+ * Computes deduplicated, evenly-spaced ticks for the benchmark X-axis.
+ * Prevents tick clustering and duplicate day/month labels.
+ * @param series - Historical symbol data points.
+ * @param range - Selected range identifier.
+ * @returns Array of unique tick identifiers.
+ */
+export function computeBenchmarkTicks(series: SymbolDataPoint[], range: string): string[] {
+  if (!series || series.length === 0) return [];
+  const key = range === "1d" ? "time" : "date";
+  const rawValues = series.map((pt) => pt[key]).filter((v): v is string => Boolean(v));
+  if (rawValues.length === 0) return [];
+
+  // For 5d range, pick the first point for each distinct date to eliminate duplicates
+  if (range === "5d") {
+    const uniqueDates: string[] = [];
+    const seen = new Set<string>();
+    for (const pt of series) {
+      if (pt.date && !seen.has(pt.date)) {
+        seen.add(pt.date);
+        uniqueDates.push(pt.date);
+      }
+    }
+    return uniqueDates;
+  }
+
+  const uniqueValues = Array.from(new Set(rawValues));
+  if (uniqueValues.length <= 6) {
+    return uniqueValues;
+  }
+
+  const count = Math.min(6, uniqueValues.length);
+  const step = (uniqueValues.length - 1) / (count - 1);
+  const selected: string[] = [];
+  for (let i = 0; i < count; i++) {
+    const idx = Math.round(i * step);
+    selected.push(uniqueValues[idx]);
+  }
+  return Array.from(new Set(selected));
+}
+
+/**
  * Calculates domain [min, max] for the YAxis based on series points.
+ * Explicitly guards against empty or non-finite inputs.
  * @param series - Symbol data points.
  * @returns Y-axis domain tuple.
  */
 export function calculateBenchmarkYDomain(series: SymbolDataPoint[]): [number | string, number | string] {
-  const minPrice = series.length > 0
-    ? Math.min(...series.map((d: SymbolDataPoint) => d.close ?? Infinity).filter(Number.isFinite))
-    : 0;
-  const maxPrice = series.length > 0
-    ? Math.max(...series.map((d: SymbolDataPoint) => d.close ?? -Infinity).filter(Number.isFinite))
-    : 0;
+  const closes = series
+    .map((d: SymbolDataPoint) => d.close)
+    .filter((c): c is number => typeof c === "number" && Number.isFinite(c));
+
+  if (closes.length === 0) return ["auto", "auto"];
+
+  const minPrice = Math.min(...closes);
+  const maxPrice = Math.max(...closes);
 
   return minPrice > 0 && maxPrice > 0
     ? [Math.floor(minPrice * 0.98), Math.ceil(maxPrice * 1.02)]
@@ -94,54 +154,90 @@ export const BenchmarkTooltip: React.FC<
 };
 
 /**
- * Renders the live interactive S&P 500 benchmark performance chart.
- * @returns {JSX.Element} Benchmark chart panel with timeframe selectors.
+ * Renders the live interactive benchmark performance chart with selectable index.
+ * @returns {JSX.Element} Benchmark chart panel with index and timeframe selectors.
  */
 export default function MarketBenchmarkChart(): React.JSX.Element {
+  const [selectedBenchmark, setSelectedBenchmark] = useState<BenchmarkOption>(
+    BENCHMARK_OPTIONS[0]
+  );
   const [selectedRange, setSelectedRange] = useState("1y");
   const { historicalData, isLoading, error } = useYahooBasicHistoricalData(
-    "^GSPC",
+    selectedBenchmark.symbol,
     selectedRange
   );
 
   const series = Array.isArray(historicalData) ? historicalData : [];
   const yDomain = calculateBenchmarkYDomain(series);
+  const computedTicks = computeBenchmarkTicks(series, selectedRange);
 
   return (
-    <div className={styles.container} role="region" aria-label="S&P 500 Benchmark Performance Chart">
+    <div
+      className={styles.container}
+      role="region"
+      aria-label={`${selectedBenchmark.name} Benchmark Performance Chart`}
+    >
       <div className={styles.header}>
         <div className={styles.titleGroup}>
-          <h2 className={styles.title}>S&P 500 Benchmark Performance</h2>
-          <span className={styles.badge}>^GSPC</span>
+          <h2 className={styles.title}>{selectedBenchmark.name} Performance</h2>
+          <span className={styles.badge}>{selectedBenchmark.symbol}</span>
         </div>
 
-        <div className={styles.timeframeGroup} role="group" aria-label="Timeframe range">
-          {TIMEFRAMES.map((tf) => (
-            <button
-              key={tf.value}
-              type="button"
-              aria-pressed={selectedRange === tf.value}
-              className={`${styles.timeframeBtn} ${
-                selectedRange === tf.value ? styles.timeframeBtnActive : ""
-              }`}
-              onClick={() => setSelectedRange(tf.value)}
-            >
-              {tf.label}
-            </button>
-          ))}
+        <div className={styles.controlsRow}>
+          <div
+            className={styles.benchmarkGroup}
+            role="group"
+            aria-label="Benchmark selector"
+          >
+            {BENCHMARK_OPTIONS.map((bm) => (
+              <button
+                key={bm.symbol}
+                type="button"
+                aria-pressed={selectedBenchmark.symbol === bm.symbol}
+                className={`${styles.benchmarkBtn} ${
+                  selectedBenchmark.symbol === bm.symbol
+                    ? styles.benchmarkBtnActive
+                    : ""
+                }`}
+                onClick={() => setSelectedBenchmark(bm)}
+              >
+                {bm.label}
+              </button>
+            ))}
+          </div>
+
+          <div
+            className={styles.timeframeGroup}
+            role="group"
+            aria-label="Timeframe range"
+          >
+            {TIMEFRAMES.map((tf) => (
+              <button
+                key={tf.value}
+                type="button"
+                aria-pressed={selectedRange === tf.value}
+                className={`${styles.timeframeBtn} ${
+                  selectedRange === tf.value ? styles.timeframeBtnActive : ""
+                }`}
+                onClick={() => setSelectedRange(tf.value)}
+              >
+                {tf.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {error && series.length === 0 ? (
         <div className={styles.errorState}>
-          <p>Unable to load S&P 500 historical benchmark data.</p>
+          <p>Unable to load {selectedBenchmark.name} historical benchmark data.</p>
         </div>
       ) : (
         <div className={styles.chartWrapper}>
           {isLoading && series.length === 0 && (
             <div className={styles.loadingOverlay} role="status">
               <MoonLoader color="var(--accent, #3b82f6)" size={48} />
-              <span>Loading S&P 500 benchmark data...</span>
+              <span>Loading {selectedBenchmark.name} benchmark data...</span>
             </div>
           )}
           <ResponsiveContainer width="100%" height="100%">
@@ -155,6 +251,9 @@ export default function MarketBenchmarkChart(): React.JSX.Element {
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light, #334155)" opacity={0.4} />
               <XAxis
                 dataKey={selectedRange === "1d" ? "time" : "date"}
+                ticks={computedTicks.length > 0 ? computedTicks : undefined}
+                interval={computedTicks.length > 0 ? 0 : "preserveStartEnd"}
+                minTickGap={28}
                 stroke="var(--border-light, #334155)"
                 tick={{ fill: "var(--textSoft, #94a3b8)", fontSize: 11 }}
                 tickFormatter={(val: string) => formatBenchmarkTick(val, selectedRange)}
