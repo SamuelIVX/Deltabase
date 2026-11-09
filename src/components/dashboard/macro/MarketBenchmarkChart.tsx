@@ -39,6 +39,7 @@ const TIMEFRAMES = [
   { label: "1D", value: "1d" },
   { label: "5D", value: "5d" },
   { label: "1M", value: "1m" },
+  { label: "3M", value: "3m" },
   { label: "6M", value: "6m" },
   { label: "1Y", value: "1y" },
   { label: "5Y", value: "5y" },
@@ -47,7 +48,7 @@ const TIMEFRAMES = [
 /**
  * Formats XAxis date ticks according to selected range.
  * @param val - Date string or timestamp.
- * @param selectedRange - Current range timeframe (e.g. "1d", "5d", "1m", "1y").
+ * @param selectedRange - Current range timeframe (e.g. "1d", "5d", "1m", "3m", "1y").
  * @returns Formatted tick string.
  */
 export function formatBenchmarkTick(val: string, selectedRange: string): string {
@@ -58,7 +59,7 @@ export function formatBenchmarkTick(val: string, selectedRange: string): string 
   if (selectedRange === "5d") {
     return d.toLocaleDateString("en-US", { weekday: "short", day: "numeric", timeZone: "UTC" });
   }
-  if (selectedRange === "1m") {
+  if (selectedRange === "1m" || selectedRange === "3m") {
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
   }
   return d.toLocaleDateString("en-US", { month: "short", year: "2-digit", timeZone: "UTC" });

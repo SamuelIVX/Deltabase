@@ -8,6 +8,7 @@ import Image from "next/image";
 import MenuLink, { MenuItem } from "./menuLink/menuLink";
 import styles from "./sidebar.module.css";
 import { useSidebar } from "./SidebarContext";
+import ThemeToggle from "@/components/theme/ThemeToggle";
 
 import {
   MdDashboard,
@@ -105,14 +106,21 @@ const Sidebar = () => {
         {isCollapsed ? <MdChevronRight size={16} /> : <MdChevronLeft size={16} />}
       </button>
 
-      <div
-        className={isCollapsed ? styles.footerBadgeCollapsed : styles.footerBadge}
-        title={isCollapsed ? "DeltaBase Analytics • v1.0" : undefined}
-      >
-        <span className={styles.statusDot} aria-hidden="true" />
-        {!isCollapsed && (
-          <span className={styles.footerText}>DeltaBase Analytics • v1.0</span>
-        )}
+      <div className={isCollapsed ? styles.footerSectionCollapsed : styles.footerSection}>
+        <div className={isCollapsed ? styles.themeToggleRowCollapsed : styles.themeToggleRow}>
+          <ThemeToggle />
+          {!isCollapsed && <span className={styles.themeToggleLabel}>Appearance</span>}
+        </div>
+
+        <div
+          className={isCollapsed ? styles.footerBadgeCollapsed : styles.footerBadge}
+          title={isCollapsed ? "DeltaBase Analytics • v1.0" : undefined}
+        >
+          <span className={styles.statusDot} aria-hidden="true" />
+          {!isCollapsed && (
+            <span className={styles.footerText}>DeltaBase Analytics • v1.0</span>
+          )}
+        </div>
       </div>
     </aside>
   );

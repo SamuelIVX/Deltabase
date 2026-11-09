@@ -72,38 +72,44 @@ export default function MarketRibbon(): JSX.Element {
     return <></>;
   }
 
+  const tickerItems = [...indices, ...indices];
+
   return (
     <div
       className={styles.ribbon}
       role="region"
       aria-label="Live market benchmark indices"
     >
-      {indices.map((idx) => {
-        const isPositive = typeof idx.changePercent === "number" && idx.changePercent > 0;
-        const isNegative = typeof idx.changePercent === "number" && idx.changePercent < 0;
-        const badgeClass = isPositive
-          ? styles.gain
-          : isNegative
-          ? styles.loss
-          : styles.neutral;
+      <div className={styles.track}>
+        {tickerItems.map((idx, index) => {
+          const isDuplicate = index >= indices.length;
+          const isPositive = typeof idx.changePercent === "number" && idx.changePercent > 0;
+          const isNegative = typeof idx.changePercent === "number" && idx.changePercent < 0;
+          const badgeClass = isPositive
+            ? styles.gain
+            : isNegative
+            ? styles.loss
+            : styles.neutral;
 
-        return (
-          <div
-            key={idx.symbol}
-            className={styles.item}
-            title={`${idx.name} (${idx.symbol})`}
-          >
-            <span className={styles.name}>{idx.name}</span>
-            <span className={styles.price}>{formatPrice(idx.price)}</span>
-            <span className={`${styles.badge} ${badgeClass}`}>
-              <span className={styles.srOnly}>{idx.name} change: </span>
-              {isPositive && <MdTrendingUp size={12} aria-hidden="true" />}
-              {isNegative && <MdTrendingDown size={12} aria-hidden="true" />}
-              {formatPercent(idx.changePercent)}
-            </span>
-          </div>
-        );
-      })}
+          return (
+            <div
+              key={`${idx.symbol}-${index}`}
+              className={styles.item}
+              title={`${idx.name} (${idx.symbol})`}
+              aria-hidden={isDuplicate ? true : undefined}
+            >
+              <span className={styles.name}>{idx.name}</span>
+              <span className={styles.price}>{formatPrice(idx.price)}</span>
+              <span className={`${styles.badge} ${badgeClass}`}>
+                <span className={styles.srOnly}>{idx.name} change: </span>
+                {isPositive && <MdTrendingUp size={12} aria-hidden="true" />}
+                {isNegative && <MdTrendingDown size={12} aria-hidden="true" />}
+                {formatPercent(idx.changePercent)}
+              </span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

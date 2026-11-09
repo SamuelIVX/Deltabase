@@ -21,7 +21,6 @@ describe("Navbar", () => {
     render(<Navbar />);
     expect(screen.getByRole("heading", { level: 1, name: "Market Dashboard" })).toBeDefined();
     expect(screen.getByText(/Real-time market indices/i)).toBeDefined();
-    expect(screen.getByRole("button", { name: /Switch to light theme/i })).toBeDefined();
   });
 
   it("renders What-If Simulator metadata when on /dashboard/whatif", () => {

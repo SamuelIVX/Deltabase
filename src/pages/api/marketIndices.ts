@@ -18,8 +18,15 @@ const INDEX_CONFIG: Array<{ symbol: string; name: string }> = [
   { symbol: "^GSPC", name: "S&P 500" },
   { symbol: "^IXIC", name: "NASDAQ" },
   { symbol: "^DJI", name: "Dow Jones" },
+  { symbol: "^RUT", name: "Russell 2000" },
   { symbol: "BTC-USD", name: "Bitcoin" },
   { symbol: "ETH-USD", name: "Ethereum" },
+  { symbol: "SOL-USD", name: "Solana" },
+  { symbol: "VXUS", name: "Total Intl Stock" },
+  { symbol: "AAPL", name: "Apple" },
+  { symbol: "MSFT", name: "Microsoft" },
+  { symbol: "NVDA", name: "NVIDIA" },
+  { symbol: "AMZN", name: "Amazon" },
 ];
 
 /**

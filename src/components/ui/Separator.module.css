@@ -1,0 +1,20 @@
+/**
+ * Styles for accessible Separator divider primitive.
+ */
+.separator {
+  flex-shrink: 0;
+  background-color: var(--border);
+  border: 0;
+}
+
+.horizontal {
+  height: 1px;
+  width: 100%;
+}
+
+.vertical {
+  width: 1px;
+  height: 100%;
+  min-height: 16px;
+  align-self: stretch;
+}

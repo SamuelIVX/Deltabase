@@ -6,6 +6,7 @@ import React from "react";
 import styles from "./rightbar.module.css";
 import useFinnhubNews from "@/hooks/useFinnhubNews";
 import type { MarketNewsArticle } from "@/types/news";
+import { Badge } from "@/components/ui/Badge";
 
 export type { MarketNewsArticle as NewsItem };
 
@@ -41,7 +42,7 @@ const Rightbar = () => {
       <div className={styles.card}>
         <div className={styles.header}>
           <h2 className={styles.title}>Market News</h2>
-          <span className={styles.liveBadge}>Live Wire</span>
+          <Badge variant="accent" className={styles.liveBadge}>Live Wire</Badge>
         </div>
 
         {isPending && (

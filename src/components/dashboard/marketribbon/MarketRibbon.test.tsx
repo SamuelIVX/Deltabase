@@ -48,13 +48,13 @@ describe("MarketRibbon", () => {
     });
 
     render(<MarketRibbon />);
-    expect(screen.getByText("S&P 500")).toBeTruthy();
-    expect(screen.getByText("$5,864.67")).toBeTruthy();
-    expect(screen.getByText("+0.24%")).toBeTruthy();
+    expect(screen.getAllByText("S&P 500")[0]).toBeTruthy();
+    expect(screen.getAllByText("$5,864.67")[0]).toBeTruthy();
+    expect(screen.getAllByText("+0.24%")[0]).toBeTruthy();
 
-    expect(screen.getByText("Bitcoin")).toBeTruthy();
-    expect(screen.getByText("$76,500.00")).toBeTruthy();
-    expect(screen.getByText("-0.65%")).toBeTruthy();
+    expect(screen.getAllByText("Bitcoin")[0]).toBeTruthy();
+    expect(screen.getAllByText("$76,500.00")[0]).toBeTruthy();
+    expect(screen.getAllByText("-0.65%")[0]).toBeTruthy();
   });
 
   it("renders error state when hook returns an error and indices list is empty", () => {

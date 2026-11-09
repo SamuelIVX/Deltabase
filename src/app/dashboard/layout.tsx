@@ -28,7 +28,9 @@ const DashboardShell: React.FC<LayoutProps> = ({ children }) => {
       <main className={styles.content}>
         {isDashboardHome && <MarketRibbon />}
         <Navbar />
-        {children}
+        <div key={pathname} className="page-entrance">
+          {children}
+        </div>
         <Footer />
       </main>
     </div>
