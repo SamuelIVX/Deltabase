@@ -7,8 +7,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getCoinDeskHeaders } from "@/lib/coindesk";
 import { normalizeCryptoSymbol } from "@/utils/normalizeCryptoSymbol";
+import { isValidCryptoSymbol, isValidCryptoMarket } from "@/lib/validation";
 
 /**
+
+
  * GET latest tick for `instrument` on `market`.
  * SECURITY: uses `COINDESK_API_KEY`; do not log the key or raw Authorization header.
  * @param req - Optional `market` (default `kraken`), `instrument` (default `BTC-USD`).
@@ -29,17 +32,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const {
-        market = 'kraken',
-        instrument = 'BTC-USD'
+        market,
+        instrument
     } = req.query;
 
-    const rawInstrument = typeof instrument === 'string' ? instrument : 'BTC-USD';
-    const normalizedInstrument = normalizeCryptoSymbol(rawInstrument);
+    if (market !== undefined && typeof market !== 'string') {
+        return res.status(400).json({ error: "Invalid market parameter" });
+    }
+    const resolvedMarket = market ?? 'kraken';
+    if (!isValidCryptoMarket(resolvedMarket)) {
+        return res.status(400).json({ error: "Invalid market parameter" });
+    }
+
+    if (instrument !== undefined && typeof instrument !== 'string') {
+        return res.status(400).json({ error: "Invalid instrument parameter" });
+    }
+    const resolvedInstrument = instrument ?? 'BTC-USD';
+    if (!isValidCryptoSymbol(resolvedInstrument)) {
+        return res.status(400).json({ error: "Invalid instrument parameter" });
+    }
+    const normalizedInstrument = normalizeCryptoSymbol(resolvedInstrument);
 
     const baseUrl = 'https://data-api.coindesk.com/spot/v1/latest/tick';
 
     const params = {
-        market: market as string,
+        market: resolvedMarket,
         instruments: normalizedInstrument,
         apply_mapping: "true",
         response_format: "JSON",
@@ -69,8 +86,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             typeof data.Data === 'object' &&
             (Object.prototype.hasOwnProperty.call(data.Data, normalizedInstrument)
                 ? data.Data[normalizedInstrument]
-                : Object.prototype.hasOwnProperty.call(data.Data, rawInstrument)
-                    ? data.Data[rawInstrument]
+                : Object.prototype.hasOwnProperty.call(data.Data, resolvedInstrument)
+                    ? data.Data[resolvedInstrument]
                     : undefined);
 
         if (!tick) {

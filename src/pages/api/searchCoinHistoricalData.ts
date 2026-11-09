@@ -6,8 +6,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getCoinDeskHeaders } from "@/lib/coindesk";
 import { normalizeCryptoSymbol } from "@/utils/normalizeCryptoSymbol";
+import { isValidCryptoSymbol, isValidCryptoMarket } from "@/lib/validation";
 
 interface CandleData {
+
+
     TIMESTAMP: number;
     OPEN: number;
     HIGH: number;
@@ -38,13 +41,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const {
-        market = 'kraken',
-        instrument = 'BTC-USD',
+        market,
+        instrument,
         range = '1d'
     } = req.query;
 
-    const rawInstrument = typeof instrument === 'string' ? instrument : 'BTC-USD';
-    const normalizedInstrument = normalizeCryptoSymbol(rawInstrument);
+    if (market !== undefined && typeof market !== 'string') {
+        return res.status(400).json({ error: "Invalid market parameter" });
+    }
+    const resolvedMarket = market ?? 'kraken';
+    if (!isValidCryptoMarket(resolvedMarket)) {
+        return res.status(400).json({ error: "Invalid market parameter" });
+    }
+
+    if (instrument !== undefined && typeof instrument !== 'string') {
+        return res.status(400).json({ error: "Invalid instrument parameter" });
+    }
+    const resolvedInstrument = instrument ?? 'BTC-USD';
+    if (!isValidCryptoSymbol(resolvedInstrument)) {
+        return res.status(400).json({ error: "Invalid instrument parameter" });
+    }
+    const normalizedInstrument = normalizeCryptoSymbol(resolvedInstrument);
 
     // Calculate timestamps based on range
     const now = Math.floor(Date.now() / 1000); // Current time in seconds
@@ -70,7 +87,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const baseUrl = endpointMap[selectedRange.interval];
 
     const params = {
-        market: market as string,
+        market: resolvedMarket,
         instrument: normalizedInstrument,
         limit: '2000',
         aggregate: '1',

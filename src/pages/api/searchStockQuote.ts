@@ -4,11 +4,12 @@
  */
 import type { NextApiRequest, NextApiResponse } from 'next';
 import yahooFinance from '@/lib/yahooFinance';
+import { isValidStockSymbol } from '@/lib/validation';
 
 /**
  * GET `?symbol=` — returns a Yahoo quote payload for the given ticker.
  * @param req - Must include a string `symbol` query param.
- * @param res - JSON quote on 200; 400 if symbol missing; 500 on Yahoo errors.
+ * @param res - JSON quote on 200; 400 if symbol missing or invalid; 500 on Yahoo errors.
  * @example
  * // GET /api/searchStockQuote?symbol=AAPL → 200 { symbol, regularMarketPrice, ... }
  */
@@ -19,12 +20,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const { symbol } = req.query;
-    if (!symbol || typeof symbol !== 'string') {
+    if (!isValidStockSymbol(symbol)) {
         return res.status(400).json({ error: 'Missing or invalid symbol parameter.' });
     }
 
     try {
-        const results = await yahooFinance.quote(symbol);
+        const results = await yahooFinance.quote(symbol.trim().toUpperCase());
+
         if (typeof res.setHeader === 'function') {
             res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
         }

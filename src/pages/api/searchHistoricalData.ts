@@ -4,6 +4,7 @@
  */
 import { NextApiRequest, NextApiResponse } from "next";
 import yahooFinance from "@/lib/yahooFinance";
+import { isValidStockSymbol } from "@/lib/validation";
 
 type YahooChartQuote = {
     date?: Date;
@@ -30,11 +31,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     const { symbol, years } = req.query;
 
-    if (typeof symbol !== 'string' || !symbol.trim()) {
+    if (!isValidStockSymbol(symbol)) {
         return res.status(400).json({ error: "Invalid symbol parameter" });
     }
 
     const parsedYears = Number(years);
+
     if (typeof years !== 'string' || !Number.isInteger(parsedYears) || parsedYears < 1 || parsedYears > 30) {
         return res.status(400).json({ error: "Invalid years parameter: must be an integer between 1 and 30" });
     }
