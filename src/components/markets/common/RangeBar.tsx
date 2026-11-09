@@ -13,12 +13,19 @@ export interface RangeBarProps {
     current?: number | null | undefined;
 }
 
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+});
+
 /**
  * Accessible visual range slider meter.
  * @param props - Range bar configuration including label, low, high, and optional current price.
  * @returns {JSX.Element | null} Meter element, or null if range bounds are invalid.
  */
-export const RangeBar: React.FC<RangeBarProps> = ({ label, low, high, current }) => {
+const RangeBar: React.FC<RangeBarProps> = ({ label, low, high, current }) => {
     if (low == null || high == null || high <= low) {
         return null;
     }
@@ -36,37 +43,43 @@ export const RangeBar: React.FC<RangeBarProps> = ({ label, low, high, current })
             <div className={styles.rangeHeader}>
                 <span className={styles.rangeLabel}>{label}</span>
                 <div className={styles.rangeValues}>
-                    <span className={styles.rangeBound}>${low}</span>
+                    <span className={styles.rangeBound}>{currencyFormatter.format(low)}</span>
                     {hasCurrent && (
                         <span className={styles.rangeCurrent}>
-                            Current: ${current}
+                            Current: {currencyFormatter.format(current as number)}
                         </span>
                     )}
-                    <span className={styles.rangeBound}>${high}</span>
+                    <span className={styles.rangeBound}>{currencyFormatter.format(high)}</span>
                 </div>
             </div>
-            <div
-                className={styles.rangeTrack}
-                role="meter"
-                aria-label={label}
-                aria-valuemin={low}
-                aria-valuemax={high}
-                aria-valuenow={clampedPrice}
-            >
-                {percent != null && (
-                    <>
-                        <div
-                            className={styles.rangeFill}
-                            style={{ width: `${percent.toFixed(1)}%` }}
-                        />
-                        <div
-                            className={styles.rangeThumb}
-                            style={{ left: `${percent.toFixed(1)}%` }}
-                            aria-hidden="true"
-                        />
-                    </>
-                )}
-            </div>
+            {hasCurrent ? (
+                <div
+                    className={styles.rangeTrack}
+                    role="meter"
+                    aria-label={label}
+                    aria-valuemin={low}
+                    aria-valuemax={high}
+                    aria-valuenow={clampedPrice}
+                >
+                    {percent != null && (
+                        <>
+                            <div
+                                className={styles.rangeFill}
+                                style={{ width: `${percent.toFixed(1)}%` }}
+                            />
+                            <div
+                                className={styles.rangeThumb}
+                                style={{ left: `${percent.toFixed(1)}%` }}
+                                aria-hidden="true"
+                            />
+                        </>
+                    )}
+                </div>
+            ) : (
+                <div className={styles.rangeTrack} aria-hidden="true">
+                    <div className={styles.rangeFill} style={{ width: "0%" }} />
+                </div>
+            )}
         </div>
     );
 };

@@ -41,9 +41,7 @@ const Rightbar = () => {
       <div className={styles.card}>
         <div className={styles.header}>
           <h2 className={styles.title}>Market Intelligence</h2>
-          <span className={styles.liveBadge} aria-label="Live market wire">
-            Live Wire
-          </span>
+          <span className={styles.liveBadge}>Live Wire</span>
         </div>
 
         {isPending && (

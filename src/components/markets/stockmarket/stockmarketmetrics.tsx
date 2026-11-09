@@ -16,8 +16,6 @@ import formatPercent from '@/utils/formatPercent';
 import formatDate from '@/utils/formatDate';
 import RangeBar from '../common/RangeBar';
 
-export { RangeBar };
-
 const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
     <div className={styles.statItem}>
         <span className={styles.label}>{label}</span>

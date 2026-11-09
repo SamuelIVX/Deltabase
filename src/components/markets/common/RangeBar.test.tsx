@@ -36,12 +36,11 @@ describe("RangeBar component", () => {
         expect(screen.getByText("Current: $250")).toBeInTheDocument();
     });
 
-    it("renders range bar without current price label or thumb when current is omitted", () => {
-        render(<RangeBar label="Year Range" low={100} high={200} />);
-        const meter = screen.getByRole("meter", { name: "Year Range" });
-        expect(meter).toHaveAttribute("aria-valuemin", "100");
-        expect(meter).toHaveAttribute("aria-valuemax", "200");
-        expect(meter).not.toHaveAttribute("aria-valuenow");
+    it("renders decorative track with aria-hidden and omits meter role when current is omitted", () => {
+        const { container } = render(<RangeBar label="Year Range" low={100} high={200} />);
+        expect(screen.queryByRole("meter")).not.toBeInTheDocument();
+        const track = container.querySelector('[aria-hidden="true"]');
+        expect(track).toBeInTheDocument();
         expect(screen.queryByText(/Current:/i)).not.toBeInTheDocument();
         expect(screen.getByText("$100")).toBeInTheDocument();
         expect(screen.getByText("$200")).toBeInTheDocument();

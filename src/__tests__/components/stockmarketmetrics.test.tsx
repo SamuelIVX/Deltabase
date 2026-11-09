@@ -1,11 +1,11 @@
 /**
- * Unit tests for the StockMarketMetrics component and 52-Week RangeBar.
+ * Unit tests for the StockMarketMetrics component.
  * Verifies safe rendering when range fields are undefined, ETF expense ratio display,
- * and accessible meter attributes.
+ * and key statistics presentation.
  */
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import StockMarketMetrics, { RangeBar } from "@/components/markets/stockmarket/stockmarketmetrics";
+import StockMarketMetrics from "@/components/markets/stockmarket/stockmarketmetrics";
 import { StockMarketContext } from "@/components/markets/stockmarket/stockmarketchart";
 
 let mockQuoteState = {
@@ -21,27 +21,6 @@ vi.mock("@/hooks/useYahooStockQuote", () => ({
 vi.mock("@/hooks/useDebounce", () => ({
     default: (val: string) => val,
 }));
-
-describe("RangeBar component", () => {
-    it("returns null when low, high, or inverted range is provided", () => {
-        const { container: c1 } = render(<RangeBar label="52W" low={undefined} high={100} current={50} />);
-        expect(c1).toBeEmptyDOMElement();
-
-        const { container: c2 } = render(<RangeBar label="52W" low={100} high={50} current={75} />);
-        expect(c2).toBeEmptyDOMElement();
-    });
-
-    it("renders meter element with accessible attributes and clamped values", () => {
-        render(<RangeBar label="52-Week Range" low={100} high={200} current={150} />);
-        const meter = screen.getByRole("meter", { name: "52-Week Range" });
-        expect(meter).toHaveAttribute("aria-valuemin", "100");
-        expect(meter).toHaveAttribute("aria-valuemax", "200");
-        expect(meter).toHaveAttribute("aria-valuenow", "150");
-        expect(screen.getByText("Current: $150")).toBeInTheDocument();
-        expect(screen.getByText("$100")).toBeInTheDocument();
-        expect(screen.getByText("$200")).toBeInTheDocument();
-    });
-});
 
 describe("StockMarketMetrics component", () => {
     it("renders please select a stock message when no quote is loaded", () => {
