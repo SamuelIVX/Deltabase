@@ -385,6 +385,8 @@ export default function TaxAdjustedReturns() {
                                         setTaxRate(raw);
                                         if (Number.isFinite(val)) {
                                             setFederalRate(Math.max(0, val));
+                                        } else {
+                                            setFederalRate(0);
                                         }
                                     }
                                     setIsTaxPreset(false);

@@ -24,7 +24,16 @@ export interface YahooStockQuoteState {
 const fetchYahooStockQuote = async (symbol: string): Promise<YahooQuote> => {
     const res = await fetch(`/api/searchStockQuote?symbol=${encodeURIComponent(symbol)}`);
     if (!res.ok) {
-        throw new Error(`Error fetching quote: ${res.statusText}`);
+        let errorMsg = res.statusText;
+        try {
+            const body = await res.json();
+            if (body && typeof body.error === 'string' && body.error) {
+                errorMsg = body.error;
+            }
+        } catch {
+            // Keep res.statusText fallback
+        }
+        throw new Error(`Error fetching quote: ${errorMsg || res.status}`);
     }
     return await res.json();
 };

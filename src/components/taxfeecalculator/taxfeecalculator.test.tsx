@@ -354,4 +354,19 @@ describe("TaxAdjustedReturns", () => {
         fireEvent.change(taxInput, { target: { value: "125" } });
         expect(taxInput).toHaveValue(100);
     });
+
+    it("resets federalRate to 0 when tax rate input is cleared so subsequent state preset uses 0 basis", () => {
+        render(<TaxAdjustedReturns />);
+        fireEvent.click(screen.getByRole("button", { name: "Stock" }));
+
+        const taxInput = screen.getByLabelText("Tax Rate (%)");
+        // Clear the tax input
+        fireEvent.change(taxInput, { target: { value: "" } });
+        expect(taxInput).toHaveValue(null);
+
+        // Click +6% Moderate state preset -> should be 0 + 6 = 6%, not stale 15 + 6 = 21%
+        const modStateBtn = screen.getByRole("button", { name: /6% \(Moderate\)/i });
+        fireEvent.click(modStateBtn);
+        expect(taxInput).toHaveValue(6);
+    });
 });
