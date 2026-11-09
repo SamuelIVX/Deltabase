@@ -43,3 +43,6 @@ next-env.d.ts
 
 # temporary workflow files
 outdated.json
+reports/
+.stryker-tmp/
+

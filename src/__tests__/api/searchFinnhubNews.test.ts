@@ -9,8 +9,10 @@ import type { NextApiRequest, NextApiResponse } from "next";
 interface MockRes {
     statusCode: number;
     body: unknown;
+    headers: Record<string, string | string[]>;
     status(code: number): MockRes;
     json(body: unknown): MockRes;
+    setHeader(name: string, value: string | string[]): MockRes;
 }
 
 /**
@@ -24,12 +26,17 @@ function mockRes(): MockRes {
     const res: MockRes = {
         statusCode: 0,
         body: undefined,
+        headers: {},
         status(code: number) {
             this.statusCode = code;
             return this;
         },
         json(body: unknown) {
             this.body = body;
+            return this;
+        },
+        setHeader(name: string, value: string | string[]) {
+            this.headers[name] = value;
             return this;
         },
     };
@@ -73,6 +80,7 @@ describe("searchFinnhubNews", () => {
         const res = mockRes();
         await handler(req, res as unknown as NextApiResponse);
         expect(res.statusCode).toBe(200);
+        expect(res.headers["Cache-Control"]).toBe("public, s-maxage=300, stale-while-revalidate=600");
         expect(res.body).toEqual(articles);
         expect(fetch).toHaveBeenCalledWith(
             "https://finnhub.io/api/v1/news?category=general&token=test-key",

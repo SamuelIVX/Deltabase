@@ -33,9 +33,24 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run Stryker
+      # Stryker v10 removed `--since`; scope PR runs with an explicit --mutate list.
+      # Exclusions mirror stryker.config.mjs (tests, d.ts, Next.js entrypoints).
+      - name: Run Stryker on Changed Files
         if: ${{ !startsWith(github.head_ref, 'renovate/') }}
-        run: npx stryker run
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            FILES=$(git diff --name-only --diff-filter=ACMR "origin/${{ github.base_ref }}...HEAD" -- '*.ts' '*.tsx' \
+              | grep -vE '\.(test|spec)\.tsx?$|/__tests__/|\.d\.ts$|(^|/)app/.*(layout|page|loading|error|not-found|template|route)\.tsx$|(^|/)middleware\.ts$' \
+              || true)
+            if [ -z "$FILES" ]; then
+              echo "No mutable source files changed in this PR; skipping."
+              exit 0
+            fi
+            echo "Mutating:"; echo "$FILES"
+            npx stryker run --mutate "$(echo "$FILES" | paste -sd, -)"
+          else
+            npx stryker run
+          fi
 
       - name: Upload Mutation Report
         if: always()
