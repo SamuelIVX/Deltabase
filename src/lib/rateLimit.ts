@@ -11,13 +11,16 @@ interface RateLimitRecord {
 // In-memory store keyed by IP or identifier
 const ipRequestStore = new Map<string, RateLimitRecord>();
 
+// Maximum distinct IPs in memory at any one time to prevent memory exhaustion (DoS)
+const MAX_STORE_ENTRIES = 10000;
+
 // Cleanup stale records periodically to prevent memory bloat
 const CLEANUP_INTERVAL_MS = 60 * 1000;
 let lastCleanup = Date.now();
 
 function purgeExpiredRecords(): void {
     const now = Date.now();
-    if (now - lastCleanup < CLEANUP_INTERVAL_MS) return;
+    if (now - lastCleanup < CLEANUP_INTERVAL_MS && ipRequestStore.size < MAX_STORE_ENTRIES) return;
     lastCleanup = now;
 
     for (const [key, record] of ipRequestStore.entries()) {
@@ -25,7 +28,19 @@ function purgeExpiredRecords(): void {
             ipRequestStore.delete(key);
         }
     }
+
+    // If still at capacity, evict oldest entries
+    if (ipRequestStore.size >= MAX_STORE_ENTRIES) {
+        const excess = ipRequestStore.size - Math.floor(MAX_STORE_ENTRIES * 0.8);
+        let deleted = 0;
+        for (const key of ipRequestStore.keys()) {
+            if (deleted >= excess) break;
+            ipRequestStore.delete(key);
+            deleted++;
+        }
+    }
 }
+
 
 export interface RateLimitOptions {
     /** Maximum allowed requests within the time window. Default: 60 */

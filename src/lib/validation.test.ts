@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
     isValidStockSymbol,
     isValidCryptoSymbol,
+    isValidCryptoMarket,
     isValidSearchTerm,
 } from '@/lib/validation';
 
@@ -16,7 +17,8 @@ describe('API Input Validation', () => {
             expect(isValidStockSymbol('^IXIC')).toBe(true);
         });
 
-        it('rejects empty, null, or invalid symbol strings', () => {
+        it('rejects un-trimmed whitespace and invalid symbols', () => {
+            expect(isValidStockSymbol(' AAPL ')).toBe(false);
             expect(isValidStockSymbol('')).toBe(false);
             expect(isValidStockSymbol('   ')).toBe(false);
             expect(isValidStockSymbol(null)).toBe(false);
@@ -36,10 +38,26 @@ describe('API Input Validation', () => {
         });
 
         it('rejects malicious or malformed crypto symbols', () => {
+            expect(isValidCryptoSymbol(' BTC-USD ')).toBe(false);
             expect(isValidCryptoSymbol('')).toBe(false);
             expect(isValidCryptoSymbol(null)).toBe(false);
             expect(isValidCryptoSymbol('BTC-USD?param=1')).toBe(false);
             expect(isValidCryptoSymbol('BTC/USD')).toBe(false);
+        });
+    });
+
+    describe('isValidCryptoMarket', () => {
+        it('accepts standard crypto exchanges', () => {
+            expect(isValidCryptoMarket('kraken')).toBe(true);
+            expect(isValidCryptoMarket('coinbase')).toBe(true);
+            expect(isValidCryptoMarket('binance')).toBe(true);
+        });
+
+        it('rejects invalid markets or malicious strings', () => {
+            expect(isValidCryptoMarket('')).toBe(false);
+            expect(isValidCryptoMarket(null)).toBe(false);
+            expect(isValidCryptoMarket('kraken/evil')).toBe(false);
+            expect(isValidCryptoMarket('a'.repeat(35))).toBe(false);
         });
     });
 
@@ -58,3 +76,4 @@ describe('API Input Validation', () => {
         });
     });
 });
+

@@ -7,9 +7,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getCoinDeskHeaders } from "@/lib/coindesk";
 import { normalizeCryptoSymbol } from "@/utils/normalizeCryptoSymbol";
-import { isValidCryptoSymbol } from "@/lib/validation";
+import { isValidCryptoSymbol, isValidCryptoMarket } from "@/lib/validation";
 
 /**
+
 
  * GET latest tick for `instrument` on `market`.
  * SECURITY: uses `COINDESK_API_KEY`; do not log the key or raw Authorization header.
@@ -34,6 +35,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         market = 'kraken',
         instrument = 'BTC-USD'
     } = req.query;
+
+    const rawMarket = typeof market === 'string' ? market : 'kraken';
+    if (!isValidCryptoMarket(rawMarket)) {
+        return res.status(400).json({ error: "Invalid market parameter" });
+    }
 
     const rawInstrument = typeof instrument === 'string' ? instrument : 'BTC-USD';
     if (!isValidCryptoSymbol(rawInstrument)) {

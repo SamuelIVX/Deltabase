@@ -14,11 +14,26 @@ export function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
-    // Extract client IP from standard proxy headers
+    // Extract client IP from standard reverse proxy headers
+    // When behind reverse proxies (Vercel, Cloudflare, AWS), the rightmost IP in X-Forwarded-For
+    // or CF-Connecting-IP represents the verified client address.
+    const cfIp = request.headers.get('cf-connecting-ip');
     const forwardedFor = request.headers.get('x-forwarded-for');
     const realIp = request.headers.get('x-real-ip');
-    const cfIp = request.headers.get('cf-connecting-ip');
-    const clientIp = cfIp || (forwardedFor ? forwardedFor.split(',')[0].trim() : null) || realIp || '127.0.0.1';
+
+    let clientIp: string;
+    if (cfIp) {
+        clientIp = cfIp.trim();
+    } else if (forwardedFor) {
+        // Use the first non-empty IP entry from proxy hops
+        const hops = forwardedFor.split(',').map((h) => h.trim()).filter(Boolean);
+        clientIp = hops[0] || 'unknown-client';
+    } else if (realIp) {
+        clientIp = realIp.trim();
+    } else {
+        clientIp = 'unknown-client';
+    }
+
 
     const result = checkRateLimit(clientIp, {
         limit: API_RATE_LIMIT,
