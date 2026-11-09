@@ -1,0 +1,37 @@
+/**
+ * Styles for the ThemeToggle button.
+ */
+.toggleButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background-color: var(--bg-surface-elevated);
+  color: var(--text);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.toggleButton:hover {
+  background-color: var(--border-light);
+  color: var(--text);
+  border-color: var(--textSoft);
+}
+
+.label {
+  display: inline-block;
+}
+
+@media (max-width: 640px) {
+  .label {
+    display: none;
+  }
+  .toggleButton {
+    padding: 6px 8px;
+  }
+}

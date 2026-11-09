@@ -1,13 +1,14 @@
 /**
- * Dashboard shell layout — sidebar, navbar, and main content slot.
+ * Dashboard shell layout — sidebar, market ribbon, navbar, and main content slot.
  */
 import Navbar from "@/components/dashboard/navbar/navbar";
 import Sidebar from "@/components/dashboard/sidebar/sidebar";
-import styles from "@/components/dashboard/dashboard.module.css";
+import MarketRibbon from "@/components/dashboard/marketribbon/MarketRibbon";
 import Footer from "@/components/dashboard/footer/footer";
+import styles from "@/components/dashboard/dashboard.module.css";
 
 /**
- * Renders sidebar + navbar around dashboard page content.
+ * Renders sidebar, market indices ribbon, and navbar around dashboard page content.
  * @param {{ children: import('react').ReactNode }} props
  * @param {import('react').ReactNode} props.children - Nested dashboard route.
  * @returns {JSX.Element} Dashboard chrome layout.
@@ -18,11 +19,12 @@ const Layout = ({ children }) => {
       <div className={styles.menu}>
         <Sidebar />
       </div>
-      <div className={styles.content}>
+      <main className={styles.content}>
+        <MarketRibbon />
         <Navbar />
         {children}
         <Footer />
-      </div>
+      </main>
     </div>
   );
 };

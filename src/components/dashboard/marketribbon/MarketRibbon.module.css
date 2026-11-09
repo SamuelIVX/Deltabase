@@ -1,0 +1,135 @@
+/**
+ * Styles for the top market indices ticker ribbon.
+ */
+.ribbon {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background-color: var(--bgSoft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 16px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  box-shadow: var(--card-shadow);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.ribbon::-webkit-scrollbar {
+  display: none;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  transition: background-color 0.15s ease;
+}
+
+.item:hover {
+  background-color: var(--bg-surface-elevated);
+}
+
+.name {
+  font-weight: 600;
+  color: var(--text);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.price {
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gain {
+  color: var(--gain);
+  background-color: var(--gain-bg);
+}
+
+.loss {
+  color: var(--loss);
+  background-color: var(--loss-bg);
+}
+
+.neutral {
+  color: var(--textSoft);
+  background-color: var(--bg-surface-elevated);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.errorState {
+  font-size: 12px;
+  color: var(--textSoft);
+  padding: 4px 8px;
+}
+
+.skeletonItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+}
+
+.skeletonBox {
+  width: 72px;
+  height: 16px;
+  background-color: var(--border);
+  border-radius: 4px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeletonBadge {
+  width: 48px;
+  height: 16px;
+  background-color: var(--border-light);
+  border-radius: 4px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonBox,
+  .skeletonBadge {
+    animation: none;
+  }
+}

@@ -4,12 +4,16 @@
 .container {
   height: 450px;
   background-color: var(--bgSoft);
-  padding: 20px;
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .title {
-  font-weight: 200;
-  color: var(--textSoft);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text);
   margin-bottom: 20px;
 }

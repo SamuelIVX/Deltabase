@@ -1,60 +1,58 @@
 /**
- * Styles for the dashboard top navbar.
+ * Styles for the dashboard top navbar supporting themes and responsive glassmorphism.
  */
 .container {
-  padding: 20px;
-  border-radius: 10px;
+  padding: 14px 20px;
+  border-radius: 12px;
   background-color: var(--bgSoft);
+  border: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 20px;
+  box-shadow: var(--card-shadow);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.titleArea {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .title {
-  color: var(--textSoft);
-  font-weight: bold;
-  text-transform: capitalize;
-}
-
-.menu {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.search {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #2e374a;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-.input {
-  background-color: transparent;
-  border: none;
   color: var(--text);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.02em;
 }
 
-.icons {
+.subtitle {
+  color: var(--textSoft);
+  font-size: 12px;
+}
+
+.actions {
   display: flex;
+  align-items: center;
   gap: 12px;
 }
 
-.iconButton {
-  background: transparent;
-  border: none;
+.iconLink {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-light);
   color: var(--text);
   cursor: pointer;
-  padding: 6px;
-  border-radius: 6px;
+  padding: 8px;
+  border-radius: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
-.iconButton:hover {
-  background-color: rgba(255, 255, 255, 0.08);
+.iconLink:hover {
+  background-color: var(--border-light);
+  color: var(--text);
+  border-color: var(--textSoft);
 }
