@@ -1,24 +1,132 @@
 /**
- * Styles for the What-If investment form and time slider.
+ * Styles for What-If DCA strategy parameters form and Radix slider.
  */
-.wrapper {
-    display: flex;
-    gap: 24px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin: 24px auto;
-}
-
-.container {
+.section {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    flex: 1;
-    min-width: 300px;
-    background-color: var(--bgSoft);
-    padding: 20px;
-    border-radius: 10px;
+    margin-bottom: 24px;
+}
+
+.controlBar {
+    display: flex;
     align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    background: var(--bgSoft);
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+}
+
+.controlTitleGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.controlTitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+}
+
+.controlSubtitle {
+    font-size: 13px;
+    color: var(--textSoft);
+}
+
+.linkToggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+.linkToggle:hover {
+    border-color: var(--primary);
+    background: var(--bg-surface-elevated);
+}
+
+.linkToggleActive {
+    border-color: var(--primary);
+    background: rgba(2, 132, 199, 0.12);
+    color: var(--primary);
+}
+
+.linkIcon {
+    font-size: 13px;
+}
+
+.wrapper {
+    display: flex;
+    gap: 16px;
+    align-items: stretch;
+}
+
+@media (max-width: 768px) {
+    .wrapper {
+        flex-direction: column;
+    }
+}
+
+.container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    background-color: var(--bgSoft);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    box-shadow: var(--card-shadow);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    min-width: 0;
+}
+
+.containerAsset1 {
+    border-top: 3px solid var(--asset-1);
+}
+
+.containerAsset2 {
+    border-top: 3px solid var(--asset-2);
+}
+
+.formCardHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.dotAsset1 {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--asset-1);
+}
+
+.dotAsset2 {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--asset-2);
+}
+
+.cardHeaderTitle {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
 }
 
 .field {
@@ -28,88 +136,159 @@
 }
 
 .label {
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 12px;
+    font-weight: 600;
     color: var(--textSoft);
-    text-transform: capitalize;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .inputBg {
-    background: #2e374a;
-    border-radius: 10px;
-    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.inputBg:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2);
+}
+
+.currencyPrefix {
+    padding-left: 12px;
+    color: var(--textSoft);
+    font-weight: 600;
+    font-size: 14px;
 }
 
 .input {
     background-color: transparent;
     border: none;
     color: var(--text);
-    padding: 10px;
+    padding: 10px 12px;
     width: 100%;
+    outline: none;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
 }
 
+.input::placeholder {
+    color: var(--textSoft);
+    opacity: 0.6;
+}
+
+/* Time Slider Styles */
 .sliderWrapper {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 6px;
+    gap: 12px;
+    margin-top: 6px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
 }
 
-.slider {
+.sliderHeader {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-width: 50%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sliderHeading {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--textSoft);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .sliderLabel {
-    text-transform: capitalize;
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+}
+
+.quickYears {
+    display: flex;
+    gap: 6px;
+}
+
+.yearBtn {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
     color: var(--textSoft);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 0;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+.yearBtn:hover {
+    color: var(--text);
+    border-color: var(--textSoft);
+}
+
+.yearBtnActive {
+    background: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+}
+
+.yearBtnActive:hover {
+    background: var(--primary-hover);
+    color: #ffffff;
 }
 
 .SliderRoot {
-    margin: 0 auto;
     position: relative;
     display: flex;
     align-items: center;
     user-select: none;
     touch-action: none;
-    width: 200px;
-    height: 20px;
-    margin-top: 10px;
+    width: 100%;
+    height: 24px;
+    cursor: pointer;
 }
 
 .SliderTrack {
-    background-color: white;
+    background-color: var(--border-light);
     position: relative;
     flex-grow: 1;
     border-radius: 9999px;
-    height: 3px;
+    height: 4px;
 }
 
 .SliderRange {
     position: absolute;
-    background-color: black;
+    background-color: var(--primary);
     border-radius: 9999px;
     height: 100%;
 }
 
 .SliderThumb {
     display: block;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     background-color: var(--bgSoft);
-    box-shadow: 0 2px 10px black;
-    border-radius: 10px;
+    border: 2px solid var(--primary);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    border-radius: 50%;
+    transition: transform 0.1s ease, border-color 0.15s ease;
 }
 
 .SliderThumb:hover {
-    background-color: black;
+    transform: scale(1.15);
+    background-color: var(--bg-surface-elevated);
 }
 
 .SliderThumb:focus {
     outline: none;
-    box-shadow: 0 0 0 5px white;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.35);
 }

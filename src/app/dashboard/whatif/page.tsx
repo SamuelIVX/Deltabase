@@ -8,30 +8,44 @@ import { AssetContext } from '@/components/whatif/assetselector/assetselector';
 import Blurb from "@/components/whatif/blurb/blurb";
 import AssetSelector from "@/components/whatif/assetselector/assetselector";
 import InvestmentForm from "@/components/whatif/investmentform/investmentform";
-import ComparisonCharts from "../../../components/whatif/comparisoncharts/comparisoncharts";
+import ComparisonCharts from "@/components/whatif/comparisoncharts/comparisoncharts";
 import ComparisonSummary from "@/components/whatif/comparisonsummary/comparisonsummary";
+import type { AssetItem } from "@/types/whatif";
 
 /**
  * What-If flagship page — holds investment/asset state in AssetContext and
  * composes selector, form, charts, and summary.
  * @returns {JSX.Element}
- * @example
- * // Routed at /dashboard/whatif
  */
 const WhatIf = () => {
-    // Asset 1 state
-    const [selectedAsset1, setSelectedAsset1] = useState(null);
-    const [value1, setValue1] = useState([1]);
-    const [initialInvestment1, setInitialInvestment1] = useState("");
-    const [monthlyInvestment1, setMonthlyInvestment1] = useState("");
-    const [asset1Data, setAsset1Data] = useState([]);
+    // Default to SPY vs QQQ with 5-year lookback and $1,000 / $250 DCA
+    const [selectedAsset1, setSelectedAsset1] = useState<AssetItem | null>({
+        symbol: "SPY",
+        shortname: "SPDR S&P 500 ETF Trust",
+    });
+    const [value1, setValue1] = useState<number[]>([5]);
+    const [initialInvestment1, setInitialInvestment1] = useState<string>("1000");
+    const [monthlyInvestment1, setMonthlyInvestment1] = useState<string>("250");
+    const [asset1Data, setAsset1Data] = useState<Array<{
+        name: string;
+        portfolioValue: string;
+        invested: string;
+        adjclose: number;
+    }>>([]);
 
-    // Asset 2 state
-    const [selectedAsset2, setSelectedAsset2] = useState(null);
-    const [value2, setValue2] = useState([1]);
-    const [initialInvestment2, setInitialInvestment2] = useState("");
-    const [monthlyInvestment2, setMonthlyInvestment2] = useState("");
-    const [asset2Data, setAsset2Data] = useState([]);
+    const [selectedAsset2, setSelectedAsset2] = useState<AssetItem | null>({
+        symbol: "QQQ",
+        shortname: "Invesco QQQ Trust",
+    });
+    const [value2, setValue2] = useState<number[]>([5]);
+    const [initialInvestment2, setInitialInvestment2] = useState<string>("1000");
+    const [monthlyInvestment2, setMonthlyInvestment2] = useState<string>("250");
+    const [asset2Data, setAsset2Data] = useState<Array<{
+        name: string;
+        portfolioValue: string;
+        invested: string;
+        adjclose: number;
+    }>>([]);
 
     return (
         <AssetContext.Provider
