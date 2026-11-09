@@ -5,16 +5,9 @@
 import React from "react";
 import styles from "./rightbar.module.css";
 import useFinnhubNews from "@/hooks/useFinnhubNews";
+import type { MarketNewsArticle } from "@/types/news";
 
-export interface NewsItem {
-  id: string | number;
-  headline: string;
-  source: string;
-  url: string;
-  datetime: number;
-  image?: string;
-  summary?: string;
-}
+export type { MarketNewsArticle as NewsItem };
 
 /**
  * Formats a unix timestamp (in seconds) to relative time (e.g. "15m ago", "2h ago").
@@ -40,7 +33,7 @@ export function formatRelativeTime(seconds: number): string {
  */
 const Rightbar = () => {
   const { data, isPending, isError } = useFinnhubNews();
-  const rawArticles = (Array.isArray(data) ? data : []) as NewsItem[];
+  const rawArticles = (Array.isArray(data) ? data : []) as MarketNewsArticle[];
   const articles = rawArticles.slice(0, 5);
 
   return (

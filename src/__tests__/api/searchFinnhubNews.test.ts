@@ -120,6 +120,13 @@ describe("searchFinnhubNews", () => {
         expect(res.statusCode).toBe(200);
         expect(res.headers["Cache-Control"]).toBe("public, s-maxage=300, stale-while-revalidate=600");
         expect(res.body).toEqual(articles);
+        expect(fetch).toHaveBeenCalledWith(
+            "https://finnhub.io/api/v1/news?category=general&token=test-key",
+            expect.objectContaining({
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            })
+        );
         expect(yahooFinance.search).not.toHaveBeenCalled();
     });
 

@@ -14,6 +14,9 @@ import formatCurrency from '@/utils/formatCurrency';
 import formatNumber from '@/utils/formatNumber';
 import formatPercent from '@/utils/formatPercent';
 import formatDate from '@/utils/formatDate';
+import RangeBar from '../common/RangeBar';
+
+export { RangeBar };
 
 const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
     <div className={styles.statItem}>
@@ -21,59 +24,6 @@ const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
         <span className={styles.value}>{value}</span>
     </div>
 );
-
-interface RangeBarProps {
-    label: string;
-    low: number | null | undefined;
-    high: number | null | undefined;
-    current: number | null | undefined;
-}
-
-/**
- * Accessible visual range slider meter (e.g. for 52-Week High/Low).
- */
-export const RangeBar: React.FC<RangeBarProps> = ({ label, low, high, current }) => {
-    if (low == null || high == null || high <= low) {
-        return null;
-    }
-
-    const currentPrice = current ?? low;
-    const clampedPrice = Math.min(Math.max(currentPrice, low), high);
-    const percent = Math.min(100, Math.max(0, ((clampedPrice - low) / (high - low)) * 100));
-
-    return (
-        <div className={styles.rangeSection}>
-            <div className={styles.rangeHeader}>
-                <span className={styles.rangeLabel}>{label}</span>
-                <div className={styles.rangeValues}>
-                    <span className={styles.rangeBound}>${low}</span>
-                    <span className={styles.rangeCurrent}>
-                        Current: ${currentPrice}
-                    </span>
-                    <span className={styles.rangeBound}>${high}</span>
-                </div>
-            </div>
-            <div
-                className={styles.rangeTrack}
-                role="meter"
-                aria-label={label}
-                aria-valuemin={low}
-                aria-valuemax={high}
-                aria-valuenow={currentPrice}
-            >
-                <div
-                    className={styles.rangeFill}
-                    style={{ width: `${percent.toFixed(1)}%` }}
-                />
-                <div
-                    className={styles.rangeThumb}
-                    style={{ left: `${percent.toFixed(1)}%` }}
-                    aria-hidden="true"
-                />
-            </div>
-        </div>
-    );
-};
 
 /**
  * Displays Yahoo quote metrics and key valuation ratios for the selected ticker.

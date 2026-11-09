@@ -6,22 +6,18 @@
  */
 import type { NextApiRequest, NextApiResponse } from "next";
 import yahooFinance from "@/lib/yahooFinance";
+import type { MarketNewsArticle } from "@/types/news";
 
-export interface MarketNewsItem {
-    id: string | number;
-    headline: string;
-    source: string;
-    url: string;
-    datetime: number;
-    image?: string;
-    summary?: string;
-}
+export type { MarketNewsArticle as MarketNewsItem };
+
+/** Default timeout for outbound Finnhub requests before triggering Yahoo fallback. */
+const FINNHUB_TIMEOUT_MS = 5000;
 
 /**
  * Fallback to Yahoo Finance news when Finnhub is unconfigured, rate-limited, or unreachable.
  * @returns Array of normalized market news items.
  */
-async function fetchYahooNewsFallback(): Promise<MarketNewsItem[]> {
+async function fetchYahooNewsFallback(): Promise<MarketNewsArticle[]> {
     const searchRes = await yahooFinance.search("market", { newsCount: 10 });
     const newsList = Array.isArray(searchRes?.news) ? searchRes.news : [];
     return newsList
@@ -71,6 +67,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const response = await fetch(url.toString(), {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
+                signal: AbortSignal.timeout(FINNHUB_TIMEOUT_MS),
             });
 
             if (response.ok) {

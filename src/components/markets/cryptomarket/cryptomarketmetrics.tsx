@@ -11,7 +11,7 @@ import { TickResult } from '@/types/crypto';
 import { StatItemProps } from '@/types/statItem';
 import formatCurrency from '@/utils/formatCurrency';
 import formatNumber from '@/utils/formatNumber';
-import { RangeBar } from '../stockmarket/stockmarketmetrics';
+import RangeBar from '../common/RangeBar';
 
 const StatItem: React.FC<StatItemProps> = ({ label, value }) => (
     <div className={styles.statItem}>
@@ -49,10 +49,10 @@ const CryptoMarketMetrics = () => {
             {result && !isLoading && (
                 <>
                     <RangeBar
-                        label="52-Week Range"
+                        label="Year Range"
                         low={result.CURRENT_YEAR_LOW}
                         high={result.CURRENT_YEAR_HIGH}
-                        current={result.CURRENT_DAY_OPEN}
+                        current={result.BEST_BID ?? undefined}
                     />
 
                     <div className={styles.statsGrid}>
