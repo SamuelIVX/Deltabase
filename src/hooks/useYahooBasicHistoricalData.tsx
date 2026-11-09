@@ -2,7 +2,9 @@
  * Fetches Yahoo range-based chart series via `/api/searchBasicHistoricalData` using React Query.
  * Powers the stock market price chart range toggles.
  */
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+
+const EMPTY_DATA: unknown[] = [];
 
 const fetchYahooStockHistoricalData = async (symbol: string, range: string) => {
     const params = new URLSearchParams({ symbol, range });
@@ -24,16 +26,18 @@ const fetchYahooStockHistoricalData = async (symbol: string, range: string) => {
  */
 function useYahooStockHistoricalData(symbol: string, range: string) {
     const enabled = Boolean(symbol);
-    const { data, isLoading, error } = useQuery({
+    const { data, isLoading, isFetching, error } = useQuery({
         queryKey: ['yahooStockHistoricalData', symbol, range],
         queryFn: () => fetchYahooStockHistoricalData(symbol, range),
         enabled,
         staleTime: 1000 * 60 * 5,
+        placeholderData: keepPreviousData,
     });
 
     return {
-        historicalData: enabled ? (data ?? []) : [],
-        isLoading: enabled ? isLoading : false,
+        historicalData: (enabled && data ? data : EMPTY_DATA) as typeof data,
+        isLoading: enabled ? (isLoading && !data) : false,
+        isFetching: enabled ? isFetching : false,
         error: enabled && error ? (error as Error).message : null,
     };
 }

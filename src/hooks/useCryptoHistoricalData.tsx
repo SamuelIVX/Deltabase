@@ -2,8 +2,10 @@
  * Fetches CoinDesk historical candles via `/api/searchCoinHistoricalData` using React Query.
  * Used by crypto market charts and What-If crypto legs.
  */
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Params } from "@/types/crypto";
+
+const EMPTY_RESULTS: Result[] = [];
 
 type Result = {
     date: string;
@@ -55,7 +57,7 @@ export default function useCryptoHistoricalData({
     signal,
 }: Params & { signal?: AbortSignal }) {
     const enabled = Boolean(market && instrument);
-    const { data, isLoading, error } = useQuery({
+    const { data, isLoading, isFetching, error } = useQuery({
         queryKey: ['cryptoHistoricalData', market, instrument, range],
         queryFn: ({ signal: contextSignal }) => {
             const combinedSignal = signal && typeof AbortSignal.any === 'function'
@@ -65,11 +67,13 @@ export default function useCryptoHistoricalData({
         },
         enabled,
         staleTime: 1000 * 60 * 5,
+        placeholderData: keepPreviousData,
     });
 
     return {
-        results: enabled ? (data ?? []) : [],
-        isLoading: enabled ? isLoading : false,
+        results: enabled && data ? data : EMPTY_RESULTS,
+        isLoading: enabled ? (isLoading && !data) : false,
+        isFetching: enabled ? isFetching : false,
         error: enabled && error ? (error as Error).message : null,
     };
 }

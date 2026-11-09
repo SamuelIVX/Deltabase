@@ -99,7 +99,11 @@ const CryptoMarketChart = () => {
     // Fetch historical data
     const [selectedRange, setSelectedRange] = useState('1mo');
 
-    const { results } = useCryptoHistoricalData({
+    const {
+        results,
+        isLoading: isHistoricalLoading,
+        error: historicalError,
+    } = useCryptoHistoricalData({
         market: "kraken",
         instrument: normalizedInstrument,
         range: selectedRange
@@ -181,8 +185,8 @@ const CryptoMarketChart = () => {
                 </div>
             )}
 
-            {results?.length > 0 && (
-                <>
+            <div className={styles.chartArea}>
+                {results?.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                         <AreaChart
                             width={500}
@@ -225,20 +229,34 @@ const CryptoMarketChart = () => {
                             />
                         </AreaChart>
                     </ResponsiveContainer>
-
-                    <div className={styles.dateRangeButtons}>
-                        {['1d', '5d', '1mo', '3mo', '6mo', '1y', '5y'].map((range) => (
-                            <button
-                                key={range}
-                                className={`${styles.dateButton} ${selectedRange === range ? styles.selected : ''}`}
-                                onClick={() => handleRangeChange(range)}
-                            >
-                                {range.toUpperCase()}
-                            </button>
-                        ))}
+                ) : isHistoricalLoading ? (
+                    <div className={styles.chartLoading}>
+                        <MoonLoader color="var(--primary)" size={48} />
                     </div>
-                </>
-            )}
+                ) : historicalError ? (
+                    <div className={styles.chartMessage}>
+                        Failed to load historical chart data: {historicalError}
+                    </div>
+                ) : (
+                    <div className={styles.chartMessage}>
+                        No historical chart data available.
+                    </div>
+                )}
+            </div>
+
+            <hr style={{ border: '1px solid var(--border)' }} />
+
+            <div className={styles.dateRangeButtons}>
+                {['1d', '5d', '1mo', '3mo', '6mo', '1y', '5y'].map((range) => (
+                    <button
+                        key={range}
+                        className={`${styles.dateButton} ${selectedRange === range ? styles.selected : ''}`}
+                        onClick={() => handleRangeChange(range)}
+                    >
+                        {range.toUpperCase()}
+                    </button>
+                ))}
+            </div>
         </div>
     );
 };

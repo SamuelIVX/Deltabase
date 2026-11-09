@@ -88,13 +88,14 @@
 }
 
 .articleLink:hover {
-  background-color: var(--card);
-  border-color: var(--border);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  background-color: var(--bg-surface-elevated);
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
 }
 
 .articleLink:hover .headline {
-  color: var(--accent);
+  color: var(--primary);
 }
 
 .articleLink:focus-visible {

@@ -68,7 +68,11 @@ const StockMarketChart = () => {
         setSelectedRange(range);
     };
 
-    const { historicalData } = useYahooBasicHistoricalData(debouncedStock, selectedRange);
+    const {
+        historicalData,
+        isLoading: isHistoricalLoading,
+        error: historicalError,
+    } = useYahooBasicHistoricalData(debouncedStock, selectedRange);
 
     return (
         <div className={styles.container}>
@@ -142,8 +146,8 @@ const StockMarketChart = () => {
                 </div>
             )}
 
-            {historicalData?.length > 0 && (
-                <>
+            <div className={styles.chartArea}>
+                {historicalData && historicalData.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
                         <AreaChart
                             width={500}
@@ -174,23 +178,34 @@ const StockMarketChart = () => {
                                 fill="rgba(61, 180, 63, 0.15)" />
                         </AreaChart>
                     </ResponsiveContainer>
-
-                    <hr style={{ border: '1px solid rgba(3, 73, 148, 0.15)' }} />
-
-                    <div className={styles.dateRangeButtons}>
-                        {['1d', '5d', '1m', '6m', '1y', '5y'].map((range) => (
-                            <button
-                                key={range}
-                                className={`${styles.dateButton} ${selectedRange === range ? styles.selected : ''}`}
-                                onClick={() => handleRangeChange(range)}
-                            >
-                                {range.toUpperCase()}
-                            </button>
-                        ))}
+                ) : isHistoricalLoading ? (
+                    <div className={styles.chartLoading}>
+                        <MoonLoader color="var(--primary)" size={48} />
                     </div>
+                ) : historicalError ? (
+                    <div className={styles.chartMessage}>
+                        Failed to load historical chart data: {historicalError}
+                    </div>
+                ) : (
+                    <div className={styles.chartMessage}>
+                        No historical chart data available.
+                    </div>
+                )}
+            </div>
 
-                </>
-            )}
+            <hr style={{ border: '1px solid var(--border)' }} />
+
+            <div className={styles.dateRangeButtons}>
+                {['1d', '5d', '1m', '6m', '1y', '5y'].map((range) => (
+                    <button
+                        key={range}
+                        className={`${styles.dateButton} ${selectedRange === range ? styles.selected : ''}`}
+                        onClick={() => handleRangeChange(range)}
+                    >
+                        {range.toUpperCase()}
+                    </button>
+                ))}
+            </div>
 
         </div >
     );

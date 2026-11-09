@@ -148,8 +148,8 @@ export const CustomWhatIfTooltip = ({
  */
 const UnifiedComparisonChart = () => {
     const {
-        selectedAsset1, value1, initialInvestment1, monthlyInvestment1, setAsset1Data,
-        selectedAsset2, value2, initialInvestment2, monthlyInvestment2, setAsset2Data
+        selectedAsset1, value1, initialInvestment1, monthlyInvestment1, asset1Data, setAsset1Data,
+        selectedAsset2, value2, initialInvestment2, monthlyInvestment2, asset2Data, setAsset2Data
     } = useContext(AssetContext);
 
     // Hover state for interactive series focus / dimming: null | 'asset1' | 'asset2'
@@ -172,18 +172,18 @@ const UnifiedComparisonChart = () => {
     useEffect(() => {
         if (dca1.monthlyPortfolio && dca1.monthlyPortfolio.length > 0) {
             setAsset1Data(dca1.monthlyPortfolio);
-        } else if (!results1 || results1.length === 0) {
+        } else if ((!results1 || results1.length === 0) && asset1Data.length > 0) {
             setAsset1Data([]);
         }
-    }, [dca1.monthlyPortfolio, results1, setAsset1Data]);
+    }, [dca1.monthlyPortfolio, results1, asset1Data.length, setAsset1Data]);
 
     useEffect(() => {
         if (dca2.monthlyPortfolio && dca2.monthlyPortfolio.length > 0) {
             setAsset2Data(dca2.monthlyPortfolio);
-        } else if (!results2 || results2.length === 0) {
+        } else if ((!results2 || results2.length === 0) && asset2Data.length > 0) {
             setAsset2Data([]);
         }
-    }, [dca2.monthlyPortfolio, results2, setAsset2Data]);
+    }, [dca2.monthlyPortfolio, results2, asset2Data.length, setAsset2Data]);
 
     // Align both monthly portfolios into a single chronological series
     const chartData = useMemo(() => {

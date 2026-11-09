@@ -3,6 +3,7 @@
  * Dashboard shell layout — collapsible sidebar, market ribbon, navbar, and main content slot.
  */
 import React from "react";
+import { usePathname } from "next/navigation";
 import Navbar from "@/components/dashboard/navbar/navbar";
 import Sidebar from "@/components/dashboard/sidebar/sidebar";
 import MarketRibbon from "@/components/dashboard/marketribbon/MarketRibbon";
@@ -16,6 +17,8 @@ interface LayoutProps {
 
 const DashboardShell: React.FC<LayoutProps> = ({ children }) => {
   const { isCollapsed } = useSidebar();
+  const pathname = usePathname();
+  const isDashboardHome = pathname === "/dashboard" || pathname === "/dashboard/";
 
   return (
     <div className={styles.container}>
@@ -23,7 +26,7 @@ const DashboardShell: React.FC<LayoutProps> = ({ children }) => {
         <Sidebar />
       </div>
       <main className={styles.content}>
-        <MarketRibbon />
+        {isDashboardHome && <MarketRibbon />}
         <Navbar />
         {children}
         <Footer />
