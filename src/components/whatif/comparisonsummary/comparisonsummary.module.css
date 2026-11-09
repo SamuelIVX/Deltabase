@@ -1,72 +1,307 @@
 /**
- * Styles for the What-If comparison summary cards.
+ * Styles for What-If DCA scorecard, comparison table, and opportunity cost card.
  */
-.unselected {
-    background-color: var(--bgSoft);
-    border-radius: 10px;
-    padding: 20px;
-    margin-top: 24px;
-    color: var(--textSoft)
-}
-
 .wrapper {
     display: flex;
-    gap: 20px;
-    align-items: flex-start;
+    flex-direction: column;
+    margin-bottom: 32px;
 }
 
 .container {
-    flex: 1;
-    padding: 20px;
-    border-radius: 10px;
     background-color: var(--bgSoft);
-    margin-top: 24px;
+    border: 1px solid var(--border);
+    padding: 24px 28px;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--primary);
+    background: rgba(2, 132, 199, 0.12);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 4px;
 }
 
 .title {
-    text-align: center;
-    color: var(--textSoft);
-    font-weight: bold;
-    font-size: 24px;
+    color: var(--text);
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.01em;
 }
 
-.content {
-    margin-top: 20px;
+.winnerPill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--gain-bg);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: var(--gain);
+    padding: 6px 12px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.winnerDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--gain);
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+}
+
+/* Alpha Takeaway Card */
+.alphaCard {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 18px 22px;
+    border-radius: 10px;
+    margin-bottom: 24px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    text-align: center;
+    gap: 6px;
 }
 
-.betterChoice {
-    font-style: italic;
+.alphaCost {
+    border-left: 4px solid var(--loss);
 }
 
-.disclaimer {
-    font-size: 12px;
-    color: rgba(211, 211, 211, 0.934);
+.alphaSave {
+    border-left: 4px solid var(--gain);
 }
 
-.symbolHighlight {
-    color: #e5e7eb;
+.summary {
+    font-size: 13px;
+    color: var(--textSoft);
 }
 
-.amountHighlight {
-    color: #93c5fd;
-}
-
-.finalHighlight {
-    color: #facc15;
+.costAmount {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
 }
 
 .costNegative {
-    color: #f87171;
+    color: var(--loss);
 }
 
 .costPositive {
-    color: #10b981;
+    color: var(--gain);
+}
+
+.verdictLine {
+    font-size: 14px;
+    color: var(--text);
+    margin-top: 2px;
+}
+
+.betterChoice {
+    color: var(--textSoft);
 }
 
 .winnerHighlight {
-    color: #10b981;
+    color: var(--gain);
+    font-weight: 700;
+}
+
+.verdictNote {
+    color: var(--textSoft);
+    font-size: 13px;
+    margin-left: 4px;
+}
+
+/* Head-to-Head Comparison Table */
+.tableWrapper {
+    overflow-x: auto;
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: left;
+}
+
+.table th,
+.table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.thMetric {
+    color: var(--textSoft);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    width: 35%;
+}
+
+.thAsset {
+    color: var(--text);
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.thAssetContent {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dotAsset1 {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--asset-1);
+}
+
+.dotAsset2 {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--asset-2);
+}
+
+.thDelta {
+    color: var(--textSoft);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-align: right;
+}
+
+.tdLabel {
+    color: var(--text);
+    font-weight: 500;
+}
+
+.tdVal {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.currPrefix {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--textSoft);
+}
+
+.cellWinner {
+    color: var(--gain);
+    font-weight: 700;
+}
+
+.tdDelta {
+    font-variant-numeric: tabular-nums;
+    color: var(--textSoft);
+    text-align: right;
+    font-weight: 600;
+}
+
+.spreadBadge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.gainText {
+    color: var(--gain);
+    font-variant-numeric: tabular-nums;
+}
+
+.lossText {
+    color: var(--loss);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Narrative Breakdown */
+.narrativeSection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 640px) {
+    .narrativeSection {
+        grid-template-columns: 1fr;
+    }
+}
+
+.narrativeCard {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--textSoft);
+    line-height: 1.5;
+}
+
+.narrativeFinal {
+    margin-top: 8px;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.symbolHighlight {
+    color: var(--text);
+    font-weight: 700;
+}
+
+.amountHighlight {
+    color: var(--primary);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.finalHighlight {
+    color: var(--text);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0 16px 0;
+}
+
+.disclaimer {
+    font-size: 11px;
+    color: var(--textSoft);
+    line-height: 1.6;
 }

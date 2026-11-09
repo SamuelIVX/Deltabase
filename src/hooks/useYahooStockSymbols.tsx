@@ -3,8 +3,9 @@
  * Aborts in-flight requests when the search term changes or the hook unmounts.
  */
 import { useQuery } from "@tanstack/react-query";
+import type { AssetItem } from "@/types/whatif";
 
-const fetchYahooStockSymbols = async (searchTerm, signal) => {
+const fetchYahooStockSymbols = async (searchTerm: string, signal?: AbortSignal): Promise<AssetItem[]> => {
     const res = await fetch(`/api/searchSymbol?searchTerm=${encodeURIComponent(searchTerm)}`, {
         signal,
     });
@@ -17,14 +18,14 @@ const fetchYahooStockSymbols = async (searchTerm, signal) => {
 
 /**
  * Searches Yahoo for tickers matching `searchTerm`.
- * @param {string} searchTerm - Free-text query; empty clears results.
- * @returns {{ results: Array, isLoading: boolean, error: string|null }} Quote hits from Yahoo search.
+ * @param searchTerm - Free-text query; empty clears results.
+ * @returns `{ results, isLoading, error }` Quote hits from Yahoo search.
  * @example
  * const { results } = useYahooStockSymbols("apple");
  */
-function useYahooStockSymbols(searchTerm) {
+function useYahooStockSymbols(searchTerm: string) {
     const enabled = Boolean(searchTerm);
-    const { data, isLoading, error } = useQuery({
+    const { data, isLoading, error } = useQuery<AssetItem[]>({
         queryKey: ['yahooStockSymbols', searchTerm],
         queryFn: ({ signal }) => fetchYahooStockSymbols(searchTerm, signal),
         enabled,
@@ -34,7 +35,7 @@ function useYahooStockSymbols(searchTerm) {
     return {
         results: enabled ? (data ?? []) : [],
         isLoading: enabled ? isLoading : false,
-        error: enabled && error ? error.message : null,
+        error: enabled && error ? (error as Error).message : null,
     };
 }
 

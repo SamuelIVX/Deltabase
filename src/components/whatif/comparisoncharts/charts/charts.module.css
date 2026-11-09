@@ -1,6 +1,289 @@
 /**
- * Styles for individual What-If DCA Recharts panels.
+ * Modern styles for What-If unified comparison chart, interactive legend, and glass tooltip.
  */
+.chartWrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.chartHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.chartTitleGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.chartHeading {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+}
+
+.chartSubheading {
+    font-size: 12px;
+    color: var(--textSoft);
+}
+
+.interactiveLegend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.legendPill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.legendPill:hover,
+.legendPillActive {
+    border-color: var(--primary);
+    background: var(--bg-surface-elevated);
+    box-shadow: 0 0 0 1px var(--primary);
+}
+
+.dotAsset1 {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--asset-1);
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+}
+
+.dotAsset2 {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--asset-2);
+    box-shadow: 0 0 6px rgba(129, 140, 248, 0.5);
+}
+
+.dashInvested {
+    width: 10px;
+    height: 2px;
+    background-color: var(--benchmark);
+}
+
+.legendSymbol {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.legendValue {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+}
+
+.legendMutedValue {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--textSoft);
+    font-variant-numeric: tabular-nums;
+}
+
+.legendPrincipal {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+
+.gainText {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gain);
+    font-variant-numeric: tabular-nums;
+}
+
+.lossText {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--loss);
+    font-variant-numeric: tabular-nums;
+}
+
+.loadingOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(9, 13, 22, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    border-radius: 12px;
+}
+
+.errorMessage {
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--loss-bg);
+    color: var(--loss);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.chartContainer {
+    width: 100%;
+    height: 420px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 0 0 0;
+}
+
+/* Glassmorphic Chart Tooltip */
+.glassTooltip {
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-shadow: var(--card-shadow);
+    backdrop-filter: blur(12px);
+    min-width: 240px;
+    font-family: inherit;
+}
+
+.tooltipDate {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--textSoft);
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+}
+
+.tooltipRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 6px 0;
+}
+
+.tooltipRowMuted {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 6px 0 4px 0;
+    padding-top: 6px;
+    border-top: 1px dashed var(--border);
+}
+
+.tooltipLabel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.dotInvested {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--benchmark);
+}
+
+.tooltipValues {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tooltipValue {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+}
+
+.tooltipMutedValue {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--textSoft);
+    font-variant-numeric: tabular-nums;
+}
+
+.gainPill {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: var(--gain-bg);
+    color: var(--gain);
+    font-variant-numeric: tabular-nums;
+}
+
+.lossPill {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: var(--loss-bg);
+    color: var(--loss);
+    font-variant-numeric: tabular-nums;
+}
+
+.tooltipSpread {
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 11px;
+}
+
+.spreadLabel {
+    font-weight: 600;
+    color: var(--textSoft);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.tooltipSpreadAsset1 {
+    font-weight: 700;
+    color: var(--asset-1);
+    font-variant-numeric: tabular-nums;
+}
+
+.tooltipSpreadAsset2 {
+    font-weight: 700;
+    color: var(--asset-2);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Legacy fallback classes */
 .container {
     height: 450px;
     background-color: var(--bgSoft);
@@ -13,18 +296,6 @@
     margin-bottom: 20px;
 }
 
-.loadingOverlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-}
-
 .customTooltip {
     padding: 10px;
 }
@@ -32,7 +303,7 @@
 .description {
     margin: 8px 0 2px 0;
     font-size: 12px;
-    color: rgba(211, 211, 211, 0.934);
+    color: var(--textSoft);
 }
 
 .value {
