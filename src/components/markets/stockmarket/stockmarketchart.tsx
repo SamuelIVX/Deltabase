@@ -132,13 +132,13 @@ const StockMarketChart = () => {
             </div>
 
             {error && <p className={styles.message}>Error: {error}</p>}
-            {isLoading && (
+            {!quote && isLoading && (
                 <div className={styles.loadingOverlay}>
-                    <MoonLoader color="var(--accent, #3b82f6)" size={64} />
+                    <MoonLoader color="var(--accent, #3b82f6)" size={48} />
                 </div>
             )}
 
-            {quote && !isLoading && (
+            {quote && (
                 <div className={styles.stockInfo}>
 
 

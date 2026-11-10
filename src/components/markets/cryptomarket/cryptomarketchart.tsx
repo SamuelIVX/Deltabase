@@ -156,13 +156,13 @@ const CryptoMarketChart = () => {
             </div>
 
             {error && <p className={styles.message}>Error: {error}</p>}
-            {isLoading && (
+            {!result && isLoading && (
                 <div className={styles.loadingOverlay}>
-                    <MoonLoader color="var(--accent, #3b82f6)" size={64} />
+                    <MoonLoader color="var(--accent, #3b82f6)" size={48} />
                 </div>
             )}
 
-            {result && !isLoading && (
+            {result && (
                 <div className={styles.stockInfo}>
                     <div className={styles.priceSection}>
                         <span className={styles.price}>

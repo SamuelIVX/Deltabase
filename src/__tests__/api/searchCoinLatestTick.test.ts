@@ -1,15 +1,21 @@
 /**
- * Unit tests for the CoinDesk latest tick API route (`searchCoinLatestTick`).
- * Asserts standard HTTP Authorization Bearer header usage, prototype pollution guards, and error handling.
+ * Unit tests for the crypto latest tick API route (`searchCoinLatestTick`).
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import handler from "@/pages/api/searchCoinLatestTick";
+import yahooFinance from "@/lib/yahooFinance";
 import type { NextApiRequest, NextApiResponse } from "next";
+
+vi.mock("@/lib/yahooFinance", () => ({
+    default: {
+        quote: vi.fn(),
+    },
+}));
 
 interface MockRes {
     statusCode: number;
-    body: unknown;
     headers: Record<string, string | string[]>;
+    body: unknown;
     status(code: number): MockRes;
     json(body: unknown): MockRes;
     setHeader(name: string, value: string | string[]): MockRes;
@@ -18,8 +24,8 @@ interface MockRes {
 function mockRes(): MockRes {
     const res: MockRes = {
         statusCode: 0,
-        body: undefined,
         headers: {},
+        body: undefined,
         status(code: number) {
             this.statusCode = code;
             return this;
@@ -37,178 +43,65 @@ function mockRes(): MockRes {
 }
 
 describe("searchCoinLatestTick", () => {
-    const originalKey = process.env.COINDESK_API_KEY;
-
     beforeEach(() => {
-        vi.stubGlobal("fetch", vi.fn());
-    });
-
-    afterEach(() => {
-        vi.unstubAllGlobals();
-        if (originalKey === undefined) {
-            delete process.env.COINDESK_API_KEY;
-        } else {
-            process.env.COINDESK_API_KEY = originalKey;
-        }
+        vi.clearAllMocks();
     });
 
     it("rejects non-GET HTTP methods with 405", async () => {
         const req = { method: "POST", query: {} } as unknown as NextApiRequest;
         const res = mockRes();
         await handler(req, res as unknown as NextApiResponse);
+
         expect(res.statusCode).toBe(405);
         expect(res.headers["Allow"]).toEqual(["GET"]);
         expect(res.body).toEqual({ error: "Method POST Not Allowed" });
     });
 
-    it("returns 500 when COINDESK_API_KEY is not configured", async () => {
-        delete process.env.COINDESK_API_KEY;
-        const req = { method: "GET", query: {} } as unknown as NextApiRequest;
+    it("rejects invalid instrument with 400", async () => {
+        const req = { method: "GET", query: { instrument: "INVALID$?%" } } as unknown as NextApiRequest;
         const res = mockRes();
         await handler(req, res as unknown as NextApiResponse);
-        expect(res.statusCode).toBe(500);
-        expect(res.body).toEqual({ error: "API key not configured" });
+
+        expect(res.statusCode).toBe(400);
+        expect(res.body).toEqual({ error: "Invalid instrument parameter" });
     });
 
-    it("uses Authorization Bearer header, caches, and omits api_key query param", async () => {
-        process.env.COINDESK_API_KEY = "coindesk-secret-key";
-        const tickData = { PRICE: 50000, INSTRUMENT: "BTC-USD" };
-        vi.mocked(fetch).mockResolvedValue({
-            ok: true,
-            json: async () => ({ Data: { "BTC-USD": tickData } }),
-        } as Response);
+    it("returns 200 with formatted tick payload on successful quote", async () => {
+        vi.mocked(yahooFinance.quote).mockResolvedValueOnce({
+            regularMarketPrice: 75128.5,
+            regularMarketOpen: 74000.0,
+            regularMarketDayHigh: 76000.0,
+            regularMarketDayLow: 73500.0,
+            regularMarketChange: 1128.5,
+            regularMarketChangePercent: 1.52,
+            regularMarketVolume: 25000000000,
+            regularMarketTime: new Date(1794273000 * 1000),
+            fiftyTwoWeekHigh: 80000.0,
+            fiftyTwoWeekLow: 40000.0,
+            bid: 75125.0,
+            ask: 75130.0,
+        } as never);
 
-        const req = { method: "GET", query: { instrument: "BTC-USD", market: "kraken" } } as unknown as NextApiRequest;
+        const req = { method: "GET", query: { instrument: "BTC-USD" } } as unknown as NextApiRequest;
         const res = mockRes();
         await handler(req, res as unknown as NextApiResponse);
 
         expect(res.statusCode).toBe(200);
-        expect(res.body).toEqual(tickData);
         expect(res.headers["Cache-Control"]).toBe("public, s-maxage=60, stale-while-revalidate=120");
-
-        expect(fetch).toHaveBeenCalledTimes(1);
-        const [calledUrl, calledOptions] = vi.mocked(fetch).mock.calls[0];
-        expect(calledUrl.toString()).not.toContain("api_key");
-        const parsedUrl = new URL(calledUrl.toString());
-        expect(parsedUrl.searchParams.get("market")).toBe("kraken");
-        expect(parsedUrl.searchParams.get("instruments")).toBe("BTC-USD");
-        expect(parsedUrl.searchParams.get("apply_mapping")).toBe("true");
-        expect(parsedUrl.searchParams.get("response_format")).toBe("JSON");
-        expect(calledOptions?.headers).toEqual({
-            "Content-Type": "application/json",
-            "Authorization": "Bearer coindesk-secret-key",
-        });
+        const body = res.body as Record<string, unknown>;
+        expect(body.PRICE).toBe(75128.5);
+        expect(body.INSTRUMENT).toBe("BTC-USD");
+        expect(body.CURRENT_DAY_HIGH).toBe(76000.0);
     });
 
-    it("uses default parameters when query parameters are omitted", async () => {
-        process.env.COINDESK_API_KEY = "coindesk-secret-key";
-        const tickData = { PRICE: 65000, INSTRUMENT: "BTC-USD" };
-        vi.mocked(fetch).mockResolvedValue({
-            ok: true,
-            json: async () => ({ Data: { "BTC-USD": tickData } }),
-        } as Response);
-
-        const req = { method: "GET", query: {} } as unknown as NextApiRequest;
-        const res = mockRes();
-        await handler(req, res as unknown as NextApiResponse);
-
-        expect(res.statusCode).toBe(200);
-        expect(res.body).toEqual(tickData);
-        const [calledUrl] = vi.mocked(fetch).mock.calls[0];
-        const parsedUrl = new URL(calledUrl.toString());
-        expect(parsedUrl.searchParams.get("market")).toBe("kraken");
-        expect(parsedUrl.searchParams.get("instruments")).toBe("BTC-USD");
-    });
-
-    it("normalizes lowercase crypto query such as btc to BTC-USD", async () => {
-        process.env.COINDESK_API_KEY = "coindesk-secret-key";
-        const tickData = { PRICE: 70000, INSTRUMENT: "BTC-USD" };
-        vi.mocked(fetch).mockResolvedValue({
-            ok: true,
-            json: async () => ({ Data: { "BTC-USD": tickData } }),
-        } as Response);
-
-        const req = { method: "GET", query: { instrument: "btc" } } as unknown as NextApiRequest;
-        const res = mockRes();
-        await handler(req, res as unknown as NextApiResponse);
-
-        expect(res.statusCode).toBe(200);
-        expect(res.body).toEqual(tickData);
-        const [calledUrl] = vi.mocked(fetch).mock.calls[0];
-        const parsedUrl = new URL(calledUrl.toString());
-        expect(parsedUrl.searchParams.get("instruments")).toBe("BTC-USD");
-    });
-
-    it("rejects inherited prototype properties such as constructor", async () => {
-        process.env.COINDESK_API_KEY = "coindesk-secret-key";
-        vi.mocked(fetch).mockResolvedValue({
-            ok: true,
-            json: async () => ({ Data: {} }),
-        } as Response);
-
-        const req = { method: "GET", query: { instrument: "constructor", market: "kraken" } } as unknown as NextApiRequest;
-        const res = mockRes();
-        await handler(req, res as unknown as NextApiResponse);
-
-        expect(res.statusCode).toBe(400);
-        expect(res.body).toEqual({ error: "No tick data found" });
-    });
-
-    it("returns 500 when fetch throws network error", async () => {
-        process.env.COINDESK_API_KEY = "coindesk-secret-key";
-        vi.mocked(fetch).mockRejectedValue(new Error("Network timeout"));
-
-        const req = { method: "GET", query: {} } as unknown as NextApiRequest;
-        const res = mockRes();
-        await handler(req, res as unknown as NextApiResponse);
-
-        expect(res.statusCode).toBe(500);
-        expect(res.body).toEqual({ error: "Failed to fetch crypto tick" });
-    });
-
-    it("returns 500 when upstream returns !ok", async () => {
-        process.env.COINDESK_API_KEY = "coindesk-secret-key";
-        vi.mocked(fetch).mockResolvedValue({
-            ok: false,
-            status: 502,
-            text: async () => "Bad gateway",
-        } as Response);
-
-        const req = { method: "GET", query: {} } as unknown as NextApiRequest;
-        const res = mockRes();
-        await handler(req, res as unknown as NextApiResponse);
-
-        expect(res.statusCode).toBe(500);
-        expect(res.body).toEqual({ error: "Failed to fetch crypto tick" });
-    });
-
-    it("returns 400 when Data property is missing from response", async () => {
-        process.env.COINDESK_API_KEY = "coindesk-secret-key";
-        vi.mocked(fetch).mockResolvedValue({
-            ok: true,
-            json: async () => ({ other: 123 }),
-        } as Response);
+    it("returns 500 when yahooFinance.quote throws an error", async () => {
+        vi.mocked(yahooFinance.quote).mockRejectedValueOnce(new Error("Yahoo rate limit or network fail"));
 
         const req = { method: "GET", query: { instrument: "BTC-USD" } } as unknown as NextApiRequest;
         const res = mockRes();
         await handler(req, res as unknown as NextApiResponse);
 
-        expect(res.statusCode).toBe(400);
-        expect(res.body).toEqual({ error: "No tick data found" });
-    });
-
-    it("returns 400 when Data property is not an object", async () => {
-        process.env.COINDESK_API_KEY = "coindesk-secret-key";
-        vi.mocked(fetch).mockResolvedValue({
-            ok: true,
-            json: async () => ({ Data: "not-an-object" }),
-        } as Response);
-
-        const req = { method: "GET", query: { instrument: "BTC-USD" } } as unknown as NextApiRequest;
-        const res = mockRes();
-        await handler(req, res as unknown as NextApiResponse);
-
-        expect(res.statusCode).toBe(400);
-        expect(res.body).toEqual({ error: "No tick data found" });
+        expect(res.statusCode).toBe(500);
+        expect(res.body).toEqual({ error: "Failed to fetch crypto tick" });
     });
 });

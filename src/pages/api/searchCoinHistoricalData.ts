@@ -1,32 +1,31 @@
 /**
- * Next.js Pages API: CoinDesk spot historical candles for crypto charts / What-If.
- * SECURITY: reads `COINDESK_API_KEY` from server env and sends it as a Bearer
- * token — never expose this key to the client or log the Authorization header.
+ * Next.js Pages API: Real-time crypto spot historical candles via Yahoo Finance.
+ * Replaces CoinDesk to provide keyless, unlimited, high-volume candle series.
  */
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getCoinDeskHeaders } from "@/lib/coindesk";
+import yahooFinance from "@/lib/yahooFinance";
 import { normalizeCryptoSymbol } from "@/utils/normalizeCryptoSymbol";
 import { isValidCryptoSymbol, isValidCryptoMarket } from "@/lib/validation";
 
-interface CandleData {
+type YahooInterval = "1d" | "5d" | "1m" | "2m" | "5m" | "15m" | "30m" | "60m" | "90m" | "1h" | "1wk" | "1mo" | "3mo";
 
-
-    TIMESTAMP: number;
-    OPEN: number;
-    HIGH: number;
-    LOW: number;
-    CLOSE: number;
-    VOLUME: number;
+interface HistoricalQuote {
+    date?: Date;
+    open?: number;
+    high?: number;
+    low?: number;
+    close?: number;
+    volume?: number;
 }
 
 /**
- * GET historical CoinDesk candles filtered to the requested lookback window.
- * SECURITY: uses `COINDESK_API_KEY`; do not log the key or raw Authorization header.
+ * GET historical crypto candles filtered to the requested lookback window.
+ * Returns normalized array matching `{ date, time, timestamp, open, high, low, close, volume }[]`.
  * @param req - Optional `market` (default `kraken`), `instrument` (default `BTC-USD`),
  *   `range` (`1d|5d|1mo|3mo|6mo|1y|5y`).
- * @param res - Normalized candle rows on 200; 500 if key missing or CoinDesk fails.
+ * @param res - Normalized candle rows on 200; 400 on invalid input; 500 on Yahoo errors.
  * @example
- * // GET /api/searchCoinHistoricalData?instrument=ETH-USD&range=1y → 200 [{ TIMESTAMP, CLOSE, ... }]
+ * // GET /api/searchCoinHistoricalData?instrument=ETH-USD&range=1y → 200 [{ timestamp, close, ... }]
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method && req.method !== 'GET') {
@@ -34,17 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
     }
 
-    const apiKey = process.env.COINDESK_API_KEY;
-
-    if (!apiKey) {
-        return res.status(500).json({ error: "API key not configured" });
-    }
-
-    const {
-        market,
-        instrument,
-        range = '1d'
-    } = req.query;
+    const { market, instrument, range = '1d' } = req.query;
 
     if (market !== undefined && typeof market !== 'string') {
         return res.status(400).json({ error: "Invalid market parameter" });
@@ -61,86 +50,58 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!isValidCryptoSymbol(resolvedInstrument)) {
         return res.status(400).json({ error: "Invalid instrument parameter" });
     }
+
     const normalizedInstrument = normalizeCryptoSymbol(resolvedInstrument);
 
-    // Calculate timestamps based on range
-    const now = Math.floor(Date.now() / 1000); // Current time in seconds
-    const rangeMap: { [key: string]: { seconds: number, interval: string } } = {
-        '1d': { seconds: 1 * 24 * 60 * 60, interval: 'hours' },
-        '5d': { seconds: 5 * 24 * 60 * 60, interval: 'hours' },
-        '1mo': { seconds: 30 * 24 * 60 * 60, interval: 'days' },
-        '3mo': { seconds: 90 * 24 * 60 * 60, interval: 'days' },
-        '6mo': { seconds: 180 * 24 * 60 * 60, interval: 'days' },
-        '1y': { seconds: 365 * 24 * 60 * 60, interval: 'days' },
-        '5y': { seconds: 5 * 365 * 24 * 60 * 60, interval: 'days' }
+    const rangeConfig: Record<string, { interval: YahooInterval; days: number }> = {
+        '1d': { interval: '15m', days: 1 },
+        '5d': { interval: '60m', days: 5 },
+        '1mo': { interval: '1d', days: 30 },
+        '3mo': { interval: '1d', days: 90 },
+        '6mo': { interval: '1d', days: 180 },
+        '1y': { interval: '1d', days: 365 },
+        '5y': { interval: '1wk', days: 1825 },
     };
 
-    const selectedRange = rangeMap[range as string] || rangeMap['1mo'];
-    const fromTs = now - selectedRange.seconds;
-
-    // Determine which endpoint to use based on interval
-    const endpointMap: { [key: string]: string } = {
-        'hours': 'https://data-api.coindesk.com/spot/v1/historical/hours',
-        'days': 'https://data-api.coindesk.com/spot/v1/historical/days'
-    };
-
-    const baseUrl = endpointMap[selectedRange.interval];
-
-    const params = {
-        market: resolvedMarket,
-        instrument: normalizedInstrument,
-        limit: '2000',
-        aggregate: '1',
-        fill: "true",
-        apply_mapping: "true",
-        response_format: "JSON",
-    };
-
-    const url = new URL(baseUrl);
-    url.search = new URLSearchParams(params).toString();
+    const selectedRange = rangeConfig[range as string] || rangeConfig['1mo'];
+    const now = new Date();
+    const period1 = new Date(now.getTime() - selectedRange.days * 24 * 60 * 60 * 1000);
 
     try {
-        const response = await fetch(url.toString(), {
-            method: 'GET',
-            headers: getCoinDeskHeaders(apiKey),
+        const chartData = await yahooFinance.chart(normalizedInstrument, {
+            period1,
+            interval: selectedRange.interval,
         });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('CoinDesk API Error:', response.status, errorText);
-            throw new Error(`CoinDesk error: ${response.status} - ${errorText}`);
-        }
+        const quotes: HistoricalQuote[] = (chartData?.quotes as HistoricalQuote[]) || [];
 
-        const data = await response.json();
-
-        if (!data || !data.Data) {
-            throw new Error("Invalid API response structure");
-        }
-
-        // Filter data to only include timestamps within our range
-        const filteredData = data.Data.filter((item: CandleData) => item.TIMESTAMP >= fromTs);
-
-        const results = filteredData.map((item: CandleData) => ({
-            date: new Date(item.TIMESTAMP * 1000).toISOString().split("T")[0],
-            time: new Date(item.TIMESTAMP * 1000).toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit'
-            }),
-            timestamp: item.TIMESTAMP,
-            open: item.OPEN,
-            high: item.HIGH,
-            low: item.LOW,
-            close: item.CLOSE,
-            volume: item.VOLUME
-        }));
+        const results = quotes
+            .filter((item) => item.date != null && item.close != null)
+            .map((item) => {
+                const dateObj = new Date(item.date!);
+                const ts = Math.floor(dateObj.getTime() / 1000);
+                return {
+                    date: dateObj.toISOString().split("T")[0],
+                    time: dateObj.toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    }),
+                    timestamp: ts,
+                    open: item.open ?? item.close ?? 0,
+                    high: item.high ?? item.close ?? 0,
+                    low: item.low ?? item.close ?? 0,
+                    close: item.close ?? 0,
+                    volume: item.volume ?? 0,
+                };
+            });
 
         if (typeof res.setHeader === 'function') {
             res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
         }
 
-        res.status(200).json(results);
+        return res.status(200).json(results);
     } catch (err: unknown) {
-        console.error('CoinDesk historical error:', err);
-        res.status(500).json({ error: "Failed to fetch crypto historical data" });
+        console.error('Yahoo Finance crypto historical error:', err);
+        return res.status(500).json({ error: "Failed to fetch crypto historical data" });
     }
 }
