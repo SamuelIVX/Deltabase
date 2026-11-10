@@ -102,6 +102,42 @@ describe("searchCoinHistoricalData", () => {
         expect(body[0].date).toBe("2026-10-01");
     });
 
+    it("filters out quotes with missing date or close and handles unsupported range fallback", async () => {
+        const mockQuotes = [
+            {
+                date: new Date("2026-10-01T00:00:00Z"),
+                open: undefined,
+                high: undefined,
+                low: undefined,
+                close: 65500,
+                volume: undefined,
+            },
+            {
+                date: undefined,
+                close: 66000,
+            },
+            {
+                date: new Date("2026-10-03T00:00:00Z"),
+                close: undefined,
+            },
+        ];
+
+        vi.mocked(yahooFinance.chart).mockResolvedValueOnce({
+            quotes: mockQuotes,
+        } as never);
+
+        // Unknown range "custom" should fall back to 1mo (interval 1d)
+        const req = { method: "GET", query: { instrument: "BTC-USD", range: "custom" } } as unknown as NextApiRequest;
+        const res = mockRes();
+        await handler(req, res as unknown as NextApiResponse);
+
+        expect(res.statusCode).toBe(200);
+        const body = res.body as Array<Record<string, unknown>>;
+        expect(body).toHaveLength(1);
+        expect(body[0].open).toBe(65500); // Falls back to close
+        expect(body[0].volume).toBe(0); // Falls back to 0
+    });
+
     it("returns 500 when yahooFinance.chart fails", async () => {
         vi.mocked(yahooFinance.chart).mockRejectedValueOnce(new Error("Yahoo chart fail"));
 

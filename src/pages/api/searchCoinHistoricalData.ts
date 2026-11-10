@@ -63,7 +63,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         '5y': { interval: '1wk', days: 1825 },
     };
 
-    const selectedRange = rangeConfig[range as string] || rangeConfig['1mo'];
+    const rangeKey = typeof range === 'string' && Object.hasOwn(rangeConfig, range) ? range : '1mo';
+    const selectedRange = rangeConfig[rangeKey];
     const now = new Date();
     const period1 = new Date(now.getTime() - selectedRange.days * 24 * 60 * 60 * 1000);
 

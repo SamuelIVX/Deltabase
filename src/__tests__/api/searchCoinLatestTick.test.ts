@@ -94,6 +94,34 @@ describe("searchCoinLatestTick", () => {
         expect(body.CURRENT_DAY_HIGH).toBe(76000.0);
     });
 
+    it("returns 400 when quote is empty or regularMarketPrice is missing", async () => {
+        vi.mocked(yahooFinance.quote).mockResolvedValueOnce({} as never);
+
+        const req = { method: "GET", query: { instrument: "BTC-USD" } } as unknown as NextApiRequest;
+        const res = mockRes();
+        await handler(req, res as unknown as NextApiResponse);
+
+        expect(res.statusCode).toBe(400);
+        expect(res.body).toEqual({ error: "No tick data found" });
+    });
+
+    it("handles fallback values when Yahoo omits optional quote fields", async () => {
+        vi.mocked(yahooFinance.quote).mockResolvedValueOnce({
+            regularMarketPrice: 50000.0,
+        } as never);
+
+        const req = { method: "GET", query: { instrument: "BTC-USD" } } as unknown as NextApiRequest;
+        const res = mockRes();
+        await handler(req, res as unknown as NextApiResponse);
+
+        expect(res.statusCode).toBe(200);
+        const body = res.body as Record<string, unknown>;
+        expect(body.PRICE).toBe(50000.0);
+        expect(body.CURRENT_DAY_OPEN).toBe(50000.0);
+        expect(body.BEST_BID).toBe(50000.0);
+        expect(body.CURRENT_DAY_QUOTE_VOLUME).toBe(0);
+    });
+
     it("returns 500 when yahooFinance.quote throws an error", async () => {
         vi.mocked(yahooFinance.quote).mockRejectedValueOnce(new Error("Yahoo rate limit or network fail"));
 
