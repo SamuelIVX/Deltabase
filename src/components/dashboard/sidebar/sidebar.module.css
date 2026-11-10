@@ -61,10 +61,12 @@
 
 .userImage {
   border-radius: 8px;
-  object-fit: cover;
+  object-fit: contain;
+  background-color: var(--bg-surface-elevated);
   border: 1px solid var(--border);
+  padding: 3px;
   flex-shrink: 0;
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .user:hover .userImage,
