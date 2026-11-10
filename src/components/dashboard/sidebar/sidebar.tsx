@@ -70,7 +70,7 @@ const Sidebar = () => {
           >
             <Image
               className={styles.userImage}
-              src="/DeltaBase.jpg"
+              src="/icon.png"
               alt="DeltaBase logo"
               width={36}
               height={36}
