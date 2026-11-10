@@ -59,7 +59,10 @@ export default function MobileBottomNav(): React.JSX.Element {
   return (
     <nav className={styles.navContainer} aria-label="Mobile navigation">
       {mobileNavItems.map((item) => {
-        const isActive = pathname === item.path;
+        const isActive =
+          item.path === "/dashboard"
+            ? pathname === item.path || pathname === "/dashboard/"
+            : pathname === item.path || pathname?.startsWith(`${item.path}/`);
         return (
           <Link
             key={item.path}

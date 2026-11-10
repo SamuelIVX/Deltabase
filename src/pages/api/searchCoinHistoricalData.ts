@@ -33,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
     }
 
-    const { market, instrument, range = '1d' } = req.query;
+    const { market, instrument, range = '1mo' } = req.query;
 
     if (market !== undefined && typeof market !== 'string') {
         return res.status(400).json({ error: "Invalid market parameter" });
@@ -86,6 +86,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     time: dateObj.toLocaleTimeString('en-US', {
                         hour: '2-digit',
                         minute: '2-digit',
+                        timeZone: 'UTC',
                     }),
                     timestamp: ts,
                     open: item.open ?? item.close ?? 0,

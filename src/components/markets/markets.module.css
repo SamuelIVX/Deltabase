@@ -107,11 +107,43 @@
 
 .priceSection {
     margin-bottom: 6px;
-    font-size: 16px;
+    font-size: 15px;
     font-family: var(--fontMono);
     display: flex;
     align-items: baseline;
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.priceMuted {
+    font-size: 14px;
+    color: var(--textSoft);
+    font-family: var(--fontMono);
+}
+
+.afterHoursSection {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 13px;
+    font-family: var(--fontMono);
+    color: var(--textSoft);
+}
+
+.afterHoursDivider {
+    color: var(--border);
+    margin: 0 4px;
+    font-weight: 700;
+}
+
+.afterHoursLabel {
+    color: var(--textSoft);
+    font-weight: 500;
+}
+
+.afterHoursPrice {
+    font-weight: 600;
+    color: var(--text);
 }
 
 .price {
@@ -222,19 +254,6 @@
     z-index: 2;
 }
 
-.loadingOverlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: var(--radius-md);
-    z-index: 10;
-}
 
 .message {
     color: var(--danger, #ef4444);

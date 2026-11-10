@@ -76,11 +76,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             CURRENT_YEAR_HIGH: quote.fiftyTwoWeekHigh ?? price,
             CURRENT_YEAR_LOW: quote.fiftyTwoWeekLow ?? price,
             LIFETIME_HIGH: quote.fiftyTwoWeekHigh ?? price,
-            PRICE_LAST_UPDATE_TS: Math.floor(
+            PRICE_LAST_UPDATE_TS:
                 quote.regularMarketTime instanceof Date
-                    ? quote.regularMarketTime.getTime() / 1000
-                    : Date.now() / 1000
-            ),
+                    ? Math.floor(quote.regularMarketTime.getTime() / 1000)
+                    : typeof quote.regularMarketTime === 'number'
+                        ? quote.regularMarketTime
+                        : 0,
         };
 
         if (typeof res.setHeader === 'function') {

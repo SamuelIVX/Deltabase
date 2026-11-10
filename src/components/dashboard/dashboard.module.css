@@ -92,7 +92,7 @@
     display: none;
   }
   .content {
-    padding: 16px 16px 80px 16px; /* 80px bottom space for MobileBottomNav */
+    padding: 16px 16px calc(80px + env(safe-area-inset-bottom, 0px)) 16px; /* bottom space for MobileBottomNav */
   }
 }
 

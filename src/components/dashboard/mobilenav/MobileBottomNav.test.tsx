@@ -3,8 +3,10 @@ import { render, screen } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import MobileBottomNav from "./MobileBottomNav";
 
+const mockUsePathname = vi.fn(() => "/dashboard/cryptomarket");
+
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/dashboard/cryptomarket",
+  usePathname: () => mockUsePathname(),
 }));
 
 describe("MobileBottomNav component", () => {
@@ -24,5 +26,13 @@ describe("MobileBottomNav component", () => {
 
     const homeLink = screen.getByRole("link", { name: /Home/i });
     expect(homeLink).not.toHaveAttribute("aria-current");
+  });
+
+  it("marks parent tab as active for nested child routes", () => {
+    mockUsePathname.mockReturnValueOnce("/dashboard/cryptomarket/detail");
+
+    render(<MobileBottomNav />);
+    const cryptoLink = screen.getByRole("link", { name: /Crypto/i });
+    expect(cryptoLink).toHaveAttribute("aria-current", "page");
   });
 });

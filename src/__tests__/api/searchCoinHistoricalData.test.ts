@@ -132,6 +132,10 @@ describe("searchCoinHistoricalData", () => {
         await handler(req, res as unknown as NextApiResponse);
 
         expect(res.statusCode).toBe(200);
+        expect(yahooFinance.chart).toHaveBeenCalledWith(
+            "BTC-USD",
+            expect.objectContaining({ interval: "1d" })
+        );
         const body = res.body as Array<Record<string, unknown>>;
         expect(body).toHaveLength(1);
         expect(body[0].open).toBe(65500); // Falls back to close
