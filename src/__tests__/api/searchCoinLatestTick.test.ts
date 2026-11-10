@@ -92,6 +92,25 @@ describe("searchCoinLatestTick", () => {
         expect(body.PRICE).toBe(75128.5);
         expect(body.INSTRUMENT).toBe("BTC-USD");
         expect(body.CURRENT_DAY_HIGH).toBe(76000.0);
+        expect(body.PRICE_LAST_UPDATE_TS).toBe(1794273000);
+        expect(body.LIFETIME_HIGH).toBeNull();
+    });
+
+    it("returns 200 and normalizes plain symbol 'btc' to 'BTC-USD' with numeric timestamp", async () => {
+        vi.mocked(yahooFinance.quote).mockResolvedValueOnce({
+            regularMarketPrice: 75000.0,
+            regularMarketTime: 1794273500,
+        } as never);
+
+        const req = { method: "GET", query: { instrument: "btc" } } as unknown as NextApiRequest;
+        const res = mockRes();
+        await handler(req, res as unknown as NextApiResponse);
+
+        expect(res.statusCode).toBe(200);
+        expect(yahooFinance.quote).toHaveBeenCalledWith("BTC-USD");
+        const body = res.body as Record<string, unknown>;
+        expect(body.INSTRUMENT).toBe("BTC-USD");
+        expect(body.PRICE_LAST_UPDATE_TS).toBe(1794273500);
     });
 
     it("returns 400 when quote is empty or regularMarketPrice is missing", async () => {
@@ -120,6 +139,8 @@ describe("searchCoinLatestTick", () => {
         expect(body.CURRENT_DAY_OPEN).toBe(50000.0);
         expect(body.BEST_BID).toBe(50000.0);
         expect(body.CURRENT_DAY_QUOTE_VOLUME).toBe(0);
+        expect(body.PRICE_LAST_UPDATE_TS).toBe(0);
+        expect(body.LIFETIME_HIGH).toBeNull();
     });
 
     it("returns 500 when yahooFinance.quote throws an error", async () => {

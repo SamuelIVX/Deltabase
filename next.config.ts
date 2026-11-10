@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const isDev = process.env.NODE_ENV !== "production";
+const isDev = process.env.NODE_ENV === "development";
 
 // In development, Next.js requires 'unsafe-eval' for Hot Module Replacement (HMR) and source map callstack reconstruction.
 // In production, 'unsafe-eval' is excluded to prevent dynamic code execution.

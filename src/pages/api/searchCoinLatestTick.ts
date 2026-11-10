@@ -75,7 +75,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             BEST_ASK: quote.ask ?? price,
             CURRENT_YEAR_HIGH: quote.fiftyTwoWeekHigh ?? price,
             CURRENT_YEAR_LOW: quote.fiftyTwoWeekLow ?? price,
-            LIFETIME_HIGH: quote.fiftyTwoWeekHigh ?? price,
+            LIFETIME_HIGH: null,
             PRICE_LAST_UPDATE_TS:
                 quote.regularMarketTime instanceof Date
                     ? Math.floor(quote.regularMarketTime.getTime() / 1000)
