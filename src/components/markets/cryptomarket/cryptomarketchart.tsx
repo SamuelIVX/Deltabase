@@ -156,13 +156,8 @@ const CryptoMarketChart = () => {
             </div>
 
             {error && <p className={styles.message}>Error: {error}</p>}
-            {isLoading && (
-                <div className={styles.loadingOverlay}>
-                    <MoonLoader color="var(--accent, #3b82f6)" size={64} />
-                </div>
-            )}
 
-            {result && !isLoading && (
+            {result ? (
                 <div className={styles.stockInfo}>
                     <div className={styles.priceSection}>
                         <span className={styles.price}>
@@ -186,7 +181,13 @@ const CryptoMarketChart = () => {
                         )}
                     </div>
                 </div>
-            )}
+            ) : isLoading ? (
+                <div className={styles.stockInfo}>
+                    <div className={styles.priceSection}>
+                        <span className={styles.priceMuted}>Fetching spot price...</span>
+                    </div>
+                </div>
+            ) : null}
 
             <div className={styles.chartArea}>
                 {results?.length > 0 ? (

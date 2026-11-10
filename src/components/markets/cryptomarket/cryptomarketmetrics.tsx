@@ -46,7 +46,7 @@ const CryptoMarketMetrics = () => {
         return `$${val.toFixed(2)}`;
     };
 
-    const athDrawdown = result?.LIFETIME_HIGH && result?.PRICE
+    const athDrawdown = result?.LIFETIME_HIGH != null && result.LIFETIME_HIGH > 0 && result?.PRICE
         ? ((result.PRICE - result.LIFETIME_HIGH) / result.LIFETIME_HIGH) * 100
         : null;
 
@@ -155,7 +155,7 @@ const CryptoMarketMetrics = () => {
                         />
                         <StatItem
                             label="All Time High"
-                            value={formatCurrency(result.LIFETIME_HIGH)}
+                            value={result.LIFETIME_HIGH != null ? formatCurrency(result.LIFETIME_HIGH) : 'N/A'}
                         />
                         <StatItem
                             label="ATH Drawdown"

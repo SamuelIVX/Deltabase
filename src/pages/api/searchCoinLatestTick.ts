@@ -1,21 +1,17 @@
 /**
- * Next.js Pages API: CoinDesk latest spot tick for a crypto instrument.
- * SECURITY: reads `COINDESK_API_KEY` from server env and sends it as an
- * `Authorization: Bearer` header to CoinDesk — never expose this key to the client
- * or log the outbound request headers (it embeds the key).
+ * Next.js Pages API: Real-time crypto spot quote via Yahoo Finance.
+ * Replaces CoinDesk to provide keyless, unlimited, reliable quotes.
  */
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getCoinDeskHeaders } from "@/lib/coindesk";
+import yahooFinance from "@/lib/yahooFinance";
 import { normalizeCryptoSymbol } from "@/utils/normalizeCryptoSymbol";
 import { isValidCryptoSymbol, isValidCryptoMarket } from "@/lib/validation";
 
 /**
-
-
  * GET latest tick for `instrument` on `market`.
- * SECURITY: uses `COINDESK_API_KEY`; do not log the key or raw Authorization header.
+ * Emits a TickResult-compatible structure matching CoinDesk output.
  * @param req - Optional `market` (default `kraken`), `instrument` (default `BTC-USD`).
- * @param res - Tick object on 200; 400 if instrument missing from payload; 500 on key/API failure.
+ * @param res - Tick object on 200; 400 on invalid input; 500 on Yahoo Finance failure.
  * @example
  * // GET /api/searchCoinLatestTick?instrument=BTC-USD → 200 { PRICE, ... }
  */
@@ -25,16 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
     }
 
-    const apiKey = process.env.COINDESK_API_KEY;
-
-    if (!apiKey) {
-        return res.status(500).json({ error: "API key not configured" });
-    }
-
-    const {
-        market,
-        instrument
-    } = req.query;
+    const { market, instrument } = req.query;
 
     if (market !== undefined && typeof market !== 'string') {
         return res.status(400).json({ error: "Invalid market parameter" });
@@ -51,56 +38,59 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!isValidCryptoSymbol(resolvedInstrument)) {
         return res.status(400).json({ error: "Invalid instrument parameter" });
     }
+
+    // Convert to Yahoo format e.g. BTC-USD, ETH-USD
     const normalizedInstrument = normalizeCryptoSymbol(resolvedInstrument);
 
-    const baseUrl = 'https://data-api.coindesk.com/spot/v1/latest/tick';
-
-    const params = {
-        market: resolvedMarket,
-        instruments: normalizedInstrument,
-        apply_mapping: "true",
-        response_format: "JSON",
-    };
-
-    const url = new URL(baseUrl);
-    url.search = new URLSearchParams(params).toString();
-
     try {
-        const response = await fetch(url.toString(), {
-            method: 'GET',
-            headers: getCoinDeskHeaders(apiKey),
-        });
+        const quote = await yahooFinance.quote(normalizedInstrument);
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('CoinDesk API Error:', response.status, errorText);
-            throw new Error(`CoinDesk error: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // Extract the tick for the requested instrument safely checking own property
-        const tick =
-            data &&
-            data.Data &&
-            typeof data.Data === 'object' &&
-            (Object.prototype.hasOwnProperty.call(data.Data, normalizedInstrument)
-                ? data.Data[normalizedInstrument]
-                : Object.prototype.hasOwnProperty.call(data.Data, resolvedInstrument)
-                    ? data.Data[resolvedInstrument]
-                    : undefined);
-
-        if (!tick) {
+        if (!quote || typeof quote !== 'object' || quote.regularMarketPrice == null) {
             return res.status(400).json({ error: "No tick data found" });
         }
+
+        const price = quote.regularMarketPrice;
+        const previousClose = quote.regularMarketPreviousClose ?? price;
+        const change = quote.regularMarketChange ?? (price - previousClose);
+        const changePercent = quote.regularMarketChangePercent ?? (previousClose ? (change / previousClose) * 100 : 0);
+
+        const tick = {
+            TYPE: "953",
+            MARKET: resolvedMarket,
+            INSTRUMENT: normalizedInstrument,
+            MAPPED_INSTRUMENT: normalizedInstrument,
+            BASE: normalizedInstrument.split('-')[0] || normalizedInstrument,
+            QUOTE: normalizedInstrument.split('-')[1] || "USD",
+            PRICE: price,
+            CURRENT_DAY_OPEN: quote.regularMarketOpen ?? previousClose,
+            CURRENT_DAY_HIGH: quote.regularMarketDayHigh ?? price,
+            CURRENT_DAY_LOW: quote.regularMarketDayLow ?? price,
+            CURRENT_DAY_CHANGE: change,
+            CURRENT_DAY_CHANGE_PERCENTAGE: changePercent,
+            CURRENT_HOUR_CHANGE_PERCENTAGE: 0,
+            MOVING_24_HOUR_CHANGE: change,
+            MOVING_24_HOUR_CHANGE_PERCENTAGE: changePercent,
+            CURRENT_DAY_QUOTE_VOLUME: quote.regularMarketVolume ?? 0,
+            BEST_BID: quote.bid ?? price,
+            BEST_ASK: quote.ask ?? price,
+            CURRENT_YEAR_HIGH: quote.fiftyTwoWeekHigh ?? price,
+            CURRENT_YEAR_LOW: quote.fiftyTwoWeekLow ?? price,
+            LIFETIME_HIGH: null,
+            PRICE_LAST_UPDATE_TS:
+                quote.regularMarketTime instanceof Date
+                    ? Math.floor(quote.regularMarketTime.getTime() / 1000)
+                    : typeof quote.regularMarketTime === 'number'
+                        ? quote.regularMarketTime
+                        : 0,
+        };
 
         if (typeof res.setHeader === 'function') {
             res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
         }
 
-        res.status(200).json(tick);
+        return res.status(200).json(tick);
     } catch (err: unknown) {
-        console.error('CoinDesk latest tick error:', err);
-        res.status(500).json({ error: "Failed to fetch crypto tick" });
+        console.error('Yahoo Finance crypto tick error:', err);
+        return res.status(500).json({ error: "Failed to fetch crypto tick" });
     }
 }

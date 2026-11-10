@@ -8,6 +8,7 @@ import Navbar from "@/components/dashboard/navbar/navbar";
 import Sidebar from "@/components/dashboard/sidebar/sidebar";
 import MarketRibbon from "@/components/dashboard/marketribbon/MarketRibbon";
 import Footer from "@/components/dashboard/footer/footer";
+import MobileBottomNav from "@/components/dashboard/mobilenav/MobileBottomNav";
 import styles from "@/components/dashboard/dashboard.module.css";
 import { SidebarProvider, useSidebar } from "@/components/dashboard/sidebar/SidebarContext";
 
@@ -33,6 +34,7 @@ const DashboardShell: React.FC<LayoutProps> = ({ children }) => {
         </div>
         <Footer />
       </main>
+      <MobileBottomNav />
     </div>
   );
 };

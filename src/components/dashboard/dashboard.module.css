@@ -76,16 +76,6 @@
 }
 
 @media (max-width: 1024px) {
-  .container {
-    flex-direction: column;
-  }
-  .menu {
-    width: 100%;
-    max-width: 100%;
-    min-height: auto;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
   .wrapper {
     flex-direction: column;
   }
@@ -93,3 +83,16 @@
     max-width: 100%;
   }
 }
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+  .menu {
+    display: none;
+  }
+  .content {
+    padding: 16px 16px calc(80px + env(safe-area-inset-bottom, 0px)) 16px; /* bottom space for MobileBottomNav */
+  }
+}
+

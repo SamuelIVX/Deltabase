@@ -13,7 +13,7 @@ export interface TickResult {
     BEST_ASK: number;
     CURRENT_YEAR_HIGH: number;
     CURRENT_YEAR_LOW: number;
-    LIFETIME_HIGH: number;
+    LIFETIME_HIGH: number | null;
     PRICE: number;
     INSTRUMENT?: string;
     QUOTE?: string;

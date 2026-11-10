@@ -132,22 +132,14 @@ const StockMarketChart = () => {
             </div>
 
             {error && <p className={styles.message}>Error: {error}</p>}
-            {isLoading && (
-                <div className={styles.loadingOverlay}>
-                    <MoonLoader color="var(--accent, #3b82f6)" size={64} />
-                </div>
-            )}
 
-            {quote && !isLoading && (
+            {quote ? (
                 <div className={styles.stockInfo}>
-
-
-                    {/* Regular Market */}
+                    {/* Primary Quote + Inline Compact After Hours */}
                     <div className={styles.priceSection}>
                         <span className={styles.price}>${quote.regularMarketPrice?.toFixed(2)}</span>
-                        {' '}
                         {quote.regularMarketChangePercent !== undefined && (
-                            <span style={{ color: quote.regularMarketChangePercent >= 0 ? '#10b981' : '#ef4444' }}>
+                            <span style={{ color: quote.regularMarketChangePercent >= 0 ? 'var(--gain, #10b981)' : 'var(--loss, #ef4444)', fontWeight: 600 }}>
                                 {quote.regularMarketChangePercent >= 0 ? '+' : ''}
                                 {quote.regularMarketChangePercent.toFixed(2)}%
                                 {' '}
@@ -156,33 +148,36 @@ const StockMarketChart = () => {
                                 <span className={styles.timeLabel}> Today</span>
                             </span>
                         )}
-                        {' '}
-                    </div>
-
-                    {/* Post Market - Only show if available */}
-                    {quote.postMarketPrice && quote.postMarketChangePercent !== undefined && (
-                        <div className={styles.priceSection}>
-                            <span className={styles.price}>${quote.postMarketPrice.toFixed(2)}</span>
-                            {' '}
-                            <span style={{ color: quote.postMarketChangePercent >= 0 ? '#10b981' : '#ef4444' }}>
-                                {quote.postMarketChangePercent >= 0 ? '+' : ''}
-                                {quote.postMarketChangePercent.toFixed(2)}%
-                                {' '}
-                                ({quote.postMarketChangePercent >= 0 ? '+' : ''}
-                                ${Math.abs(quote.postMarketPrice * quote.postMarketChangePercent / 100).toFixed(2)})
-                                <span className={styles.afterHoursLabel}> After Hours</span>
+                        {/* Compact inline After Hours — only rendered when available */}
+                        {quote.postMarketPrice && quote.postMarketChangePercent !== undefined && (
+                            <span className={styles.afterHoursSection}>
+                                <span className={styles.afterHoursDivider} aria-hidden="true">·</span>
+                                <span className={styles.afterHoursLabel}>After Hours:</span>
+                                <span className={styles.afterHoursPrice}>${quote.postMarketPrice.toFixed(2)}</span>
+                                <span style={{ color: quote.postMarketChangePercent >= 0 ? 'var(--gain, #10b981)' : 'var(--loss, #ef4444)' }}>
+                                    {quote.postMarketChangePercent >= 0 ? '+' : ''}
+                                    {quote.postMarketChangePercent.toFixed(2)}%
+                                    {' '}
+                                    ({quote.postMarketChangePercent >= 0 ? '+' : ''}
+                                    ${Math.abs(quote.postMarketPrice * quote.postMarketChangePercent / 100).toFixed(2)})
+                                </span>
                             </span>
-                        </div>
-                    )}
+                        )}
+                    </div>
 
                     {quote.regularMarketTime && (
                         <div className={styles.marketTime}>
                             {formatDate(quote.regularMarketTime)} · {quote.currency}
                         </div>
                     )}
-
                 </div>
-            )}
+            ) : isLoading ? (
+                <div className={styles.stockInfo}>
+                    <div className={styles.priceSection}>
+                        <span className={styles.priceMuted}>Fetching quote...</span>
+                    </div>
+                </div>
+            ) : null}
 
             <div className={styles.chartArea}>
                 {historicalData && historicalData.length > 0 ? (

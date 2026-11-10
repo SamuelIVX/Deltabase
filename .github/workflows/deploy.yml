@@ -1,0 +1,53 @@
+---
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: deploy-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Reject stale production deployment
+        if: github.event_name == 'push'
+        run: |
+          REMOTE_SHA=$(git ls-remote origin refs/heads/main | cut -f1)
+          if [ -z "$REMOTE_SHA" ]; then
+            echo "::error::Failed to resolve current main HEAD."
+            exit 1
+          fi
+          if [ "$REMOTE_SHA" != "${{ github.sha }}" ]; then
+            echo "::error::Refusing to deploy stale commit ${{ github.sha }} to production (current main is ${REMOTE_SHA})."
+            exit 1
+          fi
+
+      - name: Deploy to Vercel
+        if: env.VERCEL_TOKEN != ''
+        uses: amondnet/vercel-action@de09aeac2ace6599ec9b11ef87558759a496bac4 # v42
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: ${{ github.event_name == 'push' && '--prod' || '' }}
+          github-comment: true

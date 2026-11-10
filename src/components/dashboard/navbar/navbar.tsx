@@ -4,6 +4,7 @@
  * Dashboard top navbar — route title and context subtitle.
  */
 import { usePathname } from "next/navigation";
+import ThemeToggle from "@/components/theme/ThemeToggle";
 import styles from "./navbar.module.css";
 
 interface RouteMeta {
@@ -52,6 +53,9 @@ const Navbar = () => {
       <div className={styles.titleArea}>
         <h1 className={styles.title}>{meta.title}</h1>
         <p className={styles.subtitle}>{meta.subtitle}</p>
+      </div>
+      <div className={styles.actions}>
+        <ThemeToggle />
       </div>
     </header>
   );
